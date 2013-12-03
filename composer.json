@@ -1,0 +1,31 @@
+{
+    "name": "opis/http-routing",
+    "description": "Opis Http Routing",
+    "keywords": ["opis", "http", "routing"],
+    "homepage": "http://opis.io",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Marius Sarca",
+            "email": "marius.sarca@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "opis/http": "1.1.x",
+        "opis/routing": "1.1.x"
+    },
+    "autoload": {
+        "psr-0": {"Opis\\HttpRouting": ""}
+    },
+    "target-dir": "Opis/HttpRouting",
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}
