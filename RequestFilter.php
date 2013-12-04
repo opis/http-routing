@@ -55,11 +55,18 @@ class RequestFilter implements FilterInterface
         {
             $placeholders = $route->getWildcards() + $route->get('wildcards');
             $domain = str_replace('.', '\.', $domain);
+            
             foreach($placeholders as $key => $value)
             {
-                $domain = str_replace('{' . $key . '}\.', '(' . $value. ')\.', $domain);
-                $domain = str_replace('{' . $key . '?}\.', '((' . $value .')\.)?', $domain);
+                $domain = str_replace('{' . $key . '}\.', '(?P<' . $key . '>(' . $value. '))\.', $domain);
+                $domain = str_replace('{' . $key . '?}\.', '((P<' . $key . '>(' . $value .')\.))?', $domain);
             }
+            
+            $domain = preg_replace('/\{([^?]+)\\.\}/', '(?P<$1>([a-zA-Z0-9\.\,\-_%=]+))\.', $domain);
+            
+            $domain = preg_replace('/\{([^?]+)\?\\.\}/', '((?P<$1>([a-zA-Z0-9\.\,\-_%=]+))\.)?', $domain);
+            
+            $route->set('compiled-domain', $domain);
             
             $domain = '#^' . $domain . '$#u';
             

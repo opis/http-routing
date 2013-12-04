@@ -69,7 +69,7 @@ class Compiler implements CompilerInterface
         preg_match($pattern, $path, $parameters);
        
         $parameters = array_slice($parameters, 1);
-        
+
         if(count($parameters) === 0)
         {
             return array();
@@ -84,18 +84,23 @@ class Compiler implements CompilerInterface
     
     public function extract(array $names, array $values, array $defaults = array())
     {
-        
         $parameters = array_intersect_key($values, array_flip($names));
+        
+        $result = array();
         
         foreach($names as $key)
         {
-            if(isset($defaults[$key]) && (!isset($parameters[$key]) || empty($parameters[$key])))
+            if(isset($parameters[$key]))
             {
-                $parameters[$key] = $defaults[$key];
+                $result[$key] = $parameters[$key];
+            }
+            else
+            {
+                $result[$key] = isset($defaults[$key]) ? $defaults[$key] : null;
             }
         }
         
-        return $parameters;
+        return $result;
     }
     
     public function bind(array $values, array $bindings)

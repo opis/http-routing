@@ -37,15 +37,22 @@ class Dispatcher implements DispatcherInterface
     
     public function dispatch(BaseRoute $route)
     {
-        $routePath = $route->getPath();
+        $pattern = $route->get('domain', '') . $route->getPath();
+        $target = $this->request->host() . $this->request->path();
+        
         $placeholders = $route->getWildcards() + $route->get('wildcards');
         $bindings = $route->getBindings() + $route->get('bindings');
-        $expr = $this->compiler->compile($routePath, $placeholders);
-        $names = $this->compiler->names($routePath);
-        $values = $this->compiler->values($expr, $this->request->path());
+        $expr = $this->compiler->delimit($route->get('compiled-domain','') . $route->get('compiled-path', ''));
+        
+        $names = $this->compiler->names($pattern);
+        
+        $values = $this->compiler->values($expr, $target);
         $values = $this->compiler->extract($names, $values, $route->getDefaults());
+        
         $arguments = $this->compiler->bind($values, $bindings);
+        
         $action = $route->getAction();
+        
         return call_user_func_array($action, $arguments);
     }
 }
