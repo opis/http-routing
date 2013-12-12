@@ -22,17 +22,22 @@ namespace Opis\HttpRouting;
 
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Compiler;
 
 class RequestFilter implements FilterInterface
 {
+
+    protected $request;
+    
     protected $compiler;
     
-    protected $request;
+    protected $collection;
     
     public function __construct(Router $router)
     {
-        $this->compiler = $router->getCompiler();
         $this->request = $router->getRequest();
+        $this->compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
+        $this->collection = $router->getCollection();
     }
     
     public function match(BaseRoute $route)
@@ -53,27 +58,14 @@ class RequestFilter implements FilterInterface
         //match domain
         if(null !== $domain = $route->get('domain'))
         {
-            $placeholders = $route->getWildcards() + $route->get('wildcards');
-            $domain = str_replace('.', '\.', $domain);
+            $domain = $this->compiler->compile($domain, $route->getWildcards() + $this->collection->getWildcards());
             
-            foreach($placeholders as $key => $value)
-            {
-                $domain = str_replace('{' . $key . '}\.', '(?P<' . $key . '>(' . $value. '))\.', $domain);
-                $domain = str_replace('{' . $key . '?}\.', '((P<' . $key . '>(' . $value .')\.))?', $domain);
-            }
-            
-            $domain = preg_replace('/\{([^?]+)\\.\}/', '(?P<$1>([a-zA-Z0-9\.\,\-_%=]+))\.', $domain);
-            
-            $domain = preg_replace('/\{([^?]+)\?\\.\}/', '((?P<$1>([a-zA-Z0-9\.\,\-_%=]+))\.)?', $domain);
-            
-            $route->set('compiled-domain', $domain);
-            
-            $domain = '#^' . $domain . '$#u';
-            
-            if(!preg_match($domain, $this->request->host()))
+            if(!preg_match($this->compiler->delimit($domain), $this->request->host()))
             {
                 return false;
             }
+            
+            $route->set('compiled-domain', $domain);
         }
         return true;
     }

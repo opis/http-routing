@@ -15,7 +15,7 @@ $collection = new RouteCollection();
 $collection->pattern('subdomain', '(forum|blog)');
 
 $collection[] = Route::create('/hello/{user}', function($user){
-        print $user;
+        return $user;
     })
     ->where('user', '[a-z]+')
     ->bind('user', function($value){

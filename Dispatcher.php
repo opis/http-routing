@@ -20,29 +20,61 @@
 
 namespace Opis\HttpRouting;
 
+use Closure;
+use RuntimeException;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\DispatcherInterface;
 
 class Dispatcher implements DispatcherInterface
 {
+
     protected $request;
     
     protected $compiler;
     
+    protected $collection;
+    
     public function __construct(Router $router)
     {
-        $this->compiler = $router->getCompiler();
         $this->request = $router->getRequest();
+        $this->compiler = $router->getCompiler();
+        $this->collection = $router->getCollection();
     }
     
     public function dispatch(BaseRoute $route)
     {
-        $pattern = $route->get('domain', '') . $route->getPath();
-        $target = $this->request->host() . $this->request->path();
+        $filters = $this->collection->getFilters();
         
-        $placeholders = $route->getWildcards() + $route->get('wildcards');
-        $bindings = $route->getBindings() + $route->get('bindings');
-        $expr = $this->compiler->delimit($route->get('compiled-domain','') . $route->get('compiled-path', ''));
+        foreach($route->get('filters', array()) as $filter)
+        {
+            if(isset($filters[$filter]))
+            {
+                $result = $filters[$filter]($route, $this->request);
+                if($result !== null && $result !== true)
+                {
+                    return $result;
+                }
+            }
+        }
+        
+        
+        if($route->get('domain') === null)
+        {
+            $pattern = $route->getPath();
+            $target = $this->request->path();
+            $expr = $route->get('compiled-path');
+        }
+        else
+        {
+            $pattern = $route->get('domain', '') . $route->getPath();
+            $target = $this->request->host() . $this->request->path();
+            $expr = $route->get('compiled-domain') . $route->get('compiled-path');
+        }
+        
+        $placeholders = $route->getWildcards() + $this->collection->getWildcards();
+        $bindings = $route->getBindings() + $this->collection->getBindings();
+        
+        $expr = $this->compiler->delimit($expr);
         
         $names = $this->compiler->names($pattern);
         
@@ -52,6 +84,11 @@ class Dispatcher implements DispatcherInterface
         $arguments = $this->compiler->bind($values, $bindings);
         
         $action = $route->getAction();
+        
+        if(!is_callable($action))
+        {
+            throw new RuntimeException('Route action is not callable');
+        }
         
         return call_user_func_array($action, $arguments);
     }

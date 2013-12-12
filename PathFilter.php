@@ -25,20 +25,22 @@ use Opis\Routing\Route as BaseRoute;
 
 class PathFilter implements FilterInterface
 {
+    protected $request;
+    
     protected $compiler;
     
-    protected $request;
+    protected $collection;
     
     public function __construct(Router $router)
     {
-        $this->compiler = $router->getCompiler();
         $this->request = $router->getRequest();
+        $this->compiler = $router->getCompiler();
+        $this->collection = $router->getCollection();
     }
     
     public function match(BaseRoute $route)
     {
-        $placeholders = $route->getWildcards() + $route->get('wildcards');
-        $pattern = $this->compiler->compile($route->getPath(), $placeholders, false);
+        $pattern = $this->compiler->compile($route->getPath(), $route->getWildcards() + $this->collection->getWildcards());
         $route->set('compiled-path', $pattern);
         return preg_match($this->compiler->delimit($pattern), $this->request->path());
     }
