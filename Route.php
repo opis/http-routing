@@ -77,7 +77,7 @@ class Route extends BaseRoute
     
     public function getWildcards()
     {
-        if(isset($this->cache['wildcards']))
+        if(!isset($this->cache['wildcards']))
         {
             $this->cache['wildcards'] = $this->wildcards + $this->get('collection')->getWildcards();
         }
@@ -86,7 +86,7 @@ class Route extends BaseRoute
     
     public function getBindings()
     {
-        if(isset($this->cache['bindings']))
+        if(!isset($this->cache['bindings']))
         {
             $this->cache['bindings'] = $this->bindings + $this->get('collection')->getBindings();
         }
