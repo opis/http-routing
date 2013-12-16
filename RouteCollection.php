@@ -80,8 +80,7 @@ class RouteCollection extends BaseCollection
     
     public function offsetSet($offset, $value)
     {
-        $this->check($value);
-        $offset = $value->get('alias');
+        $offset = $value->get('alias', $offset);
         parent::offsetSet($offset, $value);
     }
 }

@@ -23,40 +23,40 @@ namespace Opis\HttpRouting;
 use Closure;
 use RuntimeException;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\DispatcherInterface;
+use Opis\Routing\Compiler;
 use Opis\Http\ResponseContainerInterface;
 use Opis\Http\Error\AccessDenied as AccessDeniedError;
 
 class Dispatcher implements DispatcherInterface
-{
-
-    protected $request;
-    
+{    
     protected $compiler;
     
-    protected $collection;
-    
-    public function __construct(Router $router)
+    public function __construct()
     {
-        $this->request = $router->getRequest();
-        $this->compiler = $router->getCompiler();
-        $this->collection = $router->getCollection();
+        $this->compiler = new Compiler();
     }
     
-    public function dispatch(BaseRoute $route)
+    public function dispatch(BaseRouter $router, BaseRoute $route)
     {
-        $permissions = $this->collection->getPermissions();
+        $collection = $router->getRouteCollection();
+        
+        $permissions = $collection->getPermissions();
+        
+        $request = $router->getRequest();
         
         foreach($route->get('permissions', array()) as $permission)
         {
             if(isset($permissions[$permission]))
             {
-                $result = $permissions[$permission]($this->request, $route);
+                $result = $permissions[$permission]($request, $route);
                 
                 if($result instanceof ResponseContainerInterface)
                 {
                     return $result;
-                }elseif($result !== null && $result !== true)
+                }
+                elseif($result !== null && $result !== true)
                 {
                     return new AccessDeniedError($result);
                 }
@@ -66,18 +66,18 @@ class Dispatcher implements DispatcherInterface
         if($route->get('domain') === null)
         {
             $pattern = $route->getPath();
-            $target = $this->request->path();
+            $target = $request->path();
             $expr = $route->get('compiled-path');
         }
         else
         {
             $pattern = $route->get('domain', '') . $route->getPath();
-            $target = $this->request->host() . $this->request->path();
+            $target = $request->host() . $request->path();
             $expr = $route->get('compiled-domain') . $route->get('compiled-path');
         }
         
-        $placeholders = $route->getWildcards() + $this->collection->getWildcards();
-        $bindings = $route->getBindings() + $this->collection->getBindings();
+        $placeholders = $route->getWildcards() + $collection->getWildcards();
+        $bindings = $route->getBindings() + $collection->getBindings();
         
         $expr = $this->compiler->delimit($expr);
         

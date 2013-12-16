@@ -20,26 +20,53 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Router as AbstractRouter;
+use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\Compiler;
+use Opis\Routing\FilterCollection;
 use Opis\Http\Request;
 use Opis\Http\Error\NotFound as NotFoundError;
+use Opis\HttpRouting\Filters\PathFilter;
+use Opis\HttpRouting\Filters\FiltersFilter;
+use Opis\HttpRouting\Filters\RequestFilter;
 
-class Router extends AbstractRouter
+class Router extends BaseRouter
 {
     
     protected $request;
     
     protected $compiler;
     
-    protected $filterList;
+    protected static $filterCollection;
     
-    protected $dispatcher;
+    protected static $dispatcherResolver;
     
-    public function __construct(Request $request, RouteCollection $collection)
+    public function __construct(Request $request, RouteCollection $routes)
     {
-        parent::__construct($collection);
         $this->request = $request;
+        parent::__construct(static::dispatcherResolver(), static::filterCollection(), $routes);
+    }
+    
+    public static function dispatcherResolver()
+    {
+        if(static::$dispatcherResolver === null)
+        {
+            static::$dispatcherResolver = new DispatcherResolver();
+        }
+        
+        return static::$dispatcherResolver;
+    }
+    
+    public static function filterCollection()
+    {
+        if(static::$filterCollection === null)
+        {
+            static::$filterCollection = new FilterCollection();
+            static::$filterCollection[] = new RequestFilter();
+            static::$filterCollection[] = new PathFilter();
+            static::$filterCollection[] = new FiltersFilter();
+        }
+        
+        return static::$filterCollection;
     }
     
     public function getRequest()
@@ -47,52 +74,18 @@ class Router extends AbstractRouter
         return $this->request;
     }
     
-    public function getCompiler()
+    public function route()
     {
-        if($this->compiler === null)
-        {
-            $this->compiler = new Compiler();
-        }
-        
-        return $this->compiler;
-    }
-    
-    public function execute()
-    {
-        $result = parent::execute();
+        $result = parent::route();
         
         $response = $this->request->response();
         
         if($result === null)
         {
-            $result = new NotFoundError('<h1>Page not found</h1>');
+            $result = new NotFoundError('<h2>Page not found</h2>');
         }
         
         $response->body($result);
         $response->send();
-    }
-    
-    protected function dispatcher()
-    {
-        if($this->dispatcher === null)
-        {
-            $this->dispatcher = new Dispatcher($this);
-        }
-        
-        return $this->dispatcher;
-    }
-    
-    protected function filters()
-    {
-        if($this->filterList === null)
-        {
-            $this->filterList = array(
-                new PathFilter($this),
-                new RequestFilter($this),
-                new FiltersFilter($this),
-            );
-        }
-        
-        return $this->filterList;
     }
 }

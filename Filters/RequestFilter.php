@@ -18,30 +18,26 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\HttpRouting;
+namespace Opis\HttpRouting\Filters;
 
 use Opis\Routing\FilterInterface;
-use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Route;
+use Opis\Routing\Router;
 use Opis\Routing\Compiler;
 
 class RequestFilter implements FilterInterface
 {
-
-    protected $request;
     
     protected $compiler;
     
-    protected $collection;
-    
-    public function __construct(Router $router)
+    public function __construct()
     {
-        $this->request = $router->getRequest();
         $this->compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
-        $this->collection = $router->getCollection();
     }
     
-    public function match(BaseRoute $route)
+    public function match(Router $router, Route $route)
     {
+        
         //match secure
         if(null !== $secure = $route->get('secure'))
         {
@@ -50,17 +46,23 @@ class RequestFilter implements FilterInterface
                 return false;
             }
         }
+        
+        $request = $router->getRequest();
+        
         //match method
-        if(!in_array($this->request->method(), $route->get('method', array('GET'))))
+        if(!in_array($request->method(), $route->get('method', array('GET'))))
         {
             return false;
         }
+        
         //match domain
         if(null !== $domain = $route->get('domain'))
         {
-            $domain = $this->compiler->compile($domain, $route->getWildcards() + $this->collection->getWildcards());
+            $collection = $router->getRouteCollection();
             
-            if(!preg_match($this->compiler->delimit($domain), $this->request->host()))
+            $domain = $this->compiler->compile($domain, $route->getWildcards() + $collection->getWildcards());
+            
+            if(!preg_match($this->compiler->delimit($domain), $request->host()))
             {
                 return false;
             }
