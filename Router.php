@@ -89,6 +89,7 @@ class Router extends AbstractRouter
             $this->filterList = array(
                 new PathFilter($this),
                 new RequestFilter($this),
+                new FiltersFilter($this),
             );
         }
         
