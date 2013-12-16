@@ -24,6 +24,8 @@ use Closure;
 use RuntimeException;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\DispatcherInterface;
+use Opis\Http\ResponseContainerInterface;
+use Opis\Http\Error\AccessDenied as AccessDeniedError;
 
 class Dispatcher implements DispatcherInterface
 {
@@ -43,20 +45,23 @@ class Dispatcher implements DispatcherInterface
     
     public function dispatch(BaseRoute $route)
     {
-        $filters = $this->collection->getFilters();
+        $permissions = $this->collection->getPermissions();
         
-        foreach($route->get('filters', array()) as $filter)
+        foreach($route->get('permissions', array()) as $permission)
         {
-            if(isset($filters[$filter]))
+            if(isset($permissions[$permission]))
             {
-                $result = $filters[$filter]($route, $this->request);
-                if($result !== null && $result !== true)
+                $result = $permissions[$permission]($this->request, $route);
+                
+                if($result instanceof ResponseContainerInterface)
                 {
                     return $result;
+                }elseif($result !== null && $result !== true)
+                {
+                    return new AccessDeniedError($result);
                 }
             }
         }
-        
         
         if($route->get('domain') === null)
         {
