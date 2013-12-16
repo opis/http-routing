@@ -80,7 +80,12 @@ class RouteCollection extends BaseCollection
     
     public function offsetSet($offset, $value)
     {
+        if(!($value instanceof Route))
+        {
+            throw new InvalidArgumentException('Expected \Opis\HttpRouting\Route');
+        }
         $offset = $value->get('alias', $offset);
+        $value->set('collection', $this);
         parent::offsetSet($offset, $value);
     }
 }

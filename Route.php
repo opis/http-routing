@@ -25,6 +25,8 @@ use Opis\Routing\Route as BaseRoute;
 class Route extends BaseRoute
 {
     
+    protected $cache = array();
+    
     public static function create($path, $action, $method = 'GET')
     {
         $route = new static($path,$action);
@@ -71,6 +73,24 @@ class Route extends BaseRoute
     public function namedAs($value)
     {
         return $this->set('alias', $value);
+    }
+    
+    public function getWildcards()
+    {
+        if(isset($this->cache['wildcards']))
+        {
+            $this->cache['wildcards'] = $this->wildcards + $this->get('collection')->getWildcards();
+        }
+        return $this->cache['wildcards'];
+    }
+    
+    public function getBindings()
+    {
+        if(isset($this->cache['bindings']))
+        {
+            $this->cache['bindings'] = $this->bindings + $this->get('collection')->getBindings();
+        }
+        return $this->cache['bindings'];
     }
     
 }

@@ -37,9 +37,8 @@ class PathFilter implements FilterInterface
     
     public function match(Router $router, Route $route)
     {
-        $collection = $router->getRouteCollection();
         $request = $router->getRequest();
-        $pattern = $this->compiler->compile($route->getPath(), $route->getWildcards() + $collection->getWildcards());
+        $pattern = $this->compiler->compile($route->getPath(), $route->getWildcards());
         
         if(preg_match($this->compiler->delimit($pattern), $request->path()))
         {

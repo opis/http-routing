@@ -58,9 +58,7 @@ class RequestFilter implements FilterInterface
         //match domain
         if(null !== $domain = $route->get('domain'))
         {
-            $collection = $router->getRouteCollection();
-            
-            $domain = $this->compiler->compile($domain, $route->getWildcards() + $collection->getWildcards());
+            $domain = $this->compiler->compile($domain, $route->getWildcards());
             
             if(!preg_match($this->compiler->delimit($domain), $request->host()))
             {

@@ -39,10 +39,8 @@ class Dispatcher implements DispatcherInterface
     }
     
     public function dispatch(BaseRouter $router, BaseRoute $route)
-    {
-        $collection = $router->getRouteCollection();
-        
-        $permissions = $collection->getPermissions();
+    {        
+        $permissions = $router->getRouteCollection()->getPermissions();
         
         $request = $router->getRequest();
         
@@ -76,8 +74,8 @@ class Dispatcher implements DispatcherInterface
             $expr = $route->get('compiled-domain') . $route->get('compiled-path');
         }
         
-        $placeholders = $route->getWildcards() + $collection->getWildcards();
-        $bindings = $route->getBindings() + $collection->getBindings();
+        $placeholders = $route->getWildcards();
+        $bindings = $route->getBindings();
         
         $expr = $this->compiler->delimit($expr);
         
