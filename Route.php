@@ -63,6 +63,11 @@ class Route extends BaseRoute
         return $this->set('filters', $filters);
     }
     
+    public function permissions(array $permissions)
+    {
+        return $this->set('permissions', $permissions);
+    }
+    
     public function namedAs($value)
     {
         return $this->set('alias', $value);

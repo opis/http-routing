@@ -32,6 +32,8 @@ class RouteCollection extends BaseCollection
     
     protected $filters = array();
     
+    protected $permissions = array();
+    
     public function getWildcards()
     {
         return $this->wildcards;
@@ -45,6 +47,11 @@ class RouteCollection extends BaseCollection
     public function getFilters()
     {
         return $this->filters;
+    }
+    
+    public function getPermissions()
+    {
+        return $this->permissions;
     }
     
     public function wildcard($name, $value)
@@ -62,6 +69,12 @@ class RouteCollection extends BaseCollection
     public function filter($name, Closure $filter)
     {
         $this->filters[$name] = $filter;
+        return $this;
+    }
+    
+    public function permission($name, Closure $permission)
+    {
+        $this->permissions[$name] = $permission;
         return $this;
     }
     
