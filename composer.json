@@ -16,8 +16,9 @@
         "opis/routing": "dev-nightly"
     },
     "autoload": {
-        "psr-0": {"Opis\\HttpRouting": "lib"}
+        "psr-0": {"Opis\\HttpRouting": ""}
     },
+    "target-dir": "Opis/HttpRouting",
     "config": {
         "preferred-install": "dist"
     },
