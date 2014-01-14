@@ -1,4 +1,4 @@
-##Opis Http Routing##
+##Opis Http Routing Component##
 
 Experimental
 
@@ -7,12 +7,12 @@ use \Opis\Http\Request;
 use \Opis\HttpRouting\Route;
 use \Opis\HttpRouting\Router;
 use \Opis\HttpRouting\RouteCollection;
+use \Opis\HttpRouting\Path;
 
 $request = Request::create('/hello/opis');
+$path = new Path($request);
 
 $collection = new RouteCollection();
-
-$collection->pattern('subdomain', '(forum|blog)');
 
 $collection[] = Route::create('/hello/{user}', function($user){
         return $user;
@@ -20,12 +20,11 @@ $collection[] = Route::create('/hello/{user}', function($user){
     ->where('user', '[a-z]+')
     ->bind('user', function($value){
         return strtoupper($value);
-    })
-    ->domain('{subdomain?}.localhost');
+    });
 
-$router = new Router($request, $collection);
+$router = new Router($collection);
 
-$router->execute();
+$router->route($path);
 ```
 
 Output
