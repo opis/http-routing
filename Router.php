@@ -20,33 +20,25 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\Compiler;
-use Opis\Routing\FilterCollection;
 use Opis\Http\Request;
+use Opis\Routing\PathFilter;
+use Opis\Routing\Collections\FilterCollection;
+use Opis\Routing\Router as BaseRouter;
 use Opis\Http\Error\NotFound as NotFoundError;
-use Opis\HttpRouting\Filters\PathFilter;
-use Opis\HttpRouting\Filters\FiltersFilter;
-use Opis\HttpRouting\Filters\RequestFilter;
 
 class Router extends BaseRouter
 {
-    
-    protected $request;
-    
-    protected $compiler;
     
     protected static $filterCollection;
     
     protected static $dispatcherResolver;
     
-    public function __construct(Request $request, RouteCollection $routes)
+    public function __construct(RouteCollection $routes)
     {
-        $this->request = $request;
-        parent::__construct(static::dispatcherResolver(), static::filterCollection(), $routes);
+        parent::__construct($routes, static::dispatcherResolver(), static::filterCollection());
     }
     
-    public static function dispatcherResolver()
+    protected static function dispatcherResolver()
     {
         if(static::$dispatcherResolver === null)
         {
@@ -56,27 +48,22 @@ class Router extends BaseRouter
         return static::$dispatcherResolver;
     }
     
-    public static function filterCollection()
+    protected static function filterCollection()
     {
         if(static::$filterCollection === null)
         {
             static::$filterCollection = new FilterCollection();
             static::$filterCollection[] = new RequestFilter();
             static::$filterCollection[] = new PathFilter();
-            static::$filterCollection[] = new FiltersFilter();
+            static::$filterCollection[] = new UserFilter();
         }
         
         return static::$filterCollection;
     }
     
-    public function getRequest()
+    public function route(Path $path)
     {
-        return $this->request;
-    }
-    
-    public function route()
-    {
-        $result = parent::route();
+        $result = parent::route($path);
         
         $response = $this->request->response();
         

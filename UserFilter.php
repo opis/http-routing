@@ -20,33 +20,29 @@
 
 namespace Opis\HttpRouting\Filters;
 
-use Opis\Routing\FilterInterface;
 use Opis\Routing\Route;
-use Opis\Routing\Router;
-use Opis\Routing\Compiler;
+use Opis\Routing\Contracts\FilterInterface;
+use Opis\Routing\Contracts\PathInterface;
 
-class PathFilter implements FilterInterface
+class UserFilter implements FilterInterface
 {
-    
-    protected $compiler;
-    
-    public function __construct()
+   
+    public function pass(PathInterface $path, Route $route)
     {
-        $this->compiler = new Compiler();
-    }
-    
-    public function match(Router $router, Route $route)
-    {
-        $request = $router->getRequest();
-        $pattern = $this->compiler->compile($route->getPath(), $route->getWildcards());
+        $filters = $route->getFilters();
+        $request = $path->request();
         
-        if(preg_match($this->compiler->delimit($pattern), $request->path()))
+        foreach($route->get('filters', array()) as $filter)
         {
-            $route->set('compiled-path', $pattern);
-            return true;
+            if(isset($filters[$filter]))
+            {
+                if($filters[$filter]($request, $route) === false)
+                {
+                    return false;
+                }
+            }
         }
         
-        return false;
+        return true;
     }
-    
 }

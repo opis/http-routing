@@ -21,7 +21,7 @@
 namespace Opis\HttpRouting;
 
 use Closure;
-use Opis\Routing\RouteCollection as BaseCollection;
+use Opis\Routing\Collections\RouteCollection as BaseCollection;
 
 class RouteCollection extends BaseCollection
 {
@@ -33,6 +33,16 @@ class RouteCollection extends BaseCollection
     protected $filters = array();
     
     protected $permissions = array();
+    
+    protected $defaults = array();
+    
+    protected function checkType($value)
+    {
+        if(!($value instanceof Route))
+        {
+            throw new InvalidArgumentException('Expected \Opis\HttpRouting\Route');
+        }
+    }
     
     public function getWildcards()
     {
@@ -54,6 +64,11 @@ class RouteCollection extends BaseCollection
         return $this->permissions;
     }
     
+    public function getDefaults()
+    {
+        return $this->defaults;
+    }
+    
     public function wildcard($name, $value)
     {
         $this->wildcard[$name] = $value;
@@ -63,6 +78,12 @@ class RouteCollection extends BaseCollection
     public function bind($name, Closure $value)
     {
         $this->bindings[$name] = $value;
+        return $this;
+    }
+    
+    public function implicit($name, $value)
+    {
+        $this->defaults[$name] = $value;
         return $this;
     }
     
@@ -80,11 +101,6 @@ class RouteCollection extends BaseCollection
     
     public function offsetSet($offset, $value)
     {
-        if(!($value instanceof Route))
-        {
-            throw new InvalidArgumentException('Expected \Opis\HttpRouting\Route');
-        }
-        $offset = $value->get('alias', $offset);
         $value->set('collection', $this);
         parent::offsetSet($offset, $value);
     }

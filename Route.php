@@ -20,6 +20,9 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\Pattern;
+use Opis\Routing\Compiler;
+use Opis\Routing\CompiledExpression;
 use Opis\Routing\Route as BaseRoute;
 
 class Route extends BaseRoute
@@ -27,10 +30,59 @@ class Route extends BaseRoute
     
     protected $cache = array();
     
-    public static function create($path, $action, $method = 'GET')
+    protected static $compilerInstance;
+    
+    protected $compiledDomain;
+    
+    protected static $domainCompilerInstance;
+    
+    protected static function compiler()
     {
-        $route = new static($path,$action);
-        return $route->method($method);
+        if(static::$compilerInstance === null)
+        {
+            static::$compilerInstance = new Compiler();
+        }
+        
+        return static::$compilerInstance;
+    }
+    
+    protected static function domainCompiler()
+    {
+        if(static::$domainCompilerInstance === null)
+        {
+            static::$domainCompilerInstance = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
+        }
+        
+        return static::$domainCompilerInstance;
+    }
+    
+    public static function create($pattern, $action, $method = 'GET')
+    {
+        return (new static($pattern, $action))->method($method);
+    }
+    
+    public function __construct($pattern, $action)
+    {
+        parent::__construct(new Pattern($pattern), $action, static::compiler());
+    }
+    
+    public function compileDomain()
+    {
+        if($this->compiledDomain === null)
+        {
+            $domain = $this->get('domain');
+            
+            if($domain !== null)
+            {
+                $this->compiledDomain = new CompiledExpression(static::domainCompiler(),
+                                                               $domain,
+                                                               $this->getWildcards(),
+                                                               $this->getDefaults(),
+                                                               $this->getBindings());
+            }
+        }
+        
+        return $this->compiledDomain;
     }
     
     public function where($name, $value)
@@ -40,7 +92,7 @@ class Route extends BaseRoute
     
     public function domain($value)
     {
-        return $this->set('domain', $value);
+        return $this->set('domain', new Pattern($value));
     }
     
     public function method($method)
@@ -70,11 +122,6 @@ class Route extends BaseRoute
         return $this->set('permissions', $permissions);
     }
     
-    public function namedAs($value)
-    {
-        return $this->set('alias', $value);
-    }
-    
     public function getWildcards()
     {
         if(!isset($this->cache['wildcards']))
@@ -91,6 +138,25 @@ class Route extends BaseRoute
             $this->cache['bindings'] = $this->bindings + $this->get('collection')->getBindings();
         }
         return $this->cache['bindings'];
+    }
+    
+    public function getDefaults()
+    {
+        if(!isset($this->cache['defaults']))
+        {
+            $this->cache['defaults'] = $this->defaults + $this->get('collection')->getDefaults();
+        }
+        return $this->cache['defaults'];
+    }
+    
+    public function getPermissions()
+    {
+        return $this->get('collection')->getPermissions();
+    }
+    
+    public function getFilters()
+    {
+        return $this->get('collection')->getFilters();
     }
     
 }

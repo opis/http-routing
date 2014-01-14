@@ -18,55 +18,40 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\HttpRouting\Filters;
+namespace Opis\HttpRouting;
 
-use Opis\Routing\FilterInterface;
 use Opis\Routing\Route;
-use Opis\Routing\Router;
-use Opis\Routing\Compiler;
+use Opis\Routing\Contracts\FilterInterface;
+use Opis\Routing\Contracts\PathInterface;
 
 class RequestFilter implements FilterInterface
 {
     
-    protected $compiler;
-    
-    public function __construct()
-    {
-        $this->compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
-    }
-    
-    public function match(Router $router, Route $route)
+    public function pass(PathInterface $path, Route $route)
     {
         
         //match secure
         if(null !== $secure = $route->get('secure'))
         {
-            if($secure !== $this->request->isSecure())
+            
+            if($secure !== $path->request()->isSecure())
             {
                 return false;
             }
         }
         
-        $request = $router->getRequest();
-        
         //match method
-        if(!in_array($request->method(), $route->get('method', array('GET'))))
+        if(!in_array($path->request()->method(), $route->get('method', array('GET'))))
         {
             return false;
         }
         
         //match domain
-        if(null !== $domain = $route->get('domain'))
+        if(null !== $domain = $route->compiledDomain())
         {
-            $domain = $this->compiler->compile($domain, $route->getWildcards());
-            
-            if(!preg_match($this->compiler->delimit($domain), $request->host()))
-            {
-                return false;
-            }
-            
-            $route->set('compiled-domain', $domain);
+            return $domain->match($path->domain());
         }
+        
         return true;
     }
     
