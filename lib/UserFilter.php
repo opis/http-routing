@@ -18,7 +18,7 @@
  * limitations under the License.
  * ============================================================================ */
 
-namespace Opis\HttpRouting\Filters;
+namespace Opis\HttpRouting;
 
 use Opis\Routing\Route;
 use Opis\Routing\Contracts\FilterInterface;
