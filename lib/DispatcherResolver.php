@@ -12,12 +12,10 @@ class DispatcherResolver extends BaseResolver
     
     protected $collection;
     
-    protected $defaultDispatcher;
-    
     public function __construct()
     {
         $this->collection = new DispatcherCollection();
-        $this->defaultDispatcher = new Dispatcher();
+        $this->collection['default'] = new Dispatcher();
     }
     
     public function register($name, DispatcherInterface $dispatcher)
@@ -28,13 +26,13 @@ class DispatcherResolver extends BaseResolver
     
     public function resolve(Path $router, Route $route)
     {
-        $dispatcher = $route->get('dispatcher');
+        $dispatcher = $route->get('dispatcher', 'default');
         
-        if($dispatcher !== null && isset($this->collection[$dispatcher]))
+        if(isset($this->collection[$dispatcher]))
         {
             return $this->collection[$dispatcher];
         }
         
-        return $this->defaultDispatcher;
+        return $this->collection['default'];
     }
 }
