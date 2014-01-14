@@ -22,27 +22,18 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use RuntimeException;
-use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\DispatcherInterface;
-use Opis\Routing\Compiler;
+use Opis\Routing\Dispatcher as BaseDispatcher;
 use Opis\Http\ResponseContainerInterface;
 use Opis\Http\Error\AccessDenied as AccessDeniedError;
 
-class Dispatcher implements DispatcherInterface
+class Dispatcher extends BaseDispatcher
 {    
-    protected $compiler;
     
-    public function __construct()
-    {
-        $this->compiler = new Compiler();
-    }
-    
-    public function dispatch(BaseRouter $router, BaseRoute $route)
+    public function dispatch(Path $path, Route $route)
     {        
-        $permissions = $router->getRouteCollection()->getPermissions();
+        $permissions = $route->getPermissions();
         
-        $request = $router->getRequest();
+        $request = $path->request();
         
         foreach($route->get('permissions', array()) as $permission)
         {
@@ -61,38 +52,24 @@ class Dispatcher implements DispatcherInterface
             }
         }
         
-        if($route->get('domain') === null)
+        $values = array();
+        
+        $domain = $route->compileDomain();
+        
+        if($domain !== null)
         {
-            $pattern = $route->getPath();
-            $target = $request->path();
-            $expr = $route->get('compiled-path');
-        }
-        else
-        {
-            $pattern = $route->get('domain', '') . $route->getPath();
-            $target = $request->host() . $request->path();
-            $expr = $route->get('compiled-domain') . $route->get('compiled-path');
+            $values += $domain->bind($path->domain());
         }
         
-        $placeholders = $route->getWildcards();
-        $bindings = $route->getBindings();
+        $values += $route->compile()->bind($path);
+        $action = $this->resolveAction($route->getAction());
         
-        $expr = $this->compiler->delimit($expr);
+        return $this->invokeAction($path, $action, $values);
         
-        $names = $this->compiler->names($pattern);
-        
-        $values = $this->compiler->values($expr, $target);
-        $values = $this->compiler->extract($names, $values, $route->getDefaults());
-        
-        $arguments = $this->compiler->bind($values, $bindings);
-        
-        $action = $route->getAction();
-        
-        if(!is_callable($action))
-        {
-            throw new RuntimeException('Route action is not callable');
-        }
-        
-        return call_user_func_array($action, $arguments);
+    }
+    
+    protected function resolveAction($action)
+    {
+        return $action;
     }
 }
