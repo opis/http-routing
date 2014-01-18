@@ -122,6 +122,11 @@ class Route extends BaseRoute
         return $this->set('permissions', $permissions);
     }
     
+    public function dispatcher($name)
+    {
+        return $this->set('dispatcher', $name);
+    }
+    
     public function getWildcards()
     {
         if(!isset($this->cache['wildcards']))
