@@ -28,13 +28,13 @@ use Opis\Routing\Route as BaseRoute;
 class Route extends BaseRoute
 {
     
-    protected $cache = array();
-    
     protected static $compilerInstance;
+    
+    protected static $domainCompilerInstance;
     
     protected $compiledDomain;
     
-    protected static $domainCompilerInstance;
+    protected $cache = array();
     
     protected static function compiler()
     {
