@@ -20,14 +20,14 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Route;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Contracts\FilterInterface;
 use Opis\Routing\Contracts\PathInterface;
 
 class RequestFilter implements FilterInterface
 {
     
-    public function pass(PathInterface $path, Route $route)
+    public function pass(PathInterface $path, BaseRoute $route)
     {
         
         //match secure
@@ -47,7 +47,7 @@ class RequestFilter implements FilterInterface
         }
         
         //match domain
-        if(null !== $domain = $route->compiledDomain())
+        if(null !== $domain = $route->compileDomain())
         {
             return $domain->match($path->domain());
         }

@@ -23,6 +23,7 @@ namespace Opis\HttpRouting;
 use Opis\Http\Request;
 use Opis\Routing\PathFilter;
 use Opis\Routing\Collections\FilterCollection;
+use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Http\Error\NotFound as NotFoundError;
 
@@ -61,11 +62,11 @@ class Router extends BaseRouter
         return static::$filterCollection;
     }
     
-    public function route(Path $path)
+    public function route(PathInterface $path)
     {
         $result = parent::route($path);
         
-        $response = $this->request->response();
+        $response = $path->request()->response();
         
         if($result === null)
         {
