@@ -61,7 +61,7 @@ class Route extends BaseRoute
         return (new static($pattern, $action))->method($method);
     }
     
-    public function __construct($pattern, $action)
+    public function __construct($pattern, callable $action)
     {
         parent::__construct(new Pattern($pattern), $action, static::compiler());
     }

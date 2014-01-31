@@ -74,9 +74,9 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function bind($name, $value)
+    public function bind($name, callable $callback)
     {
-        $this->bindings[$name] = $value;
+        $this->bindings[$name] = $callback;
         return $this;
     }
     
@@ -86,13 +86,13 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function filter($name, Closure $filter)
+    public function filter($name, callable $filter)
     {
         $this->filters[$name] = $filter;
         return $this;
     }
     
-    public function permission($name, Closure $permission)
+    public function permission($name, callable $permission)
     {
         $this->permissions[$name] = $permission;
         return $this;
@@ -102,5 +102,27 @@ class RouteCollection extends BaseCollection
     {
         $value->set('collection', $this);
         parent::offsetSet($offset, $value);
+    }
+    
+    public function serialize()
+    {
+        return serialize(array(
+            'collection' => $this->collection,
+            'bindings' => $this->bindings,
+            'wildcards' => $this->wildcards,
+            'filters' => $this->filters,
+            'defaults' => $this->defaults,
+            'permissions' => $this->permissions,
+        ));
+    }
+    
+    public function unserialize($data)
+    {
+        $object = unserialize($data);
+        
+        foreach($object as $key => $value)
+        {
+            $this->{$key} = $value;
+        }
     }
 }
