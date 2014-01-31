@@ -20,7 +20,6 @@
 
 namespace Opis\HttpRouting;
 
-use Closure;
 use Opis\Routing\Collections\RouteCollection as BaseCollection;
 
 class RouteCollection extends BaseCollection
@@ -75,7 +74,7 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function bind($name, Closure $value)
+    public function bind($name, $value)
     {
         $this->bindings[$name] = $value;
         return $this;

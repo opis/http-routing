@@ -20,14 +20,14 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\Contracts\FilterInterface;
 use Opis\Routing\Contracts\PathInterface;
 
 class UserFilter implements FilterInterface
 {
    
-    public function pass(PathInterface $path, BaseRoute $route)
+    public function pass(PathInterface $path, RouteInterface $route)
     {
         $filters = $route->getFilters();
         $request = $path->request();
