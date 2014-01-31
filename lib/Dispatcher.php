@@ -65,7 +65,7 @@ class Dispatcher extends BaseDispatcher
         
         $values += $route->compile()->bind($path);
         
-        return $this->invokeAction($path, $action, $values);
+        return $this->invokeAction($path, $route->getAction(), $values);
         
     }
 }
