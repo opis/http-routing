@@ -42,6 +42,7 @@ class Dispatcher extends BaseDispatcher
         
         $values += $route->compile()->bind($path);
         
+        print_r($values); die;
         return $this->invokeAction($route->getAction(), $values);
         
     }
