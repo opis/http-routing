@@ -35,6 +35,8 @@ class RouteCollection extends BaseCollection
     
     protected $defaults = array();
     
+    protected $errors = array();
+    
     protected function checkType($value)
     {
         if(!($value instanceof Route))
@@ -58,14 +60,18 @@ class RouteCollection extends BaseCollection
         return $this->filters;
     }
     
-    public function getPermissions()
-    {
-        return $this->permissions;
-    }
-    
     public function getDefaults()
     {
         return $this->defaults;
+    }
+    
+    public function getError($code)
+    {
+        if(isset($this->errors[$code]))
+        {
+            return $this->errors[$code];
+        }
+        return null;
     }
     
     public function wildcard($name, $value)
@@ -86,15 +92,15 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function filter($name, callable $filter)
+    public function notFound(callable $callback)
     {
-        $this->filters[$name] = $filter;
+        $this->errors[404] = $callback;
         return $this;
     }
     
-    public function permission($name, callable $permission)
+    public function filter($name, callable $filter)
     {
-        $this->permissions[$name] = $permission;
+        $this->filters[$name] = $filter;
         return $this;
     }
     
@@ -112,7 +118,7 @@ class RouteCollection extends BaseCollection
             'wildcards' => $this->wildcards,
             'filters' => $this->filters,
             'defaults' => $this->defaults,
-            'permissions' => $this->permissions,
+            'errors' => $this->errors,
         ));
     }
     

@@ -20,12 +20,10 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Http\Request;
 use Opis\Routing\PathFilter;
 use Opis\Routing\Collections\FilterCollection;
 use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Router as BaseRouter;
-use Opis\Http\Error\NotFound as NotFoundError;
 
 class Router extends BaseRouter
 {
@@ -66,14 +64,16 @@ class Router extends BaseRouter
     {
         $result = parent::route($path);
         
-        $response = $path->request()->response();
-        
         if($result === null)
         {
-            $result = new NotFoundError('<h2>Page not found</h2>');
+            $callback = $this->routes->getError(404);
+            
+            if($callback !== null)
+            {
+                $result = $callback($path);
+            }
         }
         
-        $response->body($result);
-        $response->send();
+        return $result;
     }
 }

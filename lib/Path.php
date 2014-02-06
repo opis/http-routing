@@ -20,33 +20,52 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Http\Request;
 use Opis\Routing\Path as BasePath;
 
 class Path extends BasePath
 {
-    protected $request;
+    protected $path;
     
     protected $domain;
     
-    public function __construct(Request $request)
+    protected $method;
+    
+    protected $secure;
+    
+    protected $request;
+    
+    public function __construct($path, $domain, $method = 'GET', $secure = false, $request = null)
     {
+        $this->method = $method;
+        $this->domain = new BasePath($domain);
+        $this->method = strtoupper($method);
+        $this->secure = $secure;
         $this->request = $request;
-        parent::__construct($request->path());
+        parent::__construct($path);
+    }
+    
+    public function path()
+    {
+        return $this->__toString();
+    }
+    
+    public function domain()
+    {
+        return $this->domain;
+    }
+    
+    public function method()
+    {
+        return $this->method();
+    }
+    
+    public function isSecure()
+    {
+        return $this->secure;
     }
     
     public function request()
     {
         return $this->request;
-    }
-    
-    public function domain()
-    {
-        if($this->domain === null)
-        {
-            $this->domain = new BasePath($this->request->host());
-        }
-        
-        return $this->domain;
     }
 }

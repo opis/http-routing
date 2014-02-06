@@ -21,38 +21,15 @@
 namespace Opis\HttpRouting;
 
 use Closure;
-use RuntimeException;
 use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\Dispatcher as BaseDispatcher;
-use Opis\Http\ResponseContainerInterface;
-use Opis\Http\Error\AccessDenied as AccessDeniedError;
 
 class Dispatcher extends BaseDispatcher
 {    
     
     public function dispatch(PathInterface $path, RouteInterface $route)
     {        
-        $permissions = $route->getPermissions();
-        
-        $request = $path->request();
-        
-        foreach($route->get('permissions', array()) as $permission)
-        {
-            if(isset($permissions[$permission]))
-            {
-                $result = $permissions[$permission]($request, $route);
-                
-                if($result instanceof ResponseContainerInterface)
-                {
-                    return $result;
-                }
-                elseif($result !== null && $result !== true)
-                {
-                    return new AccessDeniedError($result);
-                }
-            }
-        }
         
         $values = array();
         

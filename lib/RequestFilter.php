@@ -34,14 +34,14 @@ class RequestFilter implements FilterInterface
         if(null !== $secure = $route->get('secure'))
         {
             
-            if($secure !== $path->request()->isSecure())
+            if($secure !== $path->isSecure())
             {
                 return false;
             }
         }
         
         //match method
-        if(!in_array($path->request()->method(), $route->get('method', array('GET'))))
+        if(!in_array($path->method(), $route->get('method', array('GET'))))
         {
             return false;
         }

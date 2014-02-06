@@ -117,11 +117,6 @@ class Route extends BaseRoute
         return $this->set('filters', $filters);
     }
     
-    public function permissions(array $permissions)
-    {
-        return $this->set('permissions', $permissions);
-    }
-    
     public function dispatcher($name)
     {
         return $this->set('dispatcher', $name);
@@ -152,11 +147,6 @@ class Route extends BaseRoute
             $this->cache['defaults'] = $this->defaults + $this->get('collection')->getDefaults();
         }
         return $this->cache['defaults'];
-    }
-    
-    public function getPermissions()
-    {
-        return $this->get('collection')->getPermissions();
     }
     
     public function getFilters()
