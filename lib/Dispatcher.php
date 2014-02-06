@@ -80,6 +80,9 @@ class Dispatcher extends BaseDispatcher
                 $arguments[] = null;
             }
         }
+        print 'Values';
+        print_r($values);
+        print 'Arguments';
         print_r($arguments); die;
         $arguments += $values;
         
