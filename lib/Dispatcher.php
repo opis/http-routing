@@ -66,6 +66,7 @@ class Dispatcher extends BaseDispatcher
         foreach($parameters as $param)
         {
             $name = $param->getName();
+            print $name . ',';
             if(isset($values[$name]))
             {
                 $arguments[] = $values[$name];
