@@ -56,7 +56,7 @@ class Path extends BasePath
     
     public function method()
     {
-        return $this->method();
+        return $this->method;
     }
     
     public function isSecure()
