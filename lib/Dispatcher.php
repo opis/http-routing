@@ -42,8 +42,47 @@ class Dispatcher extends BaseDispatcher
         
         $values += $route->compile()->bind($path);
         
-        print_r($values); die;
         return $this->invokeAction($route->getAction(), $values);
         
+    }
+    
+    public function invokeAction(callable $action, array $values = array())
+    {
+        $isMethod = false;
+        
+        if(is_object($action) && !($action instanceof \Closure))
+        {
+            $callback = new \ReflectionMethod(get_class($action), '__invoke');
+            $isMethod = true;
+        }
+        else
+        {
+            $callback = new \ReflectionFunction($action);
+        }
+        
+        $parameters = $callback->getParameters();
+        $arguments = array();
+        
+        foreach($parameters as $param)
+        {
+            $name = $param->getName();
+            if(isset($values[$name]))
+            {
+                $arguments[] = $values[$name];
+                unset($values[$name]);
+            }
+            elseif($param->isOptional())
+            {
+                $arguments[] = $param->getDefaultValue();
+            }
+            else
+            {
+                $arguments[] = null;
+            }
+        }
+        print_r($arguments); die;
+        $arguments += $values;
+        
+        return $isMethod ? $callback->invokeArgs($action, $arguments) : $callback->invokeArgs($arguments);
     }
 }
