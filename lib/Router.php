@@ -23,6 +23,7 @@ namespace Opis\HttpRouting;
 use Opis\Routing\PathFilter;
 use Opis\Routing\Collections\FilterCollection;
 use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Contracts\DispatcherResolverInterface;
 use Opis\Routing\Router as BaseRouter;
 
 class Router extends BaseRouter
@@ -32,9 +33,20 @@ class Router extends BaseRouter
     
     protected static $dispatcherResolver;
     
-    public function __construct(RouteCollection $routes)
+    public function __construct(RouteCollection $routes,
+                                DispatcherResolverInterface $resolver = null,
+                                FilterCollection $filters = null)
     {
-        parent::__construct($routes, static::dispatcherResolver(), static::filterCollection());
+        if($resolver === null)
+        {
+            $resolver = static::dispatcherResolver();
+        }
+        if($filters === null)
+        {
+            $filters = static::filterCollection();
+        }
+        
+        parent::__construct($routes, $resolver, $filters);
     }
     
     public function route(PathInterface $path)
