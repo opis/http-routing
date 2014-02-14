@@ -20,6 +20,8 @@
 
 namespace Opis\HttpRouting;
 
+use Closure;
+use Opis\Closure\SerializableClosure;
 use Opis\Routing\Collections\RouteCollection as BaseCollection;
 
 class RouteCollection extends BaseCollection
@@ -80,7 +82,7 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function bind($name, callable $callback)
+    public function bind($name, Closure $callback)
     {
         $this->bindings[$name] = $callback;
         return $this;
@@ -92,13 +94,13 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function notFound(callable $callback)
+    public function notFound(Closure $callback)
     {
         $this->errors[404] = $callback;
         return $this;
     }
     
-    public function filter($name, callable $filter)
+    public function filter($name, Closure $filter)
     {
         $this->filters[$name] = $filter;
         return $this;
@@ -106,29 +108,74 @@ class RouteCollection extends BaseCollection
     
     public function offsetSet($offset, $value)
     {
-        $value->set('collection', $this);
         parent::offsetSet($offset, $value);
+        $value->set('collection', $this);
     }
     
     public function serialize()
     {
-        return serialize(array(
+        SerializableClosure::enterContext();
+        
+        $map = function(&$value) use(&$map){
+            if($value instanceof Closure)
+            {
+                return SerializableClosure::from($value);
+            }
+            elseif(is_array($value))
+            {
+                return array_map($map, $value);
+            }
+            elseif($value instanceof \stdClass)
+            {
+                $object = (array) $object;
+                $object = array_map($map, $object);
+                return (object) $object;
+            }
+            return $value;
+        };
+        
+        $object = array(
             'collection' => $this->collection,
-            'bindings' => $this->bindings,
             'wildcards' => $this->wildcards,
-            'filters' => $this->filters,
-            'defaults' => $this->defaults,
-            'errors' => $this->errors,
-        ));
+            'bindings' => array_map($map, $this->bindings),
+            'filters' => array_map($map, $this->filters),
+            'defaults' => array_map($map, $this->defaults),
+            'errors' => array_map($map, $this->errors),
+        );
+        
+        SerializableClosure::exitContext();
+        
+        return serialize($object);
     }
     
     public function unserialize($data)
     {
         $object = unserialize($data);
         
-        foreach($object as $key => $value)
-        {
-            $this->{$key} = $value;
-        }
+        $map = function(&$value) use(&$map){
+            if($value instanceof SerializableClosure)
+            {
+                return $value->getClosure();
+            }
+            elseif(is_array($value))
+            {
+                return array_map($map, $value);
+            }
+            elseif($value instanceof \stdClass)
+            {
+                $object = (array) $object;
+                $object = array_map($map, $object);
+                return (object) $object;
+            }
+            return $value;
+        };
+        
+        $this->collection = $object['collection'];
+        $this->wildcards = $object['wildcards'];
+        $this->bindings = array_map($map, $object['bindings']);
+        $this->filters = array_map($map, $object['filters']);
+        $this->defaults = array_map($map, $object['defaults']);
+        $this->errors = array_map($map, $object['errors']);
+        
     }
 }

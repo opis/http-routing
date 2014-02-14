@@ -20,7 +20,6 @@
 
 namespace Opis\HttpRouting;
 
-use Closure;
 use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\Dispatcher as BaseDispatcher;

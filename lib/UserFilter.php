@@ -29,17 +29,11 @@ class UserFilter implements FilterInterface
    
     public function pass(PathInterface $path, RouteInterface $route)
     {
-        $filters = $route->getFilters();
-        $request = $path->request();
-        
-        foreach($route->get('filters', array()) as $filter)
+        foreach($route->getFilters() as $filter)
         {
-            if(isset($filters[$filter]))
+            if($filter($path, $route) === false)
             {
-                if($filters[$filter]($request, $route) === false)
-                {
-                    return false;
-                }
+                return false;
             }
         }
         

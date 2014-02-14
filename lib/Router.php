@@ -37,6 +37,23 @@ class Router extends BaseRouter
         parent::__construct($routes, static::dispatcherResolver(), static::filterCollection());
     }
     
+    public function route(PathInterface $path)
+    {
+        $result = parent::route($path);
+        
+        if($result === null)
+        {
+            $callback = $this->routes->getError(404);
+            
+            if($callback !== null)
+            {
+                $result = $callback($path);
+            }
+        }
+        
+        return $result;
+    }
+    
     protected static function dispatcherResolver()
     {
         if(static::$dispatcherResolver === null)
@@ -58,22 +75,5 @@ class Router extends BaseRouter
         }
         
         return static::$filterCollection;
-    }
-    
-    public function route(PathInterface $path)
-    {
-        $result = parent::route($path);
-        
-        if($result === null)
-        {
-            $callback = $this->routes->getError(404);
-            
-            if($callback !== null)
-            {
-                $result = $callback($path);
-            }
-        }
-        
-        return $result;
     }
 }

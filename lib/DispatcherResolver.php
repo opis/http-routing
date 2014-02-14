@@ -20,27 +20,34 @@
 
 namespace Opis\HttpRouting;
 
-
+use Closure;
+use Serializable;
+use Opis\Closure\SerializableClosure;
 use Opis\Routing\Collections\DispatcherCollection;
 use Opis\Routing\Contracts\DispatcherInterface;
 use Opis\Routing\Contracts\PathInterface;
 use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\DispatcherResolver as BaseResolver;
 
-class DispatcherResolver extends BaseResolver
+class DispatcherResolver extends BaseResolver implements Serializable
 {
     
-    protected $collection;
+    protected $collection = array();
+    
+    protected $constructors = array();
     
     public function __construct()
     {
         $this->collection = new DispatcherCollection();
-        $this->collection['default'] = new Dispatcher();
+        $this->register('default', function(){
+           return new Dispatcher();
+        });
     }
     
-    public function register($name, DispatcherInterface $dispatcher)
+    public function register($name, Closure $callback)
     {
-        $this->collection[$name] = $dispatcher;
+        $this->constructors[$name] = $callback;
+        unset($this->collection[$name]);
         return $this;
     }
     
@@ -48,11 +55,30 @@ class DispatcherResolver extends BaseResolver
     {
         $dispatcher = $route->get('dispatcher', 'default');
         
-        if(isset($this->collection[$dispatcher]))
+        if(!isset($this->collection[$dispatcher]))
         {
-            return $this->collection[$dispatcher];
+            $constructor = $this->constructors[$dispatcher];
+            $this->collection[$dispatcher] = $constructor();
         }
         
-        return $this->collection['default'];
+        return $this->collection[$dispatcher];
+    }
+    
+    public function serialize()
+    {
+        SerializableClosure::enterContext();
+        
+        $object = array_map(function($value){ return SerializableClosure::from($value); });
+        
+        SerializableClosure::exitContext();
+        
+        return serialize($object);
+    }
+    
+    public function unserialize($data)
+    {
+        $object = unserialize($data);
+        $this->collection = new DispatcherCollection();
+        $this->constructors = array_map(function($value){ return $value->getClosure(); });
     }
 }

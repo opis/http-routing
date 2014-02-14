@@ -34,7 +34,7 @@ class Path extends BasePath
     
     protected $request;
     
-    public function __construct($path, $domain, $method = 'GET', $secure = false, $request = null)
+    public function __construct($path, $domain = 'localhost', $method = 'GET', $secure = false, $request = null)
     {
         $this->method = $method;
         $this->domain = new BasePath($domain);

@@ -20,6 +20,7 @@
 
 namespace Opis\HttpRouting;
 
+use Closure;
 use Opis\Routing\Pattern;
 use Opis\Routing\Compiler;
 use Opis\Routing\CompiledExpression;
@@ -36,32 +37,9 @@ class Route extends BaseRoute
     
     protected $cache = array();
     
-    protected static function compiler()
-    {
-        if(static::$compilerInstance === null)
-        {
-            static::$compilerInstance = new Compiler();
-        }
-        
-        return static::$compilerInstance;
-    }
     
-    protected static function domainCompiler()
-    {
-        if(static::$domainCompilerInstance === null)
-        {
-            static::$domainCompilerInstance = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
-        }
-        
-        return static::$domainCompilerInstance;
-    }
     
-    public static function create($pattern, $action, $method = 'GET')
-    {
-        return (new static($pattern, $action))->method($method);
-    }
-    
-    public function __construct($pattern, callable $action)
+    public function __construct($pattern, Closure $action)
     {
         parent::__construct(new Pattern($pattern), $action, static::compiler());
     }
@@ -112,8 +90,15 @@ class Route extends BaseRoute
         return $this->set('secure', $value);
     }
     
-    public function filters(array $filters)
+    public function useFilters(array $filters)
     {
+        return $this->set('usedfilters', $filters);
+    }
+    
+    public function filter($name, Closure $filter)
+    {
+        $filters = $this->get('filters', array());
+        $filters[$name] = $filter;
         return $this->set('filters', $filters);
     }
     
@@ -151,7 +136,39 @@ class Route extends BaseRoute
     
     public function getFilters()
     {
-        return $this->get('collection')->getFilters();
+        if(!isset($this->cache['filters']))
+        {
+            $usedfilters = $this->get('usedfilters', array());
+            $filters = array_intersect_key($this->get('collection')->getFilters(), array_flip($usedfilters));
+            $this->cache['filters'] = $this->get('filters', array()) + $filters;
+        }
+        return $this->cache['filters'];
+    }
+    
+    public static function create($pattern, $action, $method = 'GET')
+    {
+        $route = new static($pattern, $action);
+        return $route->method($method);
+    }
+    
+    protected static function compiler()
+    {
+        if(static::$compilerInstance === null)
+        {
+            static::$compilerInstance = new Compiler();
+        }
+        
+        return static::$compilerInstance;
+    }
+    
+    protected static function domainCompiler()
+    {
+        if(static::$domainCompilerInstance === null)
+        {
+            static::$domainCompilerInstance = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
+        }
+        
+        return static::$domainCompilerInstance;
     }
     
 }
