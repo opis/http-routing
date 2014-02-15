@@ -1,7 +1,7 @@
 {
     "name": "opis/http-routing",
-    "description": "Extendable HTTP routing library for PHP 5.3+",
-    "keywords": ["opis", "http", "routing", "serializable"],
+    "description": "Extendable and fully serializable HTTP routing library for PHP 5.3+",
+    "keywords": ["routing", "http", "serializable"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
     "authors": [
