@@ -114,7 +114,6 @@ class RouteCollection extends BaseCollection
     
     public function serialize()
     {
-        SerializableClosure::enterContext();
         
         $map = function(&$value) use(&$map){
             if($value instanceof Closure)
@@ -134,18 +133,20 @@ class RouteCollection extends BaseCollection
             return $value;
         };
         
-        $object = array(
+        SerializableClosure::enterContext();
+        
+        $object = serialize(array(
             'collection' => $this->collection,
             'wildcards' => $this->wildcards,
             'bindings' => array_map($map, $this->bindings),
             'filters' => array_map($map, $this->filters),
             'defaults' => array_map($map, $this->defaults),
             'errors' => array_map($map, $this->errors),
-        );
+        ));
         
         SerializableClosure::exitContext();
         
-        return serialize($object);
+        return $object;
     }
     
     public function unserialize($data)

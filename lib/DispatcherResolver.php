@@ -66,19 +66,22 @@ class DispatcherResolver extends BaseResolver implements Serializable
     
     public function serialize()
     {
+        
         SerializableClosure::enterContext();
         
-        $object = array_map(function($value){ return SerializableClosure::from($value); });
+        $object = serialize(array_map(function($value){
+            return SerializableClosure::from($value);
+        }, $this->constructors));
         
         SerializableClosure::exitContext();
         
-        return serialize($object);
+        return $object;
     }
     
     public function unserialize($data)
     {
         $object = unserialize($data);
         $this->collection = new DispatcherCollection();
-        $this->constructors = array_map(function($value){ return $value->getClosure(); });
+        $this->constructors = array_map(function($value){ return $value->getClosure(); }, $object);
     }
 }
