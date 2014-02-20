@@ -55,6 +55,11 @@ class DispatcherResolver extends BaseResolver implements Serializable
     {
         $dispatcher = $route->get('dispatcher', 'default');
         
+        if(!isset($this->constructors[$dispatcher]))
+        {
+            $dispatcher = 'default';
+        }
+        
         if(!isset($this->collection[$dispatcher]))
         {
             $constructor = $this->constructors[$dispatcher];
