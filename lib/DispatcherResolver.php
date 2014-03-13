@@ -40,7 +40,7 @@ class DispatcherResolver extends BaseResolver implements Serializable
     {
         $this->collection = new DispatcherCollection();
         $this->register('default', function(){
-           return new Dispatcher();
+           return new \Opis\HttpRouting\Dispatcher();
         });
     }
     
