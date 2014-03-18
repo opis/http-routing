@@ -14,7 +14,7 @@ This library is available on [Packagist](https://packagist.org/packages/opis/htt
 ```json
 {
     "require": {
-        "opis/http-routing": "2.0.*"
+        "opis/http-routing": "2.1.*"
     }
 }
 ```
@@ -35,8 +35,8 @@ $collection[] = Route::create('/{category}', function($category){
     ->domain('{subdomain?}.localhost')
     ->where('subdomain', 'php')
     ->where('category', '[a-z]+')
-    ->bind('category', function($value){
-        return strtoupper($value);
+    ->bind('category', function($category){
+        return strtoupper($category);
     });
 
 $collection->notFound(function($path){
