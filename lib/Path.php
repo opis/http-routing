@@ -46,7 +46,7 @@ class Path extends BasePath
     
     public function path()
     {
-        return $this->__toString();
+        return $this->path;
     }
     
     public function domain()
