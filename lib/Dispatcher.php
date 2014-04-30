@@ -36,7 +36,10 @@ class Dispatcher extends BaseDispatcher
         
         if($domain !== null)
         {
-            $values += $domain->bind($path->domain());
+            $domainPath = $path->domain();
+            $bindings = $domain->bind($domainPath);
+            $names = $domain->names($domainPath);
+            $values = array_intersect_key($bindings, array_flip($names));
         }
         
         $values += $route->compile()->bind($path);
