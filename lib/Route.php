@@ -90,15 +90,25 @@ class Route extends BaseRoute
         return $this->set('secure', $value);
     }
     
-    public function useFilters(array $filters)
+    public function preFilter(array $filters)
     {
-        return $this->set('usedfilters', $filters);
+        return $this->set('prefilter', $filters);
+    }
+    
+    public function postFilter(array $filters)
+    {
+        return $this->set('postfilter', $filters);
+    }
+    
+    public function accessFilter(array $filters)
+    {
+        return $this->set('accessfilter', $filters);
     }
     
     public function filter($name, Closure $filter)
     {
         $filters = $this->get('filters', array());
-        $filters[$name] = $filter;
+        $filters[$name] = new ClosureFilter($filter);
         return $this->set('filters', $filters);
     }
     
@@ -138,9 +148,7 @@ class Route extends BaseRoute
     {
         if(!isset($this->cache['filters']))
         {
-            $usedfilters = $this->get('usedfilters', array());
-            $filters = array_intersect_key($this->get('collection')->getFilters(), array_flip($usedfilters));
-            $this->cache['filters'] = $this->get('filters', array()) + $filters;
+            $this->cache['filters'] = $this->get('filters', array()) + $this->get('collection')->getFilters();
         }
         return $this->cache['filters'];
     }
