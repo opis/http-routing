@@ -100,6 +100,12 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
+    public function accessDenied(Closure $callback)
+    {
+        $this->errors[403] = $callback;
+        return $this;
+    }
+    
     public function filter($name, Closure $filter)
     {
         $this->filters[$name] = $filter;
