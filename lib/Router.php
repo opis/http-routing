@@ -49,18 +49,77 @@ class Router extends BaseRouter
         parent::__construct($routes, $resolver, $filters);
     }
     
+    protected function findRoute(PathInterface $path)
+    {
+        foreach($this->routes as $route)
+        {
+            $route->implicit('path', $path);
+            
+            if($this->pass($path, $route))
+            {
+                return $route;
+            }
+        }
+        
+        return null;
+    }
+    
+    protected function passFilter($filter, PathInterface $path, Route $route)
+    {
+        $filters = $route->getFilters();
+        
+        foreach($route->get($filter, array()) as $name)
+        {
+            if(isset($filters[$name]))
+            {
+                if($filters[$name]->setBindMode(true)->pass($path, $route) === false)
+                {
+                    return false;
+                }
+            }
+        }
+        
+        return true;   
+    }
+    
+    protected function raiseError($error, PathInterface $path)
+    {
+        $callback = $this->routes->getError($error);
+        
+        if($callback !== null)
+        {
+            return $callback($path);
+        }
+        
+        return null;
+    }
+    
     public function route(PathInterface $path)
     {
-        $result = parent::route($path);
+        $route = $this->findRoute($path);
+        
+        if($route === null)
+        {
+            return $this->raiseError(404, $path);
+        }
+        
+        if(!$this->passFilter('postfilter', $path, $route))
+        {
+            return $this->raiseError(404, $path);
+        }
+        
+        if(!$this->passFilter('accessfilter', $path, $route))
+        {
+            return $this->raiseError(403, $path);
+        }
+        
+        
+        $dispatcher = $this->resolver->resolve($path, $route);
+        $result = $dispatcher->dispatch($path, $route);
         
         if($result === null)
         {
-            $callback = $this->routes->getError(404);
-            
-            if($callback !== null)
-            {
-                $result = $callback($path);
-            }
+            return $this->raiseError(404, $path);
         }
         
         return $result;

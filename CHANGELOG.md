@@ -8,3 +8,4 @@ CHANGELOG
 * Removed `useFilters` method from `Opis\HttpRouting\Route`
 * Added `preFilter`, `postFilter` and `accessFilter` methods to `Opis\HttpRouting\Route` class
 * Added `Opis\HttpRouting\ClosureFilter` class
+* Modified `Opis\HttpRouting\UserFilter` class
