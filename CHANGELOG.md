@@ -5,3 +5,6 @@ CHANGELOG
 
 * Started changelog
 * Added `accessDenied` method to `Opis\HttpRouting\RouteCollection`
+* Removed `useFilters` method from `Opis\HttpRouting\Route`
+* Added `preFilter`, `postFilter` and `accessFilter` methods to `Opis\HttpRouting\Route` class
+* Added `Opis\HttpRouting\ClosureFilter` class
