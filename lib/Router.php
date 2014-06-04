@@ -140,8 +140,8 @@ class Router extends BaseRouter
         if(static::$filterCollection === null)
         {
             static::$filterCollection = new FilterCollection();
-            static::$filterCollection[] = new RequestFilter();
             static::$filterCollection[] = new PathFilter();
+            static::$filterCollection[] = new RequestFilter();
             static::$filterCollection[] = new UserFilter();
         }
         

@@ -77,9 +77,9 @@ class ClosureFilter implements FilterInterface, Serializable
         return $this->callback;
     }
     
-    public function setBindMode(bool $value)
+    public function setBindMode($value)
     {
-        $this->doBind = $value;
+        $this->doBind = (bool) $value;
         return $this;
     }
    
@@ -115,7 +115,7 @@ class ClosureFilter implements FilterInterface, Serializable
         
         $object = serialize(array(
             'params' => $this->params,
-            'closure' => $this->closure,
+            'closure' => SerializableClosure::from($this->closure),
         ));
         
         SerializableClosure::exitContext();

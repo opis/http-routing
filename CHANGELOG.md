@@ -9,3 +9,5 @@ CHANGELOG
 * Added `preFilter`, `postFilter` and `accessFilter` methods to `Opis\HttpRouting\Route` class
 * Added `Opis\HttpRouting\ClosureFilter` class
 * Modified `Opis\HttpRouting\UserFilter` class
+* Changed filter order in `Opis\HttpRouting\Router`
+* Updated `opis/routing` dependency to version `2.2.*`
