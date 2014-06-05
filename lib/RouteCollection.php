@@ -108,7 +108,7 @@ class RouteCollection extends BaseCollection
     
     public function filter($name, Closure $filter)
     {
-        $this->filters[$name] = $filter;
+        $this->filters[$name] = new ClosureFilter($filter);
         return $this;
     }
     
@@ -144,8 +144,8 @@ class RouteCollection extends BaseCollection
         $object = serialize(array(
             'collection' => $this->collection,
             'wildcards' => $this->wildcards,
+            'filters' => $this->filters,
             'bindings' => array_map($map, $this->bindings),
-            'filters' => array_map($map, $this->filters),
             'defaults' => array_map($map, $this->defaults),
             'errors' => array_map($map, $this->errors),
         ));
@@ -157,7 +157,7 @@ class RouteCollection extends BaseCollection
     
     public function unserialize($data)
     {
-        $object = unserialize($data);
+        $object = SerializableClosure::unserializeData($data);
         
         $map = function(&$value) use(&$map){
             if($value instanceof SerializableClosure)
@@ -179,8 +179,8 @@ class RouteCollection extends BaseCollection
         
         $this->collection = $object['collection'];
         $this->wildcards = $object['wildcards'];
+        $this->filters = $object['filters'];
         $this->bindings = array_map($map, $object['bindings']);
-        $this->filters = array_map($map, $object['filters']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->errors = array_map($map, $object['errors']);
         
