@@ -1,5 +1,8 @@
 CHANGELOG
 -------------
+### Opis HTTP Routing 2.2.1, 2014.06.05
+
+* Fixed a bug in `Opis\HttpRouting\RouteCollection`
 
 ### Opis HTTP Routing 2.2.0, 2014.06.03
 
