@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis HTTP Routing 2.2.2, 2014.06.08
+
+* Modified serialize method to be compatible with `opis/routing:2.2.1`
+
 ### Opis HTTP Routing 2.2.1, 2014.06.05
 
 * Fixed a bug in `Opis\HttpRouting\RouteCollection`
