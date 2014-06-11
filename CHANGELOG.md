@@ -1,5 +1,10 @@
 CHANGELOG
 -------------
+### Opis HTTP Routing 2.3.0, 2014.06.11
+
+* Updated `opis/routing` library dependency to version `2.3.*`
+* Updated `Opis\HttpRouting\Route` class to reflect changes that were made in `opis/routing`.
+
 ### Opis HTTP Routing 2.2.2, 2014.06.08
 
 * Modified serialize method to be compatible with `opis/routing:2.2.1`
