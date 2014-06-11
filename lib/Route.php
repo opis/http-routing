@@ -28,20 +28,15 @@ use Opis\Routing\Route as BaseRoute;
 
 class Route extends BaseRoute
 {
-    
-    protected static $compilerInstance;
-    
     protected static $domainCompilerInstance;
     
     protected $compiledDomain;
     
     protected $cache = array();
     
-    
-    
     public function __construct($pattern, Closure $action)
     {
-        parent::__construct(new Pattern($pattern), $action, static::compiler());
+        parent::__construct(new Pattern($pattern), $action);
     }
     
     public function compileDomain()
@@ -54,6 +49,7 @@ class Route extends BaseRoute
             {
                 $this->compiledDomain = new CompiledExpression(static::domainCompiler(),
                                                                $domain,
+                                                               null,
                                                                $this->getWildcards(),
                                                                $this->getDefaults(),
                                                                $this->getBindings());
@@ -164,16 +160,6 @@ class Route extends BaseRoute
     {
         $route = new static($pattern, $action);
         return $route->method($method);
-    }
-    
-    protected static function compiler()
-    {
-        if(static::$compilerInstance === null)
-        {
-            static::$compilerInstance = new Compiler();
-        }
-        
-        return static::$compilerInstance;
     }
     
     protected static function domainCompiler()
