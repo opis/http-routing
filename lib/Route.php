@@ -149,12 +149,6 @@ class Route extends BaseRoute
         return $this->cache['filters'];
     }
     
-    public function serialize()
-    {
-        $this->wildcards += $this->get('collection')->getWildcards();
-        
-        return parent::serialize();
-    }
     
     public static function create($pattern, $action, $method = 'GET')
     {
