@@ -78,7 +78,7 @@ class RouteCollection extends BaseCollection
     
     public function wildcard($name, $value)
     {
-        $this->wildcard[$name] = $value;
+        $this->wildcards[$name] = $value;
         return $this;
     }
     
