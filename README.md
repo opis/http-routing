@@ -1,4 +1,4 @@
-Opis Routing
+Opis HTTP Routing
 ============
 [![Latest Stable Version](https://poser.pugx.org/opis/http-routing/version.png)](https://packagist.org/packages/opis/http-routing)
 [![Latest Unstable Version](https://poser.pugx.org/opis/http-routing/v/unstable.png)](//packagist.org/packages/opis/http-routing)
