@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### Opis HTTP Routing 2.4.2, 2014.11.25
+
+* Added autoload file
+
 ### Opis HTTP Routing 2.4.1, 2014.11.11
 
 * Bugfix in `Opis\HttpRouting\Route` class
