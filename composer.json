@@ -1,6 +1,6 @@
 {
     "name": "opis/http-routing",
-    "description": "Extendable and fully serializable HTTP routing library for PHP 5.3+",
+    "description": "Opis HTTP Routing is a library that can be used to route all types of HTTP request, providing a full range of features, like path filters, domain filters, user defined filters, access filters, custom error handlers for HTTP errors and much more. ",
     "keywords": ["routing", "http", "serializable"],
     "homepage": "http://opis.io",
     "license": "Apache-2.0",
