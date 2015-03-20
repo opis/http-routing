@@ -1,5 +1,10 @@
 CHANGELOG
 -------------
+### Opis HTTP Routing 2.5.0, 2014.03.20
+
+* Added support for late binding
+* Updated `opis/routing` library dependency to version `2.5.*`
+
 ### Opis HTTP Routing 2.4.2, 2014.11.25
 
 * Added autoload file
