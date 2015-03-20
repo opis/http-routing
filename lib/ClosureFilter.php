@@ -100,7 +100,14 @@ class ClosureFilter implements FilterInterface, Serializable
         {
             if(isset($values[$key]))
             {
-                $value = $values[$key];
+                if($this->doBind)
+                {
+                    $value = $values[$key]->value();
+                }
+                else
+                {
+                    $value = $values[$key];
+                }
             }
             
             $arguments[] = $value;
