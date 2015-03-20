@@ -17,7 +17,7 @@ handlers for `404 Not found` and `403 Forbidden` HTTP errors and much more.
 ### Requirements
 
 * PHP 5.3.* or higher
-* [Opis Routing](http://www.opis.io/routing) 2.4.*
+* [Opis Routing](http://www.opis.io/routing) 2.5.*
 
 ### Installation
 
@@ -26,18 +26,18 @@ This library is available on [Packagist](https://packagist.org/packages/opis/htt
 ```json
 {
     "require": {
-        "opis/http-routing": "2.4.*"
+        "opis/http-routing": "2.5.*"
     }
 }
 ```
 
 If you are unable to use [Composer](http://getcomposer.org) you can download the
-[tar.gz](https://github.com/opis/http-routing/archive/2.4.2.tar.gz) or the [zip](https://github.com/opis/http-routing/archive/2.4.2.zip)
+[tar.gz](https://github.com/opis/http-routing/archive/2.5.0.tar.gz) or the [zip](https://github.com/opis/http-routing/archive/2.5.0.zip)
 archive file, extract the content of the archive and include de `autoload.php` file into your project. 
 
 ```php
 
-require_once 'path/to/http-routing-2.4.2/autoload.php';
+require_once 'path/to/http-routing-2.5.0/autoload.php';
 
 ```
 
