@@ -16,14 +16,5 @@
     },
     "autoload": {
         "psr-4": {"Opis\\HttpRouting\\": "lib/"}
-    },
-    "config": {
-        "preferred-install": "dist"
-    },
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "2.6-dev"
-        }
     }
 }
