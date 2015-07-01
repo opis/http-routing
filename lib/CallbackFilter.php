@@ -22,11 +22,11 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
-use Opis\Routing\Path;
 use ReflectionFunction;
-use Opis\Routing\Route;
 use Opis\Routing\Callback;
 use Opis\Routing\FilterInterface;
+use Opis\Routing\Path as BasePath;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Closure\SerializableClosure;
 
 class CallbackFilter implements FilterInterface, Serializable
@@ -83,7 +83,7 @@ class CallbackFilter implements FilterInterface, Serializable
         return $this;
     }
    
-    public function pass(Path $path, Route $route)
+    public function pass(BasePath $path, BaseRoute $route)
     {
         if($this->doBind)
         {
