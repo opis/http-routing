@@ -20,6 +20,7 @@
 
 namespace Opis\HttpRouting;
 
+use Closure;
 use Opis\Closure\SerializableClosure;
 use Opis\Routing\CallableExpectedException;
 use Opis\Routing\Collections\RouteCollection as BaseCollection;

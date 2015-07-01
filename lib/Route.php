@@ -115,10 +115,10 @@ class Route extends BaseRoute
         return $this->set('accessfilter', $filters);
     }
     
-    public function filter($name, Closure $filter) //TODO: modify
+    public function filter($name, $filter)
     {
         $filters = $this->get('filters', array());
-        $filters[$name] = new ClosureFilter($filter);
+        $filters[$name] = new CallbackFilter($filter);
         return $this->set('filters', $filters);
     }
     
