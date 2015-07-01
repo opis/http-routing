@@ -22,11 +22,13 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
+use Opis\Routing\Path;
+use Opis\Routing\Route;
+use Opis\Routing\Callback;
+use Opis\Routing\Dispatcher;
 use Opis\Closure\SerializableClosure;
+use Opis\Routing\CallableExpectedException;
 use Opis\Routing\Collections\DispatcherCollection;
-use Opis\Routing\Contracts\DispatcherInterface;
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\RouteInterface;
 use Opis\Routing\DispatcherResolver as BaseResolver;
 
 class DispatcherResolver extends BaseResolver implements Serializable
@@ -39,19 +41,25 @@ class DispatcherResolver extends BaseResolver implements Serializable
     public function __construct()
     {
         $this->collection = new DispatcherCollection();
+        
         $this->register('default', function(){
            return new \Opis\HttpRouting\Dispatcher();
         });
     }
     
-    public function register($name, Closure $callback)
+    public function register($name, $callback)
     {
+        if(!is_callable($callback))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->constructors[$name] = $callback;
         unset($this->collection[$name]);
         return $this;
     }
     
-    public function resolve(PathInterface $router, RouteInterface $route)
+    public function resolve(Path $router, Route $route)
     {
         $dispatcher = $route->get('dispatcher', 'default');
         
@@ -62,8 +70,8 @@ class DispatcherResolver extends BaseResolver implements Serializable
         
         if(!isset($this->collection[$dispatcher]))
         {
-            $constructor = $this->constructors[$dispatcher];
-            $this->collection[$dispatcher] = $constructor();
+            $constructor = new Callback($this->constructors[$dispatcher]);
+            $this->collection[$dispatcher] = $constructor->invoke();
         }
         
         return $this->collection[$dispatcher];
@@ -75,7 +83,14 @@ class DispatcherResolver extends BaseResolver implements Serializable
         SerializableClosure::enterContext();
         
         $object = serialize(array_map(function($value){
-            return SerializableClosure::from($value);
+            
+            if($value instanceof Closure)
+            {
+                return SerializableClosure::from($value);
+            }
+            
+            return $value;
+        
         }, $this->constructors));
         
         SerializableClosure::exitContext();
@@ -87,6 +102,12 @@ class DispatcherResolver extends BaseResolver implements Serializable
     {
         $object = unserialize($data);
         $this->collection = new DispatcherCollection();
-        $this->constructors = array_map(function($value){ return $value->getClosure(); }, $object);
+        $this->constructors = array_map(function($value){
+            if($value instanceof SerializableClosure)
+            {
+                return $value->getClosure();
+            }
+            return $value;
+        }, $object);
     }
 }

@@ -20,7 +20,6 @@
 
 namespace Opis\HttpRouting;
 
-use Closure;
 use Opis\Routing\Pattern;
 use Opis\Routing\Compiler;
 use Opis\Routing\CompiledExpression;
@@ -34,7 +33,7 @@ class Route extends BaseRoute
     
     protected $cache = array();
     
-    public function __construct($pattern, Closure $action)
+    public function __construct($pattern, $action)
     {
         parent::__construct(new Pattern($pattern), $action);
     }
@@ -86,22 +85,37 @@ class Route extends BaseRoute
         return $this->set('secure', $value);
     }
     
-    public function preFilter(array $filters)
+    public function before($filters)
     {
-        return $this->set('prefilter', $filters);
+        if(!is_array($filters))
+        {
+            $filters = array($filters);
+        }
+        
+        return $this->set('beforefilter', $filters);
     }
     
-    public function postFilter(array $filters)
+    public function after($filters)
     {
-        return $this->set('postfilter', $filters);
+        if(!is_array($filters))
+        {
+            $filters = array($filters);
+        }
+        
+        return $this->set('afterfilter', $filters);
     }
     
-    public function accessFilter(array $filters)
+    public function access($filters)
     {
+        if(!is_array($filters))
+        {
+            $filters = array($filters);
+        }
+        
         return $this->set('accessfilter', $filters);
     }
     
-    public function filter($name, Closure $filter)
+    public function filter($name, Closure $filter) //TODO: modify
     {
         $filters = $this->get('filters', array());
         $filters[$name] = new ClosureFilter($filter);

@@ -20,14 +20,14 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Contracts\RouteInterface;
-use Opis\Routing\Contracts\FilterInterface;
-use Opis\Routing\Contracts\PathInterface;
+use Opis\Routing\Path;
+use Opis\Routing\Route;
+use Opis\Routing\FilterInterface;
 
 class RequestFilter implements FilterInterface
 {
     
-    public function pass(PathInterface $path, RouteInterface $route)
+    public function pass(Path $path, Route $route)
     {
         
         //match secure

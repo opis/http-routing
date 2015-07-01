@@ -20,14 +20,15 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\RouteInterface;
+use Opis\Routing\Path;
+use Opis\Routing\Route;
+use Opis\Routing\Callback;
 use Opis\Routing\Dispatcher as BaseDispatcher;
 
 class Dispatcher extends BaseDispatcher
 {    
     
-    public function dispatch(PathInterface $path, RouteInterface $route)
+    public function dispatch(Path $path, Route $route)
     {        
         
         $values = array();
@@ -44,7 +45,31 @@ class Dispatcher extends BaseDispatcher
         
         $values += $route->compile()->bind($path);
         
-        return $this->invokeAction($route->getAction(), $values);
+        $callback = new Callback($route->getAction());
+        
+        $arguments = array();
+        
+        $parameters = $callback->getParameters();
+        
+        foreach($parameters as $param)
+        {
+            $name = $param->getName();
+            
+            if(isset($values[$name]))
+            {
+                $arguments[] = $values[$name]->value();
+            }
+            elseif($param->isOptional())
+            {
+                $arguments[] = $param->getDefaultValue();
+            }
+            else
+            {
+                $arguments[] = null;
+            }
+        }
+        
+        return $callback->invoke($arguments);
         
     }
 }

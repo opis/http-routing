@@ -20,8 +20,8 @@
 
 namespace Opis\HttpRouting;
 
-use Closure;
 use Opis\Closure\SerializableClosure;
+use Opis\Routing\CallableExpectedException;
 use Opis\Routing\Collections\RouteCollection as BaseCollection;
 
 class RouteCollection extends BaseCollection
@@ -82,8 +82,13 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function bind($name, Closure $callback)
+    public function bind($name, $callback)
     {
+        if(!is_callable($callback))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->bindings[$name] = $callback;
         return $this;
     }
@@ -94,21 +99,31 @@ class RouteCollection extends BaseCollection
         return $this;
     }
     
-    public function notFound(Closure $callback)
+    public function notFound($callback)
     {
+        if(!is_callable($callback))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->errors[404] = $callback;
         return $this;
     }
     
-    public function accessDenied(Closure $callback)
+    public function accessDenied($callback)
     {
+        if(!is_callable($callback))
+        {
+            throw new CallableExpectedException();
+        }
+        
         $this->errors[403] = $callback;
         return $this;
     }
     
-    public function filter($name, Closure $filter)
+    public function filter($name, $filter)
     {
-        $this->filters[$name] = new ClosureFilter($filter);
+        $this->filters[$name] = new CallbackFilter($filter);
         return $this;
     }
     

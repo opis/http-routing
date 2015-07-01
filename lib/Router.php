@@ -20,11 +20,11 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\Path;
 use Opis\Routing\PathFilter;
-use Opis\Routing\Collections\FilterCollection;
-use Opis\Routing\Contracts\PathInterface;
-use Opis\Routing\Contracts\DispatcherResolverInterface;
+use Opis\Routing\DispatcherResolver;
 use Opis\Routing\Router as BaseRouter;
+use Opis\Routing\Collections\FilterCollection;
 
 class Router extends BaseRouter
 {
@@ -34,13 +34,14 @@ class Router extends BaseRouter
     protected static $dispatcherResolver;
     
     public function __construct(RouteCollection $routes,
-                                DispatcherResolverInterface $resolver = null,
+                                DispatcherResolver $resolver = null,
                                 FilterCollection $filters = null)
     {
         if($resolver === null)
         {
             $resolver = static::dispatcherResolver();
         }
+        
         if($filters === null)
         {
             $filters = static::filterCollection();
@@ -49,7 +50,7 @@ class Router extends BaseRouter
         parent::__construct($routes, $resolver, $filters);
     }
     
-    protected function findRoute(PathInterface $path)
+    protected function findRoute(Path $path)
     {
         foreach($this->routes as $route)
         {
@@ -64,7 +65,7 @@ class Router extends BaseRouter
         return null;
     }
     
-    protected function passFilter($filter, PathInterface $path, Route $route)
+    protected function passFilter($filter, Path $path, Route $route)
     {
         $filters = $route->getFilters();
         
@@ -82,7 +83,7 @@ class Router extends BaseRouter
         return true;   
     }
     
-    protected function raiseError($error, PathInterface $path)
+    protected function raiseError($error, Path $path)
     {
         $callback = $this->routes->getError($error);
         
@@ -94,7 +95,7 @@ class Router extends BaseRouter
         return null;
     }
     
-    public function route(PathInterface $path)
+    public function route(Path $path)
     {
         $route = $this->findRoute($path);
         
@@ -103,7 +104,7 @@ class Router extends BaseRouter
             return $this->raiseError(404, $path);
         }
         
-        if(!$this->passFilter('postfilter', $path, $route))
+        if(!$this->passFilter('afterfilter', $path, $route))
         {
             return $this->raiseError(404, $path);
         }
@@ -117,9 +118,9 @@ class Router extends BaseRouter
         $dispatcher = $this->resolver->resolve($path, $route);
         $result = $dispatcher->dispatch($path, $route);
         
-        if($result === null)
+        if($result instanceof HttpError)
         {
-            return $this->raiseError(404, $path);
+            return $this->raiseError($result->errorCode(), $path);
         }
         
         return $result;

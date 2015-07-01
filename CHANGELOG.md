@@ -2,6 +2,14 @@ CHANGELOG
 -------------
 ### Opis HTTP Routing 2.5.0, 2015.03.20
 
+* Updated `opis/routing` library dependency to version `3.0.*`
+* `preFilter`, `postFilter` and `accessFilter` methods were removed from `Opis\HttpRouting\Route` class
+* `before`, `after` and `access` methods were added to `Opis\HttpRouting\Route` class
+* `ClosureFilter` class was removed and it was replaced with `CallbackFilter` class
+* Added `HttpError` class
+
+### Opis HTTP Routing 2.5.0, 2015.03.20
+
 * Added support for late binding
 * Updated `opis/routing` library dependency to version `2.5.*`
 
