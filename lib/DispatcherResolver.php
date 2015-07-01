@@ -22,12 +22,12 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
-use Opis\Routing\Path;
-use Opis\Routing\Route;
 use Opis\Routing\Callback;
-use Opis\Routing\Dispatcher;
+use Opis\Routing\Path as BasePath;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Closure\SerializableClosure;
 use Opis\Routing\CallableExpectedException;
+use Opis\Routing\Dispatcher as BaseDispatcher;
 use Opis\Routing\Collections\DispatcherCollection;
 use Opis\Routing\DispatcherResolver as BaseResolver;
 
@@ -59,7 +59,7 @@ class DispatcherResolver extends BaseResolver implements Serializable
         return $this;
     }
     
-    public function resolve(Path $router, Route $route)
+    public function resolve(BasePath $router, BaseRoute $route)
     {
         $dispatcher = $route->get('dispatcher', 'default');
         

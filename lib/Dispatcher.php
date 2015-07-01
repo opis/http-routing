@@ -20,15 +20,16 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Path;
-use Opis\Routing\Route;
+
 use Opis\Routing\Callback;
+use Opis\Routing\Path as BasePath;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Dispatcher as BaseDispatcher;
 
 class Dispatcher extends BaseDispatcher
 {    
     
-    public function dispatch(Path $path, Route $route)
+    public function dispatch(BasePath $path, BaseRoute $route)
     {        
         
         $values = array();

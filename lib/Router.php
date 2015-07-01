@@ -20,9 +20,8 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Path;
 use Opis\Routing\PathFilter;
-use Opis\Routing\DispatcherResolver;
+use Opis\Routing\Path as BasePath;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\Collections\FilterCollection;
 
@@ -95,7 +94,7 @@ class Router extends BaseRouter
         return null;
     }
     
-    public function route(Path $path)
+    public function route(BasePath $path)
     {
         $route = $this->findRoute($path);
         
