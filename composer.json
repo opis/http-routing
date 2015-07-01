@@ -17,6 +17,7 @@
     "autoload": {
         "psr-4": {"Opis\\HttpRouting\\": "lib/"}
     },
+    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
             "dev-master": "3.0-dev"
