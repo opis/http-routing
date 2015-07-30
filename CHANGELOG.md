@@ -1,6 +1,6 @@
 CHANGELOG
 -------------
-### Opis HTTP Routing 3.0.x-dev
+### Opis HTTP Routing 3.0.0, 2015.07.31
 
 * Updated `opis/routing` library dependency to version `3.0.*`
 * `preFilter`, `postFilter` and `accessFilter` methods were removed from `Opis\HttpRouting\Route` class
