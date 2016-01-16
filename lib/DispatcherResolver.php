@@ -56,7 +56,7 @@ class DispatcherResolver extends BaseResolver implements Serializable
         return $this;
     }
 
-    public function resolve(BaseRouter $router, BasePath $router, BaseRoute $route)
+    public function resolve(BaseRouter $router, BasePath $path, BaseRoute $route)
     {
         $dispatcher = $route->get('dispatcher', 'default');
 
