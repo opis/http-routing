@@ -22,7 +22,8 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
-use ReflectionFunction;
+use Opis\Routing\Router;
+use Opis\Routing\Binding;
 use Opis\Routing\Callback;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Path as BasePath;
@@ -31,123 +32,79 @@ use Opis\Closure\SerializableClosure;
 
 class CallbackFilter implements FilterInterface, Serializable
 {
-    
-    protected $params;
-    
+    protected $values;
     protected $callback;
-    
     protected $callable;
-    
     protected $doBind;
-    
+
     public function __construct($callback)
     {
-        if(!is_callable($callback))
-        {
+        if (!is_callable($callback)) {
             throw new CallableExpectedException();
         }
-        
+
         $this->callable = $callback;
     }
-    
-    protected function getParams()
-    {
-        if($this->params === null)
-        {
-            $this->params = array();
-            
-            foreach($this->getCallback()->getParameters() as $param)
-            {
-                $this->params[$param->getName()] = $param->isOptional()
-                                                 ? $param->getDefaultValue()
-                                                 : null;
-            }
-        }
-        
-        return $this->params;
-    }
-    
+
     protected function getCallback()
     {
-        if($this->callback === null)
-        {
+        if ($this->callback === null) {
             $this->callback = new Callback($this->callable);
         }
-        
+
         return $this->callback;
     }
-    
+
     public function setBindMode($value)
     {
         $this->doBind = (bool) $value;
         return $this;
     }
-   
-    public function pass(BasePath $path, BaseRoute $route)
+
+    public function pass(Router $router, BasePath $path, BaseRoute $route)
     {
-        if($this->doBind)
-        {
+        if ($this->doBind) {
             $values = $route->compile()->bind($path);
-        }
-        else
-        {
+        } else {
             $values = $route->compile()->extract($path);
         }
         
-        $arguments = array();
-        
-        foreach($this->getParams() as $key => $value)
-        {
-            if(isset($values[$key]))
-            {
-                if($this->doBind)
-                {
-                    $value = $values[$key]->value();
-                }
-                else
-                {
-                    $value = $values[$key];
-                }
-            }
-            
-            $arguments[] = $value;
-        }
-        
-        return $this->getCallback()->invoke($arguments);
+        $callback = $this->getCallback();
+        $specials = $router->getSpecialValues();
+        $arguments = $callback->getArguments($values, $specials, $this->doBind);
+
+        return $callback->invoke($arguments);
     }
-    
+
     public function serialize()
     {
         SerializableClosure::enterContext();
-        
+
         $callable = $this->callable;
-        
-        if($callable instanceof Closure)
-        {
+
+        if ($callable instanceof Closure) {
             $callable = SerializableClosure::from($callable);
         }
-        
+
         $object = serialize(array(
             'params' => $this->params,
             'callable' => $callable,
         ));
-        
+
         SerializableClosure::exitContext();
-        
+
         return $object;
     }
-    
+
     public function unserialize($data)
     {
         $object = SerializableClosure::unserializeData($data);
-        
-        if($object['callable'] instanceof SerializableClosure)
-        {
+
+        if ($object['callable'] instanceof SerializableClosure) {
             $object['callable'] = $object['callable']->getClosure();
         }
-        
+
         $this->params = $object['params'];
         $this->callable = $object['callable'];
     }
-    
 }
