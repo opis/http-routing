@@ -20,57 +20,33 @@
 
 namespace Opis\HttpRouting;
 
-
 use Opis\Routing\Callback;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\Dispatcher as BaseDispatcher;
 
 class Dispatcher extends BaseDispatcher
-{    
-    
-    public function dispatch(BasePath $path, BaseRoute $route)
-    {        
-        
+{
+
+    public function dispatch(BaseRouter $router, BasePath $path, BaseRoute $route)
+    {
         $values = array();
-        
         $domain = $route->compileDomain();
-        
-        if($domain !== null)
-        {
+
+        if ($domain !== null) {
             $domainPath = $path->domain();
             $bindings = $domain->bind($domainPath);
             $names = $domain->names($domainPath);
             $values = array_intersect_key($bindings, array_flip($names));
         }
-        
+
         $values += $route->compile()->bind($path);
-        
+
         $callback = new Callback($route->getAction());
-        
-        $arguments = array();
-        
-        $parameters = $callback->getParameters();
-        
-        foreach($parameters as $param)
-        {
-            $name = $param->getName();
-            
-            if(isset($values[$name]))
-            {
-                $arguments[] = $values[$name]->value();
-            }
-            elseif($param->isOptional())
-            {
-                $arguments[] = $param->getDefaultValue();
-            }
-            else
-            {
-                $arguments[] = null;
-            }
-        }
-        
+        $specials = $router->getSpecialValues();
+        $arguments = $callback->getArguments($values, $specials);
+
         return $callback->invoke($arguments);
-        
     }
 }
