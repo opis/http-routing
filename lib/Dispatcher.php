@@ -33,18 +33,18 @@ class Dispatcher extends BaseDispatcher
     {
         $values = array();
         $domain = $route->compileDomain();
+        $specials = $router->getSpecialValues();
 
         if ($domain !== null) {
             $domainPath = $path->domain();
-            $bindings = $domain->bind($domainPath);
+            $bindings = $domain->bind($domainPath, $specials);
             $names = $domain->names($domainPath);
             $values = array_intersect_key($bindings, array_flip($names));
         }
 
-        $values += $route->compile()->bind($path);
+        $values += $route->compile()->bind($path, $specials);
 
         $callback = new Callback($route->getAction());
-        $specials = $router->getSpecialValues();
         $arguments = $callback->getArguments($values, $specials);
 
         return $callback->invoke($arguments);
