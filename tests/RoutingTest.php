@@ -30,7 +30,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->collection = new RouteCollection();
-        $this->router = new Router($this->collection);
+        $this->router = new Router($this->collection, null, null, array('x' => 'X'));
         $this->collection->notFound(function() {
             return 404;
         });
@@ -229,27 +229,48 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testGlobalBinding1()
     {
-        $this->collection->bind('foo', function($foo){
-           return strtoupper($foo); 
+        $this->collection->bind('foo', function($foo) {
+            return strtoupper($foo);
         });
-        
+
         $this->route('/{foo}', function($foo) {
-                return $foo;
+            return $foo;
         });
-        
+
         $this->assertEquals('BAR', $this->exec('/bar'));
     }
 
     public function testGlobalBinding2()
     {
-        $this->collection->bind('foo', function(){
-           return 'BAR'; 
+        $this->collection->bind('foo', function() {
+            return 'BAR';
         });
-        
+
         $this->route('/', function($foo) {
-                return $foo;
+            return $foo;
         });
-        
+
         $this->assertEquals('BAR', $this->exec('/'));
+    }
+
+    public function testSpecials1()
+    {
+        $this->route('/', function($x) {
+            return $x;
+        });
+
+        $this->assertEquals('X', $this->exec('/'));
+    }
+
+    public function testSpecials2()
+    {
+        $this->route('/', function($y) {
+            return $y;
+        })
+        ->bind('y', function($x){
+           return $x; 
+        });
+
+        $this->assertEquals('X', $this->exec('/'));
     }
 }
