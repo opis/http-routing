@@ -23,15 +23,15 @@ namespace Opis\HttpRouting;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
 
 class RequestFilter implements FilterInterface
 {
 
-    public function pass(BasePath $path, BaseRoute $route)
+    public function pass(BaseRouter $router, BasePath $path, BaseRoute $route)
     {
         //match secure
         if (null !== $secure = $route->get('secure')) {
-
             if ($secure !== $path->isSecure()) {
                 return false;
             }
@@ -46,7 +46,7 @@ class RequestFilter implements FilterInterface
         if (null !== $domain = $route->compileDomain()) {
             return $domain->match($path->domain());
         }
-
+        
         return true;
     }
 }
