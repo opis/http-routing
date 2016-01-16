@@ -32,7 +32,7 @@ class UserFilter implements FilterInterface
     {
         $filters = $route->getFilters();
 
-        foreach ($route->get('beforefilter', array()) as $name) {
+        foreach ($route->get('before', array()) as $name) {
             if (isset($filters[$name])) {
                 if ($filters[$name]->setBindMode(false)->pass($router, $path, $route) === false) {
                     return false;
