@@ -1,10 +1,14 @@
 CHANGELOG
 -------------
-### Opis HTTP Routing
+### v4.0.0, 2016.01.16
 
 * Removed `branch-alias` property from `composer.json` file
+* Updated `opis/routing` library dependency to version `^4.1.0`
+* Modified classes to reflect changes in `opis/routing` library
+* Fixed CS
+* Added tests
 
-### Opis HTTP Routing 3.0.0, 2015.07.31
+### v3.0.0, 2015.07.31
 
 * Updated `opis/routing` library dependency to version `3.0.*`
 * `preFilter`, `postFilter` and `accessFilter` methods were removed from `Opis\HttpRouting\Route` class
@@ -12,37 +16,37 @@ CHANGELOG
 * `ClosureFilter` class was removed and it was replaced with `CallbackFilter` class
 * Added `HttpError` class
 
-### Opis HTTP Routing 2.5.0, 2015.03.20
+### v2.5.0, 2015.03.20
 
 * Added support for late binding
 * Updated `opis/routing` library dependency to version `2.5.*`
 
-### Opis HTTP Routing 2.4.2, 2014.11.25
+### v2.4.2, 2014.11.25
 
 * Added autoload file
 
-### Opis HTTP Routing 2.4.1, 2014.11.11
+### v2.4.1, 2014.11.11
 
 * Bugfix in `Opis\HttpRouting\Route` class
 
-### Opis HTTP Routing 2.4.0, 2014.10.23
+### v2.4.0, 2014.10.23
 
 * Updated `opis/routing` library dependency to version `2.4.*`
 
-### Opis HTTP Routing 2.3.0, 2014.06.11
+### v2.3.0, 2014.06.11
 
 * Updated `opis/routing` library dependency to version `2.3.*`
 * Updated `Opis\HttpRouting\Route` class to reflect changes that were made in `opis/routing`.
 
-### Opis HTTP Routing 2.2.2, 2014.06.08
+### v2.2.2, 2014.06.08
 
 * Modified serialize method to be compatible with `opis/routing:2.2.1`
 
-### Opis HTTP Routing 2.2.1, 2014.06.05
+### v2.2.1, 2014.06.05
 
 * Fixed a bug in `Opis\HttpRouting\RouteCollection`
 
-### Opis HTTP Routing 2.2.0, 2014.06.03
+### v2.2.0, 2014.06.03
 
 * Started changelog
 * Added `accessDenied` method to `Opis\HttpRouting\RouteCollection`
