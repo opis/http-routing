@@ -23,17 +23,18 @@ namespace Opis\HttpRouting;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
 
 class UserFilter implements FilterInterface
 {
 
-    public function pass(BasePath $path, BaseRoute $route)
+    public function pass(BaseRouter $router, BasePath $path, BaseRoute $route)
     {
         $filters = $route->getFilters();
 
         foreach ($route->get('beforefilter', array()) as $name) {
             if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(false)->pass($path, $route) === false) {
+                if ($filters[$name]->setBindMode(false)->pass($router, $path, $route) === false) {
                     return false;
                 }
             }
