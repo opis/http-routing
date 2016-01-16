@@ -23,7 +23,6 @@ namespace Opis\HttpRouting;
 use Closure;
 use Serializable;
 use Opis\Routing\Router;
-use Opis\Routing\Binding;
 use Opis\Routing\Callback;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Path as BasePath;
