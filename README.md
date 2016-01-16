@@ -1,5 +1,6 @@
 Opis HTTP Routing
 ============
+[![Build Status](https://travis-ci.org/opis/http-routing.svg?branch=master)](https://travis-ci.org/opis/http-routing)
 [![Latest Stable Version](https://poser.pugx.org/opis/http-routing/version.png)](https://packagist.org/packages/opis/http-routing)
 [![Latest Unstable Version](https://poser.pugx.org/opis/http-routing/v/unstable.png)](//packagist.org/packages/opis/http-routing)
 [![License](https://poser.pugx.org/opis/http-routing/license.png)](https://packagist.org/packages/opis/http-routing)
