@@ -203,6 +203,32 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(404, $this->exec('/'));
     }
 
+    public function testLocalFilterSpevialValuesSuccess()
+    {
+        $this->route('/', function() {
+                return 'OK';
+            })
+            ->filter('foo', function($x) {
+                return $x == 'X';
+            })
+            ->before('foo');
+
+        $this->assertEquals('OK', $this->exec('/'));
+    }
+    
+    public function testLocalFilterSpevialValuesFail()
+    {
+        $this->route('/', function() {
+                return 'OK';
+            })
+            ->filter('foo', function($x) {
+                return $x != 'X';
+            })
+            ->before('foo');
+
+        $this->assertEquals(404, $this->exec('/'));
+    }
+
     public function testLocalBinding1()
     {
         $this->route('/{foo}', function($foo) {
@@ -265,11 +291,11 @@ class RoutingTest extends PHPUnit_Framework_TestCase
     public function testSpecials2()
     {
         $this->route('/', function($y) {
-            return $y;
-        })
-        ->bind('y', function($x){
-           return $x; 
-        });
+                return $y;
+            })
+            ->bind('y', function($x) {
+                return $x;
+            });
 
         $this->assertEquals('X', $this->exec('/'));
     }
