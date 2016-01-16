@@ -27,32 +27,37 @@ use Opis\Routing\Collections\FilterCollection;
 
 class Router extends BaseRouter
 {
-    protected static $filterCollection;
-    protected static $dispatcherResolver;
-
-    public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null)
-    {
+    public function __construct(
+        RouteCollection $routes,
+        DispatcherResolver $resolver = null, 
+        FilterCollection $filters = null,
+        array $specials = array()
+    ) {
         if ($resolver === null) {
-            $resolver = static::dispatcherResolver();
+            $resolver = new DispatcherResolver();
         }
-
+        
         if ($filters === null) {
-            $filters = static::filterCollection();
+            $filters = new FilterCollection();
+            $filters[] = new PathFilter();
+            $filters[] = new RequestFilter();
+            $filters[] = new UserFilter();
         }
-
-        parent::__construct($routes, $resolver, $filters);
+        
+        parent::__construct($routes, $resolver, $filters, $specials);
     }
+
 
     protected function findRoute(Path $path)
     {
         foreach ($this->routes as $route) {
-            $route->implicit('path', $path);
+            $this->specials['self'] = $route;
 
             if ($this->pass($path, $route)) {
                 return $route;
             }
         }
-
+        
         return null;
     }
 
@@ -62,7 +67,7 @@ class Router extends BaseRouter
 
         foreach ($route->get($filter, array()) as $name) {
             if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(true)->pass($path, $route) === false) {
+                if ($filters[$name]->setBindMode(true)->pass($this, $path, $route) === false) {
                     return false;
                 }
             }
@@ -78,55 +83,39 @@ class Router extends BaseRouter
         if ($callback !== null) {
             return $callback($path);
         }
-
+        
         return null;
     }
 
     public function route(BasePath $path)
     {
+        $this->specials += array(
+            'path' => $path,
+            'self' => null,
+        );
+        
         $route = $this->findRoute($path);
 
         if ($route === null) {
             return $this->raiseError(404, $path);
         }
 
-        if (!$this->passFilter('afterfilter', $path, $route)) {
+        if (!$this->passFilter('after', $path, $route)) {
             return $this->raiseError(404, $path);
         }
 
-        if (!$this->passFilter('accessfilter', $path, $route)) {
+        if (!$this->passFilter('access', $path, $route)) {
             return $this->raiseError(403, $path);
         }
 
 
-        $dispatcher = $this->resolver->resolve($path, $route);
-        $result = $dispatcher->dispatch($path, $route);
+        $dispatcher = $this->resolver->resolve($this, $path, $route);
+        $result = $dispatcher->dispatch($this, $path, $route);
 
         if ($result instanceof HttpError) {
             return $this->raiseError($result->errorCode(), $path);
         }
 
         return $result;
-    }
-
-    protected static function dispatcherResolver()
-    {
-        if (static::$dispatcherResolver === null) {
-            static::$dispatcherResolver = new DispatcherResolver();
-        }
-
-        return static::$dispatcherResolver;
-    }
-
-    protected static function filterCollection()
-    {
-        if (static::$filterCollection === null) {
-            static::$filterCollection = new FilterCollection();
-            static::$filterCollection[] = new PathFilter();
-            static::$filterCollection[] = new RequestFilter();
-            static::$filterCollection[] = new UserFilter();
-        }
-
-        return static::$filterCollection;
     }
 }
