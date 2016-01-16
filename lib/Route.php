@@ -27,157 +27,139 @@ use Opis\Routing\Route as BaseRoute;
 
 class Route extends BaseRoute
 {
-    protected static $domainCompilerInstance;
-    
     protected $compiledDomain;
-    
     protected $cache = array();
-    
+
     public function __construct($pattern, $action)
     {
         parent::__construct(new Pattern($pattern), $action);
     }
-    
+
     public function compileDomain()
     {
-        if($this->compiledDomain === null)
-        {
+        if ($this->compiledDomain === null) {
             $domain = $this->get('domain');
-            
-            if($domain !== null)
-            {
-                $this->compiledDomain = new CompiledExpression(static::domainCompiler(),
-                                                               $domain,
-                                                               null,
-                                                               $this->getWildcards(),
-                                                               $this->getDefaults(),
-                                                               $this->getBindings());
+
+            if ($domain !== null) {
+                $this->compiledDomain = new CompiledExpression($this->domainCompiler(), 
+                    $domain, null, $this->getWildcards(), $this->getDefaults(), $this->getBindings());
             }
         }
         
         return $this->compiledDomain;
     }
-    
+
     public function where($name, $value)
     {
         return $this->wildcard($name, $value);
     }
-    
+
     public function domain($value)
     {
         return $this->set('domain', new Pattern($value));
     }
-    
+
     public function method($method)
     {
-        if(!is_array($method))
-        {
+        if (!is_array($method)) {
             $method = array($method);
         }
-        
+
         $method = array_map('strtoupper', $method);
-        
+
         return $this->set('method', $method);
     }
-    
+
     public function secure($value = true)
     {
         return $this->set('secure', $value);
     }
-    
+
     public function before($filters)
     {
-        if(!is_array($filters))
-        {
+        if (!is_array($filters)) {
             $filters = array($filters);
         }
-        
-        return $this->set('beforefilter', $filters);
+
+        return $this->set('before', $filters);
     }
-    
+
     public function after($filters)
     {
-        if(!is_array($filters))
-        {
+        if (!is_array($filters)) {
             $filters = array($filters);
         }
         
-        return $this->set('afterfilter', $filters);
+        return $this->set('after', $filters);
     }
-    
+
     public function access($filters)
     {
-        if(!is_array($filters))
-        {
+        if (!is_array($filters)) {
             $filters = array($filters);
         }
-        
-        return $this->set('accessfilter', $filters);
+
+        return $this->set('access', $filters);
     }
-    
+
     public function filter($name, $filter)
     {
         $filters = $this->get('filters', array());
         $filters[$name] = new CallbackFilter($filter);
         return $this->set('filters', $filters);
     }
-    
+
     public function dispatcher($name)
     {
         return $this->set('dispatcher', $name);
     }
-    
+
     public function getWildcards()
     {
-        if(!isset($this->cache['wildcards']))
-        {
-            $this->cache['wildcards'] = $this->wildcards + $this->get('collection')->getWildcards();
+        if (!isset($this->cache['wildcards'])) {
+            $this->cache['wildcards'] = $this->wildcards + $this->get('#collection')->getWildcards();
         }
         return $this->cache['wildcards'];
     }
-    
+
     public function getBindings()
     {
-        if(!isset($this->cache['bindings']))
-        {
-            $this->cache['bindings'] = $this->bindings + $this->get('collection')->getBindings();
+        if (!isset($this->cache['bindings'])) {
+            $this->cache['bindings'] = $this->bindings + $this->get('#collection')->getBindings();
         }
         return $this->cache['bindings'];
     }
-    
+
     public function getDefaults()
     {
-        if(!isset($this->cache['defaults']))
-        {
-            $this->cache['defaults'] = $this->defaults + $this->get('collection')->getDefaults();
+        if (!isset($this->cache['defaults'])) {
+            $this->cache['defaults'] = $this->defaults + $this->get('#collection')->getDefaults();
         }
         return $this->cache['defaults'];
     }
-    
+
     public function getFilters()
     {
-        if(!isset($this->cache['filters']))
-        {
-            $this->cache['filters'] = $this->get('filters', array()) + $this->get('collection')->getFilters();
+        if (!isset($this->cache['filters'])) {
+            $this->cache['filters'] = $this->get('filters', array()) + $this->get('#collection')->getFilters();
         }
         return $this->cache['filters'];
     }
-    
-    
+
+    public function domainCompiler()
+    {
+        static $compiler;
+
+        if ($compiler === null) {
+            $compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL));
+        }
+
+        return $compiler;
+    }
+
     public static function create($pattern, $action, $method = 'GET')
     {
         $route = new static($pattern, $action);
         return $route->method($method);
     }
-    
-    protected static function domainCompiler()
-    {
-        if(static::$domainCompilerInstance === null)
-        {
-            static::$domainCompilerInstance = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT|Compiler::CAPTURE_TRAIL));
-        }
-        
-        return static::$domainCompilerInstance;
-    }
-    
 }
