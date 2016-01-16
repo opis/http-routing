@@ -26,33 +26,27 @@ use Opis\Routing\Route as BaseRoute;
 
 class RequestFilter implements FilterInterface
 {
-    
+
     public function pass(BasePath $path, BaseRoute $route)
     {
-        
         //match secure
-        if(null !== $secure = $route->get('secure'))
-        {
-            
-            if($secure !== $path->isSecure())
-            {
+        if (null !== $secure = $route->get('secure')) {
+
+            if ($secure !== $path->isSecure()) {
                 return false;
             }
         }
         
         //match method
-        if(!in_array($path->method(), $route->get('method', array('GET'))))
-        {
+        if (!in_array($path->method(), $route->get('method', array('GET')))) {
             return false;
         }
-        
+
         //match domain
-        if(null !== $domain = $route->compileDomain())
-        {
+        if (null !== $domain = $route->compileDomain()) {
             return $domain->match($path->domain());
         }
-        
+
         return true;
     }
-    
 }

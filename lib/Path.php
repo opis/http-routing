@@ -25,15 +25,11 @@ use Opis\Routing\Path as BasePath;
 class Path extends BasePath
 {
     protected $path;
-    
     protected $domain;
-    
     protected $method;
-    
     protected $secure;
-    
     protected $request;
-    
+
     public function __construct($path, $domain = 'localhost', $method = 'GET', $secure = false, $request = null)
     {
         $this->method = $method;
@@ -43,27 +39,27 @@ class Path extends BasePath
         $this->request = $request;
         parent::__construct($path);
     }
-    
+
     public function path()
     {
         return $this->path;
     }
-    
+
     public function domain()
     {
         return $this->domain;
     }
-    
+
     public function method()
     {
         return $this->method;
     }
-    
+
     public function isSecure()
     {
         return $this->secure;
     }
-    
+
     public function request()
     {
         return $this->request;

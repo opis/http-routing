@@ -23,37 +23,34 @@ namespace Opis\HttpRouting;
 class HttpError
 {
     protected $errorCode;
-    
     protected static $errors = array();
-    
+
     public function __construct($error)
     {
         $this->errorCode = $error;
     }
-    
+
     public function errorCode()
     {
         return $this->errorCode;
     }
-    
+
     protected static function getError($code)
     {
-        if(!isset(static::$errors[$code]))
-        {
+        if (!isset(static::$errors[$code])) {
             static::$errors[$code] = new static($code);
         }
-        
+
         return static::$errors[$code];
     }
-    
+
     public static function pageNotFound()
     {
         return static::getError(404);
     }
-    
+
     public static function accessDenied()
     {
-       return static::getError(403);
+        return static::getError(403);
     }
-    
 }

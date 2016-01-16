@@ -26,22 +26,19 @@ use Opis\Routing\Route as BaseRoute;
 
 class UserFilter implements FilterInterface
 {
-   
+
     public function pass(BasePath $path, BaseRoute $route)
     {
         $filters = $route->getFilters();
-        
-        foreach($route->get('beforefilter', array()) as $name)
-        {
-            if(isset($filters[$name]))
-            {
-                if($filters[$name]->setBindMode(false)->pass($path, $route) === false)
-                {
+
+        foreach ($route->get('beforefilter', array()) as $name) {
+            if (isset($filters[$name])) {
+                if ($filters[$name]->setBindMode(false)->pass($path, $route) === false) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
 }
