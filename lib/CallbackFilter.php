@@ -102,8 +102,7 @@ class CallbackFilter implements FilterInterface, Serializable
         if ($object['callable'] instanceof SerializableClosure) {
             $object['callable'] = $object['callable']->getClosure();
         }
-
-        $this->params = $object['params'];
+        
         $this->callable = $object['callable'];
     }
 }
