@@ -85,7 +85,10 @@ class CallbackFilter implements FilterInterface, Serializable
             $callable = SerializableClosure::from($callable);
         }
 
-        $object = serialize($callable);
+        $object = serialize(array(
+            'params' => null,
+            'callable' => $callable,
+        ));
 
         SerializableClosure::exitContext();
 
@@ -96,10 +99,11 @@ class CallbackFilter implements FilterInterface, Serializable
     {
         $object = SerializableClosure::unserializeData($data);
 
-        if ($object instanceof SerializableClosure) {
-            $object = $object['callable']->getClosure();
+        if ($object['callable'] instanceof SerializableClosure) {
+            $object['callable'] = $object['callable']->getClosure();
         }
 
-        $this->callable = $object;
+        $this->params = $object['params'];
+        $this->callable = $object['callable'];
     }
 }
