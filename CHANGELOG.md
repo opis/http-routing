@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### v4.0.1, 2016.01.19
+
+* Fixed a bug in `Opis\HttpRouting\CallbackFilter`
+
 ### v4.0.0, 2016.01.16
 
 * Removed `branch-alias` property from `composer.json` file
