@@ -31,7 +31,6 @@ use Opis\Routing\Router as BaseRouter;
 
 class CallbackFilter implements FilterInterface, Serializable
 {
-    protected $values;
     protected $callback;
     protected $callable;
     protected $doBind;
@@ -86,10 +85,7 @@ class CallbackFilter implements FilterInterface, Serializable
             $callable = SerializableClosure::from($callable);
         }
 
-        $object = serialize(array(
-            'params' => $this->params,
-            'callable' => $callable,
-        ));
+        $object = serialize($callable);
 
         SerializableClosure::exitContext();
 
@@ -100,11 +96,10 @@ class CallbackFilter implements FilterInterface, Serializable
     {
         $object = SerializableClosure::unserializeData($data);
 
-        if ($object['callable'] instanceof SerializableClosure) {
-            $object['callable'] = $object['callable']->getClosure();
+        if ($object instanceof SerializableClosure) {
+            $object = $object['callable']->getClosure();
         }
 
-        $this->params = $object['params'];
-        $this->callable = $object['callable'];
+        $this->callable = $object;
     }
 }
