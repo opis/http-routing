@@ -1,5 +1,9 @@
 CHANGELOG
 -------------
+### v4.0.2, 2016.03.20
+
+* Fixed a bug in `Route::domainCompiler`  method
+
 ### v4.0.1, 2016.01.19
 
 * Fixed a bug in `Opis\HttpRouting\CallbackFilter`
