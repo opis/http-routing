@@ -41,11 +41,10 @@ class Route extends BaseRoute
             $domain = $this->get('domain');
 
             if ($domain !== null) {
-                $this->compiledDomain = new CompiledExpression($this->domainCompiler(), 
-                    $domain, null, $this->getWildcards(), $this->getDefaults(), $this->getBindings());
+                $this->compiledDomain = new CompiledExpression($this->domainCompiler(), $domain, null, $this->getWildcards(), $this->getDefaults(), $this->getBindings());
             }
         }
-        
+
         return $this->compiledDomain;
     }
 
@@ -89,7 +88,7 @@ class Route extends BaseRoute
         if (!is_array($filters)) {
             $filters = array($filters);
         }
-        
+
         return $this->set('after', $filters);
     }
 
@@ -151,7 +150,7 @@ class Route extends BaseRoute
         static $compiler;
 
         if ($compiler === null) {
-            $compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL));
+            $compiler = new Compiler('{', '}', '.', '?', (Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL), '`', 'u', '[a-zA-Z0-9\-]+');
         }
 
         return $compiler;
