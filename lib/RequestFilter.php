@@ -28,7 +28,13 @@ use Opis\Routing\Router as BaseRouter;
 class RequestFilter implements FilterInterface
 {
 
-    public function pass(BaseRouter $router, BasePath $path, BaseRoute $route)
+    /**
+     * @param Path $path
+     * @param Route $route
+     * @param Router $router
+     * @return bool
+     */
+    public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
         //match secure
         if (null !== $secure = $route->get('secure')) {
@@ -36,15 +42,17 @@ class RequestFilter implements FilterInterface
                 return false;
             }
         }
-        
+
         //match method
         if (!in_array($path->method(), $route->get('method', array('GET')))) {
             return false;
         }
 
+        $wrapper = $router->wrapRoute($route);
+
         //match domain
-        if (null !== $domain = $route->compileDomain()) {
-            return $domain->match($path->domain());
+        if(false !== $regex = $wrapper->getDomainRegex()){
+            return preg_match($regex, (string) $path->domain());
         }
         
         return true;
