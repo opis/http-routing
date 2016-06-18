@@ -194,7 +194,7 @@ class RouteWrapper
         if($this->bound === null){
             $this->bound = $this->router->bind($this->extract() , $this->getBindings());
         }
-        $this->bound;
+        return $this->bound;
     }
 
 }
