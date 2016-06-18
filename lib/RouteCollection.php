@@ -20,48 +20,40 @@
 
 namespace Opis\HttpRouting;
 
-use Closure;
 use Opis\Closure\SerializableClosure;
-use Opis\Routing\CallableExpectedException;
-use Opis\Routing\Collections\RouteCollection as BaseCollection;
+use Opis\Routing\ClosureWrapperTrait;
+use Opis\Routing\Compiler;
+use Opis\Routing\RouteCollection as BaseCollection;
 
 class RouteCollection extends BaseCollection
 {
-    /** @var    array */
-    protected $wildcards = array();
+    use ClosureWrapperTrait;
 
     /** @var    array */
-    protected $bindings = array();
+    protected $wildcards = [];
+
+    /** @var    callable[] */
+    protected $bindings = [];
+
+    /** @var    callable[] */
+    protected $filters = [];
 
     /** @var    array */
-    protected $filters = array();
+    protected $defaults = [];
 
     /** @var    array */
-    protected $defaults = array();
+    protected $errors = [];
 
-    /** @var    array */
-    protected $errors = array();
+    /** @var  Compiler|null */
+    protected $domainCompiler;
 
-    /**
-     * Check type
-     * 
-     * @param   \Opis\HttpRouting\Route $value
-     * 
-     * @throws  InvalidArgumentException
-     */
-    protected function checkType($value)
-    {
-        if (!($value instanceof Route)) {
-            throw new InvalidArgumentException('Expected \Opis\HttpRouting\Route');
-        }
-    }
 
     /**
      * Get wildcards
      * 
      * @return  array
      */
-    public function getWildcards()
+    public function getWildcards(): array
     {
         return $this->wildcards;
     }
@@ -69,9 +61,9 @@ class RouteCollection extends BaseCollection
     /**
      * Get bindings 
      * 
-     * @return  array
+     * @return  callable[]
      */
-    public function getBindings()
+    public function getBindings(): array
     {
         return $this->bindings;
     }
@@ -79,9 +71,9 @@ class RouteCollection extends BaseCollection
     /**
      * Get filters
      * 
-     * @return  filters
+     * @return  CallbackFilter[]
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->filters;
     }
@@ -91,9 +83,23 @@ class RouteCollection extends BaseCollection
      * 
      * @return  array
      */
-    public function getDefaults()
+    public function getDefaults(): array
     {
         return $this->defaults;
+    }
+
+    /**
+     * @return Compiler
+     */
+    public function getDomainCompiler(): Compiler
+    {
+        if($this->domainCompiler === null){
+            $this->domainCompiler = new Compiler([
+                Compiler::TAG_SEPARATOR => '.',
+                Compiler::CAPTURE_MODE => Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL
+            ]);
+        }
+        return $this->domainCompiler;
     }
 
     /**
@@ -103,7 +109,7 @@ class RouteCollection extends BaseCollection
      * 
      * @return  callable|null
      */
-    public function getError($code)
+    public function getError(int $code)
     {
         if (isset($this->errors[$code])) {
             return $this->errors[$code];
@@ -113,13 +119,12 @@ class RouteCollection extends BaseCollection
 
     /**
      * Set a wildcard
-     * 
-     * @param   string  $name
-     * @param   mixed   $value
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   mixed $value
+     * @return $this|RouteCollection
      */
-    public function wildcard($name, $value)
+    public function wildcard(string $name, $value): self
     {
         $this->wildcards[$name] = $value;
         return $this;
@@ -127,33 +132,25 @@ class RouteCollection extends BaseCollection
 
     /**
      * Binding
-     * 
-     * @param   string      $name
-     * @param   callable    $callback
-     * 
-     * @return  $this
-     * 
-     * @throws CallableExpectedException
+     *
+     * @param   string $name
+     * @param   callable $callback
+     * @return $this|RouteCollection
      */
-    public function bind($name, $callback)
+    public function bind(string $name, callable $callback): self
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->bindings[$name] = $callback;
         return $this;
     }
 
     /**
      * Set a default value
-     * 
-     * @param   string  $name
-     * @param   mixed   $value
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   mixed $value
+     * @return $this|RouteCollection
      */
-    public function implicit($name, $value)
+    public function implicit(string $name, $value): self
     {
         $this->defaults[$name] = $value;
         return $this;
@@ -161,65 +158,39 @@ class RouteCollection extends BaseCollection
 
     /**
      * Set error callback
-     * 
-     * @param   callable    $callback
-     * 
-     * @return  $this
-     * 
-     * @throws  CallableExpectedException
+     *
+     * @param   callable $callback
+     * @return $this|RouteCollection
      */
-    public function notFound($callback)
+    public function notFound(callable $callback): self
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->errors[404] = $callback;
         return $this;
     }
 
     /**
      * Set error callback
-     * 
-     * @param   callable    $callback
-     * 
-     * @return  $this
-     * 
-     * @throws  CallableExpectedException
+     *
+     * @param   callable $callback
+     * @return $this|RouteCollection
      */
-    public function accessDenied($callback)
+    public function accessDenied(callable $callback): self
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->errors[403] = $callback;
         return $this;
     }
 
     /**
      * Add a filter
-     * 
-     * @param   string      $name
-     * @param   callable    $filter
-     * 
-     * @return  $this
+     *
+     * @param   string $name
+     * @param   callable $filter
+     * @return $this|RouteCollection
      */
-    public function filter($name, $filter)
+    public function filter(string $name, callable $filter): self
     {
         $this->filters[$name] = new CallbackFilter($filter);
         return $this;
-    }
-
-    /**
-     * 
-     * @param   mixed   $offset
-     * @param   mixed   $value
-     */
-    public function offsetSet($offset, $value)
-    {
-        parent::offsetSet($offset, $value);
-        $value->set('#collection', $this);
     }
 
     /**
@@ -231,16 +202,16 @@ class RouteCollection extends BaseCollection
     {
         SerializableClosure::enterContext();
 
-        $map = array($this, 'wrapClosures');
+        $map = [static::class, 'wrapClosures'];
 
-        $object = serialize(array(
-            'collection' => $this->collection,
+        $object = serialize([
+            'parent' => parent::serialize(),
             'wildcards' => $this->wildcards,
             'filters' => $this->filters,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'errors' => array_map($map, $this->errors),
-        ));
+        ]);
 
         SerializableClosure::exitContext();
 
@@ -254,56 +225,15 @@ class RouteCollection extends BaseCollection
      */
     public function unserialize($data)
     {
-        $object = SerializableClosure::unserializeData($data);
-        $map = array($this, 'unwrapClosures');
+        $object = unserialize($data);
+        $map = [static::class, 'unwrapClosures'];
 
-        $this->collection = $object['collection'];
+        parent::unserialize($object['parent']);
+
         $this->wildcards = $object['wildcards'];
         $this->filters = $object['filters'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->errors = array_map($map, $object['errors']);
-    }
-
-    /**
-     * Wrap all closures
-     * 
-     * @param   mixed   $value
-     * 
-     * @return  mixed
-     */
-    protected function wrapClosures(&$value)
-    {
-        if ($value instanceof Closure) {
-            return SerializableClosure::from($value);
-        } elseif (is_array($value)) {
-            return array_map(array($this, __FUNCTION__), $value);
-        } elseif ($value instanceof \stdClass) {
-            $object = (array) $value;
-            $object = array_map(array($this, __FUNCTION__), $object);
-            return (object) $object;
-        }
-        return $value;
-    }
-
-    /**
-     * Unwrap closures
-     * 
-     * @param   mixed   $value
-     * 
-     * @return  mixed
-     */
-    protected function unwrapClosures(&$value)
-    {
-        if ($value instanceof SerializableClosure) {
-            return $value->getClosure();
-        } elseif (is_array($value)) {
-            return array_map(array($this, __FUNCTION__), $value);
-        } elseif ($value instanceof \stdClass) {
-            $object = (array) $value;
-            $object = array_map(array($this, __FUNCTION__), $object);
-            return (object) $object;
-        }
-        return $value;
     }
 }

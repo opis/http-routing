@@ -20,83 +20,48 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\PathFilter;
+use SplObjectStorage;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\Collections\FilterCollection;
+use Opis\Routing\FilterCollection;
 
+/**
+ * Class Router
+ * @package Opis\HttpRouting
+ *
+ * @method RouteCollection getRouteCollection()
+ * @method Route findRoute(Path $path)
+ */
 class Router extends BaseRouter
 {
-    public function __construct(
-        RouteCollection $routes,
-        DispatcherResolver $resolver = null, 
-        FilterCollection $filters = null,
-        array $specials = array()
-    ) {
+    protected $storage;
+
+    public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = [])
+    {
         if ($resolver === null) {
             $resolver = new DispatcherResolver();
         }
-        
+
         if ($filters === null) {
             $filters = new FilterCollection();
-            $filters[] = new PathFilter();
-            $filters[] = new RequestFilter();
-            $filters[] = new UserFilter();
+            $filters->addFilter(new RequestFilter())
+                    ->addFilter(new UserFilter());
         }
-        
+
+        $this->storage = new SplObjectStorage();
         parent::__construct($routes, $resolver, $filters, $specials);
     }
 
-
-    protected function findRoute(Path $path)
-    {
-        foreach ($this->routes as $route) {
-            $this->specials['self'] = $route;
-
-            if ($this->pass($path, $route)) {
-                return $route;
-            }
-        }
-        
-        return null;
-    }
-
-    protected function passFilter($filter, Path $path, Route $route)
-    {
-        $filters = $route->getFilters();
-
-        foreach ($route->get($filter, array()) as $name) {
-            if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(true)->pass($this, $path, $route) === false) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    protected function raiseError($error, Path $path)
-    {
-        $callback = $this->routes->getError($error);
-
-        if ($callback !== null) {
-            return $callback($path);
-        }
-        
-        return null;
-    }
-
+    /** @noinspection PhpDocSignatureInspection */
+    /**
+     * @param Path $path
+     * @return mixed|false
+     */
     public function route(BasePath $path)
     {
-        $this->specials += array(
-            'path' => $path,
-            'self' => null,
-        );
-        
         $route = $this->findRoute($path);
 
-        if ($route === null) {
+        if ($route === false) {
             return $this->raiseError(404, $path);
         }
 
@@ -108,9 +73,8 @@ class Router extends BaseRouter
             return $this->raiseError(403, $path);
         }
 
-
-        $dispatcher = $this->resolver->resolve($this, $path, $route);
-        $result = $dispatcher->dispatch($this, $path, $route);
+        $dispatcher = $this->resolver->resolve($path, $route, $this);
+        $result = $dispatcher->dispatch($path, $route, $this);
 
         if ($result instanceof HttpError) {
             return $this->raiseError($result->errorCode(), $path);
@@ -118,4 +82,59 @@ class Router extends BaseRouter
 
         return $result;
     }
+
+    /**
+     * @param Route $route
+     * @param Path|null $path
+     * @return RouteWrapper
+     */
+    public function wrapRoute(Route $route, Path $path = null): RouteWrapper
+    {
+        if(!isset($this->storage[$route])){
+            if($path === null){
+                $path = $this->currentPath;
+            }
+            return $this->storage[$route] = new RouteWrapper($path, $route, $this);
+        }
+        return $this->storage[$route];
+    }
+
+    /**
+     * @param int $error
+     * @param Path $path
+     * @return false|mixed
+     */
+    protected function raiseError(int $error, Path $path)
+    {
+        $callback = $this->getRouteCollection()->getError($error);
+
+        if ($callback !== null) {
+            return $callback($path);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $filter
+     * @param Path $path
+     * @param Route $route
+     * @return bool
+     */
+    protected function passFilter($filter, Path $path, Route $route)
+    {
+        /** @var CallbackFilter[] $filters */
+        $filters = $route->get('filters') + $this->getRouteCollection()->getFilters();
+
+        foreach ($route->get($filter, []) as $name) {
+            if (isset($filters[$name])) {
+                if ($filters[$name]->setBindMode(true)->pass($path, $route, $this) === false) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
 }

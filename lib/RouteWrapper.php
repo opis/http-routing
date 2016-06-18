@@ -92,7 +92,7 @@ class RouteWrapper
     public function getNames(): array
     {
         if($this->names === null){
-            $this->names = array();
+            $this->names = [];
             if(null !== $domain = $this->route->get('domain')){
                 $this->names += $this->domainCompiler->getNames($domain);
             }
@@ -122,7 +122,7 @@ class RouteWrapper
     public function getValues(): array
     {
         if($this->values === null){
-            $this->values = array();
+            $this->values = [];
             if(false !== $domainRegex = $this->getDomainRegex()){
                 $this->values += $this->domainCompiler->getValues($domainRegex, (string) $this->path);
             }

@@ -23,9 +23,13 @@ namespace Opis\HttpRouting;
 class HttpError
 {
     protected $errorCode;
-    protected static $errors = array();
+    protected static $errors = [];
 
-    public function __construct($error)
+    /**
+     * HttpError constructor.
+     * @param int $error
+     */
+    public function __construct(int $error)
     {
         $this->errorCode = $error;
     }

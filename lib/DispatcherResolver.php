@@ -27,14 +27,13 @@ use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Closure\SerializableClosure;
 use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\CallableExpectedException;
-use Opis\Routing\Collections\DispatcherCollection;
+use Opis\Routing\DispatcherCollection;
 use Opis\Routing\DispatcherResolver as BaseResolver;
 
 class DispatcherResolver extends BaseResolver implements Serializable
 {
-    protected $collection = array();
-    protected $constructors = array();
+    protected $collection = [];
+    protected $constructors = [];
 
     public function __construct()
     {
@@ -47,10 +46,6 @@ class DispatcherResolver extends BaseResolver implements Serializable
 
     public function register($name, $callback)
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->constructors[$name] = $callback;
         unset($this->collection[$name]);
         return $this;

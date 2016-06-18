@@ -27,6 +27,7 @@ use Opis\Routing\Router as BaseRouter;
 
 class RequestFilter implements FilterInterface
 {
+    /** @noinspection PhpDocSignatureInspection */
 
     /**
      * @param Path $path
@@ -44,7 +45,7 @@ class RequestFilter implements FilterInterface
         }
 
         //match method
-        if (!in_array($path->method(), $route->get('method', array('GET')))) {
+        if (!in_array($path->method(), $route->get('method', ['GET']))) {
             return false;
         }
 

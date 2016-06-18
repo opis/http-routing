@@ -39,8 +39,9 @@ class CallbackFilter implements FilterInterface, Serializable
      */
     public function __construct(callable $callback)
     {
-        $this->callable = $callback;
+        $this->callback = $callback;
     }
+
 
     /**
      * @param bool $value
@@ -51,6 +52,8 @@ class CallbackFilter implements FilterInterface, Serializable
         $this->doBind = (bool) $value;
         return $this;
     }
+
+    /** @noinspection PhpDocSignatureInspection */
 
     /**
      * @param Path $path
@@ -71,7 +74,7 @@ class CallbackFilter implements FilterInterface, Serializable
     {
         SerializableClosure::enterContext();
 
-        $callable = $this->callable;
+        $callable = $this->callback;
 
         if ($callable instanceof Closure) {
             $callable = SerializableClosure::from($callable);
@@ -92,6 +95,6 @@ class CallbackFilter implements FilterInterface, Serializable
             $object = $object->getClosure();
         }
         
-        $this->callable = $object;
+        $this->callback = $object;
     }
 }

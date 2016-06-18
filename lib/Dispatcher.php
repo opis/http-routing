@@ -20,7 +20,6 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Callback;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
@@ -28,6 +27,7 @@ use Opis\Routing\Dispatcher as BaseDispatcher;
 
 class Dispatcher extends BaseDispatcher
 {
+    /** @noinspection PhpDocSignatureInspection */
 
     /**
      * @param Path $path

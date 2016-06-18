@@ -27,6 +27,7 @@ use Opis\Routing\Router as BaseRouter;
 
 class UserFilter implements FilterInterface
 {
+    /** @noinspection PhpDocSignatureInspection */
 
     /**
      * @param Path $path
@@ -39,7 +40,7 @@ class UserFilter implements FilterInterface
         /** @var CallbackFilter[] $filters */
         $filters = $route->get('filters');
 
-        foreach ($route->get('before', array()) as $name) {
+        foreach ($route->get('before', []) as $name) {
             if (isset($filters[$name])) {
                 if ($filters[$name]->setBindMode(false)->pass($path, $route, $router) === false) {
                     return false;
