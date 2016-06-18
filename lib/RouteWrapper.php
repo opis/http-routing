@@ -183,7 +183,7 @@ class RouteWrapper
                 $this->extracted += $this->router->getSpecialValues();
             }
         }
-        $this->extracted;
+        return $this->extracted;
     }
 
     /**
