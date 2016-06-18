@@ -23,6 +23,7 @@ namespace Opis\HttpRouting;
 use Opis\Closure\SerializableClosure;
 use Opis\Routing\ClosureWrapperTrait;
 use Opis\Routing\Compiler;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\RouteCollection as BaseCollection;
 
 /**

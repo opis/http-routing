@@ -28,6 +28,61 @@ use Opis\Routing\Route as BaseRoute;
  */
 class Route extends BaseRoute
 {
+    /** @var array  */
+    protected $cache = [];
+
+    /**
+     * @return array
+     */
+    public function getWildcards(): array
+    {
+        if(!isset($this->cache[__FUNCTION__])){
+            /** @var RouteCollection $collection */
+            $collection = $this->collection;
+            $this->cache[__FUNCTION__] = parent::getWildcards() + $collection->getWildcards();
+        }
+        return $this->cache[__FUNCTION__];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDefaults(): array
+    {
+        if(!isset($this->cache[__FUNCTION__])){
+            /** @var RouteCollection $collection */
+            $collection = $this->collection;
+            $this->cache[__FUNCTION__] = parent::getDefaults() + $collection->getDefaults();
+        }
+        return $this->cache[__FUNCTION__];
+    }
+
+    /**
+     * @return callable[]
+     */
+    public function getBindings(): array
+    {
+        if(!isset($this->cache[__FUNCTION__])){
+            /** @var RouteCollection $collection */
+            $collection = $this->collection;
+            $this->cache[__FUNCTION__] = parent::getBindings() + $collection->getBindings();
+        }
+        return $this->cache[__FUNCTION__];
+    }
+
+    /**
+     * @return CallbackFilter[]
+     */
+    public function getFilters(): array
+    {
+        if(!isset($this->cache[__FUNCTION__])){
+            /** @var RouteCollection $collection */
+            $collection = $this->collection;
+            $this->cache[__FUNCTION__] = $this->get('filters', []) + $collection->getFilters();
+        }
+        return $this->cache[__FUNCTION__];
+    }
+
     /**
      * @param string $value
      * @return Route
