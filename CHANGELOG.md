@@ -4,13 +4,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 5.0.x-dev
 ### Added
-- Nothig
+- Support for PHP 7.0.x
 
 ### Removed
 - Support for PHP 5.x
 
 ### Changed
-- Nothing
+- Updated `opis/routing` dependency to version `5.0.x-dev`
+- Updated `phpunit/phpunit` dependency(dev mode) to version `5.4.*`
 
 ### Fixed
 - Nothing
