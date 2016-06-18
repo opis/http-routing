@@ -25,6 +25,7 @@ use Opis\Routing\Path as BasePath;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
 
+/** @noinspection PhpMissingParentCallCommonInspection */
 /**
  * Class Router
  * @package Opis\HttpRouting
@@ -34,8 +35,16 @@ use Opis\Routing\FilterCollection;
  */
 class Router extends BaseRouter
 {
+    /** @var SplObjectStorage */
     protected $storage;
 
+    /**
+     * Router constructor.
+     * @param RouteCollection $routes
+     * @param DispatcherResolver|null $resolver
+     * @param FilterCollection|null $filters
+     * @param array $specials
+     */
     public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = [])
     {
         if ($resolver === null) {
@@ -53,6 +62,7 @@ class Router extends BaseRouter
     }
 
     /** @noinspection PhpDocSignatureInspection */
+    /** @noinspection PhpMissingParentCallCommonInspection */
     /**
      * @param Path $path
      * @return mixed|false

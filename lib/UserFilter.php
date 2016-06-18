@@ -25,6 +25,10 @@ use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 
+/**
+ * Class UserFilter
+ * @package Opis\HttpRouting
+ */
 class UserFilter implements FilterInterface
 {
     /** @noinspection PhpDocSignatureInspection */

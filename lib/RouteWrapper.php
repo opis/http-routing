@@ -23,25 +23,63 @@ namespace Opis\HttpRouting;
 
 use Opis\Routing\Binding;
 
+/**
+ * Class RouteWrapper
+ * @package Opis\HttpRouting
+ */
 class RouteWrapper
 {
+    /** @var Path  */
     protected $path;
+
+    /** @var Route  */
     protected $route;
+
+    /** @var Router  */
     protected $router;
+
+    /** @var RouteCollection  */
     protected $collection;
+
+    /** @var \Opis\Routing\Compiler  */
     protected $compiler;
+
+    /** @var \Opis\Routing\Compiler  */
     protected $domainCompiler;
 
+    /** @var  array|null */
     protected $defaults;
+
+    /** @var  array|null */
     protected $wildcards;
+
+    /** @var  array|callable[]|null */
     protected $bindings;
+
+    /** @var  array|null */
     protected $names;
+
+    /** @var  array|null */
     protected $values;
+
+    /** @var bool|string  */
     protected $regex;
+
+    /** @var  string|null */
     protected $domainRegex;
+
+    /** @var  array */
     protected $extracted;
+
+    /** @var  Binding[]|null */
     protected $bound;
 
+    /**
+     * RouteWrapper constructor.
+     * @param Path $path
+     * @param Route $route
+     * @param Router $router
+     */
     public function __construct(Path $path, Route $route, Router $router)
     {
         $this->path = $path;

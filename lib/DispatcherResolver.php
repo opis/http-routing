@@ -54,7 +54,9 @@ class DispatcherResolver extends BaseResolver
         $this->collection->register($name, $dispatcher);
         return $this;
     }
-    
+
+    /** @noinspection PhpDocSignatureInspection */
+    /** @noinspection PhpMissingParentCallCommonInspection */
     /**
      * @param Path $path
      * @param Route $route

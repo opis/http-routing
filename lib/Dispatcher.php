@@ -25,9 +25,14 @@ use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\Dispatcher as BaseDispatcher;
 
+/**
+ * Class Dispatcher
+ * @package Opis\HttpRouting
+ */
 class Dispatcher extends BaseDispatcher
 {
     /** @noinspection PhpDocSignatureInspection */
+    /** @noinspection PhpMissingParentCallCommonInspection */
 
     /**
      * @param Path $path

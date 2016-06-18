@@ -22,6 +22,10 @@ namespace Opis\HttpRouting;
 
 use Opis\Routing\Route as BaseRoute;
 
+/**
+ * Class Route
+ * @package Opis\HttpRouting
+ */
 class Route extends BaseRoute
 {
     /**

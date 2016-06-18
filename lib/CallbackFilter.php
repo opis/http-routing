@@ -28,6 +28,10 @@ use Opis\Routing\Route as BaseRoute;
 use Opis\Closure\SerializableClosure;
 use Opis\Routing\Router as BaseRouter;
 
+/**
+ * Class CallbackFilter
+ * @package Opis\HttpRouting
+ */
 class CallbackFilter implements FilterInterface, Serializable
 {
     protected $callback;
@@ -70,6 +74,9 @@ class CallbackFilter implements FilterInterface, Serializable
         return $callback(...$arguments);
     }
 
+    /**
+     * @return string
+     */
     public function serialize()
     {
         SerializableClosure::enterContext();
@@ -87,6 +94,9 @@ class CallbackFilter implements FilterInterface, Serializable
         return $object;
     }
 
+    /**
+     * @param string $data
+     */
     public function unserialize($data)
     {
         $object = unserialize($data);
