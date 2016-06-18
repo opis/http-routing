@@ -42,7 +42,7 @@ class UserFilter implements FilterInterface
     public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
         /** @var CallbackFilter[] $filters */
-        $filters = $route->get('filters');
+        $filters = $route->get('filters', []) + $router->getRouteCollection()->getFilters();
 
         foreach ($route->get('before', []) as $name) {
             if (isset($filters[$name])) {

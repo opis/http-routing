@@ -70,7 +70,7 @@ class Router extends BaseRouter
     public function route(BasePath $path)
     {
         $route = $this->findRoute($path);
-
+        
         if ($route === false) {
             return $this->raiseError(404, $path);
         }
@@ -134,7 +134,7 @@ class Router extends BaseRouter
     protected function passFilter($filter, Path $path, Route $route)
     {
         /** @var CallbackFilter[] $filters */
-        $filters = $route->get('filters') + $this->getRouteCollection()->getFilters();
+        $filters = $route->get('filters', []) + $this->getRouteCollection()->getFilters();
 
         foreach ($route->get($filter, []) as $name) {
             if (isset($filters[$name])) {
