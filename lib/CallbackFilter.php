@@ -22,7 +22,6 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
-use Opis\Routing\Callback;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
@@ -32,47 +31,40 @@ use Opis\Routing\Router as BaseRouter;
 class CallbackFilter implements FilterInterface, Serializable
 {
     protected $callback;
-    protected $callable;
     protected $doBind;
 
-    public function __construct($callback)
+    /**
+     * CallbackFilter constructor.
+     * @param callable $callback
+     */
+    public function __construct(callable $callback)
     {
-        if (!is_callable($callback)) {
-            throw new CallableExpectedException();
-        }
-
         $this->callable = $callback;
     }
 
-    protected function getCallback()
-    {
-        if ($this->callback === null) {
-            $this->callback = new Callback($this->callable);
-        }
-
-        return $this->callback;
-    }
-
-    public function setBindMode($value)
+    /**
+     * @param bool $value
+     * @return CallbackFilter
+     */
+    public function setBindMode(bool $value): self
     {
         $this->doBind = (bool) $value;
         return $this;
     }
 
-    public function pass(BaseRouter $router, BasePath $path, BaseRoute $route)
+    /**
+     * @param Path $path
+     * @param Route $route
+     * @param Router $router
+     * @return mixed
+     */
+    public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
-        $specials = $router->getSpecialValues();
-        
-        if ($this->doBind) {
-            $values = $route->compile()->bind($path, $specials);
-        } else {
-            $values = $route->compile()->extract($path);
-        }
-        
-        $callback = $this->getCallback();
-        $arguments = $callback->getArguments($values, $specials, $this->doBind);
-
-        return $callback->invoke($arguments);
+        $wrapper = $router->wrapRoute($route);
+        $values = $this->doBind ? $wrapper->extract() : $wrapper->bind();
+        $callback = $this->callback;
+        $arguments = $router->buildArguments($callback, $values, $this->doBind);
+        return $callback(...$arguments);
     }
 
     public function serialize()
@@ -85,10 +77,7 @@ class CallbackFilter implements FilterInterface, Serializable
             $callable = SerializableClosure::from($callable);
         }
 
-        $object = serialize(array(
-            'params' => null,
-            'callable' => $callable,
-        ));
+        $object = serialize($callable);
 
         SerializableClosure::exitContext();
 
@@ -97,12 +86,12 @@ class CallbackFilter implements FilterInterface, Serializable
 
     public function unserialize($data)
     {
-        $object = SerializableClosure::unserializeData($data);
+        $object = unserialize($data);
 
-        if ($object['callable'] instanceof SerializableClosure) {
-            $object['callable'] = $object['callable']->getClosure();
+        if ($object instanceof SerializableClosure) {
+            $object = $object->getClosure();
         }
         
-        $this->callable = $object['callable'];
+        $this->callable = $object;
     }
 }
