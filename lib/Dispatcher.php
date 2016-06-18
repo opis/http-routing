@@ -29,24 +29,18 @@ use Opis\Routing\Dispatcher as BaseDispatcher;
 class Dispatcher extends BaseDispatcher
 {
 
-    public function dispatch(BaseRouter $router, BasePath $path, BaseRoute $route)
+    /**
+     * @param Path $path
+     * @param Route $route
+     * @param Router $router
+     * @return mixed
+     */
+    public function dispatch(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
-        $values = array();
-        $domain = $route->compileDomain();
-        $specials = $router->getSpecialValues();
-
-        if ($domain !== null) {
-            $domainPath = $path->domain();
-            $bindings = $domain->bind($domainPath, $specials);
-            $names = $domain->names($domainPath);
-            $values = array_intersect_key($bindings, array_flip($names));
-        }
-
-        $values += $route->compile()->bind($path, $specials);
-
-        $callback = new Callback($route->getAction());
-        $arguments = $callback->getArguments($values, $specials);
-
-        return $callback->invoke($arguments);
+        $wrapper = $router->wrapRoute($route);
+        $values = $wrapper->bind();
+        $callback = $route->getAction();
+        $arguments = $router->buildArguments($callback, $values);
+        return $callback(...$arguments);
     }
 }
