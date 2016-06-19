@@ -25,10 +25,13 @@ use Opis\HttpRouting\RouteCollection;
 
 class RoutingTest extends PHPUnit_Framework_TestCase
 {
-    protected $router, $collection;
+    /** @var  Router */
+    protected $router;
+    /** @var  RouteCollection */
+    protected $collection;
 
     public function setUp()
-    {
+    {        
         $this->collection = new RouteCollection();
         $this->router = new Router($this->collection, null, null, array('x' => 'X'));
         $this->collection->notFound(function() {
@@ -41,8 +44,9 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     protected function route($pattern, $action, $method = 'GET')
     {
-        $route = Route::create($pattern, $action, $method);
-        $this->collection[] = $route;
+        $route = new Route($pattern, $action);
+        $route->method($method);
+        $this->collection->addRoute($route);
         return $route;
     }
 
@@ -53,6 +57,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testBasicRouting()
     {
+
         $this->route('/', function() {
             return 'OK';
         });
