@@ -8,8 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 - Support for PHP 5.x
+- `Opis\HttpRouting\Dispatcher` class
 
 ### Changed
+- All classes were modified in order to support transition to PHP 7.0.x
 - Updated `opis/routing` dependency to version `5.0.x-dev`
 - Updated `phpunit/phpunit` dependency(dev mode) to version `5.4.*`
 
