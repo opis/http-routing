@@ -26,7 +26,6 @@ use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\DispatcherCollection;
 use Opis\Routing\DispatcherResolver as BaseResolver;
-use Opis\Routing\Dispatcher as BaseDispatcher;
 
 /**
  * Class DispatcherResolver
@@ -62,9 +61,9 @@ class DispatcherResolver extends BaseResolver
      * @param Path $path
      * @param Route $route
      * @param Router $router
-     * @return BaseDispatcher
+     * @return Dispatcher
      */
-    public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): BaseDispatcher
+    public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): Dispatcher
     {
         $dispatcher = $route->get('dispatcher', 'default');
         return $this->collection->get($dispatcher);
