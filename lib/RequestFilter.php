@@ -53,10 +53,9 @@ class RequestFilter implements FilterInterface
             return false;
         }
 
-        $wrapper = $router->wrapRoute($route);
-
-        //match domain
-        if(false !== $regex = $wrapper->getDomainRegex()){
+        // match domain
+        if(null !== $domain = $route->get('domain')){
+            $regex = $router->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getWildcards());
             return preg_match($regex, (string) $path->domain());
         }
         

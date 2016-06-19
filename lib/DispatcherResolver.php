@@ -20,6 +20,7 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\Dispatcher;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;

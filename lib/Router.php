@@ -22,6 +22,7 @@ namespace Opis\HttpRouting;
 
 use SplObjectStorage;
 use Opis\Routing\Path as BasePath;
+use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
 
@@ -35,9 +36,6 @@ use Opis\Routing\FilterCollection;
  */
 class Router extends BaseRouter
 {
-    /** @var SplObjectStorage */
-    protected $storage;
-
     /**
      * Router constructor.
      * @param RouteCollection $routes
@@ -57,7 +55,6 @@ class Router extends BaseRouter
                     ->addFilter(new UserFilter());
         }
 
-        $this->storage = new SplObjectStorage();
         parent::__construct($routes, $resolver, $filters, $specials);
     }
 
@@ -94,19 +91,22 @@ class Router extends BaseRouter
     }
 
     /**
+     * @param Path $path
      * @param Route $route
-     * @param Path|null $path
-     * @return RouteWrapper
+     * @return array
      */
-    public function wrapRoute(Route $route, Path $path = null): RouteWrapper
+    public function extract(BasePath $path, BaseRoute $route): array
     {
-        if(!isset($this->storage[$route])){
-            if($path === null){
-                $path = $this->currentPath;
-            }
-            return $this->storage[$route] = new RouteWrapper($path, $route, $this);
+        $names = [];
+        if(null !== $domain = $route->get('domain')){
+            $names += $this->getRouteCollection()->getDomainCompiler()->getNames($domain);
         }
-        return $this->storage[$route];
+
+        $names += $this->getCompiler()->getNames($route->getPattern());
+        $regex = $this->getRouteCollection()->getRegex($route->getID());
+        $values = $this->getCompiler()->getValues($regex, (string) $path);
+
+        return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
     }
 
     /**

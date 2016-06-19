@@ -67,10 +67,12 @@ class CallbackFilter implements FilterInterface, Serializable
      */
     public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
-        $wrapper = $router->wrapRoute($route);
-        $values = $this->doBind ? $wrapper->extract() : $wrapper->bind();
+        $values = $router->extract($path, $route);
+        if($this->doBind){
+            $values = $router->bind($values, $route->getBindings());
+        }
+        $arguments = $router->buildArguments($this->callback, $values, $this->doBind);
         $callback = $this->callback;
-        $arguments = $router->buildArguments($callback, $values, $this->doBind);
         return $callback(...$arguments);
     }
 

@@ -26,8 +26,8 @@ namespace Opis\HttpRouting;
  */
 class HttpError
 {
+    /** @var int  */
     protected $errorCode;
-    protected static $errors = [];
 
     /**
      * HttpError constructor.
@@ -47,24 +47,11 @@ class HttpError
     }
 
     /**
-     * @param int $code
-     * @return HttpError
-     */
-    protected static function getError(int $code): self
-    {
-        if (!isset(static::$errors[$code])) {
-            static::$errors[$code] = new static($code);
-        }
-
-        return static::$errors[$code];
-    }
-
-    /**
      * @return HttpError
      */
     public static function pageNotFound(): self
     {
-        return static::getError(404);
+        return new static(404);
     }
 
     /**
@@ -72,6 +59,6 @@ class HttpError
      */
     public static function accessDenied(): self
     {
-        return static::getError(403);
+        return new static(403);
     }
 }

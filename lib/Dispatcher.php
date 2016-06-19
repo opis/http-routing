@@ -29,7 +29,7 @@ use Opis\Routing\Dispatcher as BaseDispatcher;
  * Class Dispatcher
  * @package Opis\HttpRouting
  */
-class Dispatcher extends BaseDispatcher
+class Dispatcher2 extends BaseDispatcher
 {
     /** @noinspection PhpDocSignatureInspection */
     /** @noinspection PhpMissingParentCallCommonInspection */
@@ -42,10 +42,10 @@ class Dispatcher extends BaseDispatcher
      */
     public function dispatch(BasePath $path, BaseRoute $route, BaseRouter $router)
     {
-        $wrapper = $router->wrapRoute($route);
-        $values = $wrapper->bind();
+        $values = $router->extract($path, $route);
+        $bindings = $router->bind($values, $route->getBindings());
         $callback = $route->getAction();
-        $arguments = $router->buildArguments($callback, $values);
+        $arguments = $router->buildArguments($callback, $bindings);
         return $callback(...$arguments);
     }
 }
