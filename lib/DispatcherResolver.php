@@ -24,7 +24,6 @@ use Opis\Routing\Dispatcher;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\DispatcherCollection;
 use Opis\Routing\DispatcherResolver as BaseResolver;
 
 /**
@@ -33,17 +32,6 @@ use Opis\Routing\DispatcherResolver as BaseResolver;
  */
 class DispatcherResolver extends BaseResolver
 {
-    /** @var DispatcherCollection */
-    protected $collection;
-
-    /**
-     * DispatcherResolver constructor.
-     */
-    public function __construct()
-    {
-        $this->collection = new DispatcherCollection(new Dispatcher());
-    }
-
     /**
      * @param string $name
      * @param Dispatcher $dispatcher
