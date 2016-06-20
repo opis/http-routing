@@ -32,17 +32,6 @@ use Opis\Routing\DispatcherResolver as BaseResolver;
  */
 class DispatcherResolver extends BaseResolver
 {
-    /**
-     * @param string $name
-     * @param Dispatcher $dispatcher
-     * @return DispatcherResolver
-     */
-    public function register(string $name, Dispatcher $dispatcher): self
-    {
-        $this->collection->register($name, $dispatcher);
-        return $this;
-    }
-
     /** @noinspection PhpDocSignatureInspection */
     /** @noinspection PhpMissingParentCallCommonInspection */
     /**
