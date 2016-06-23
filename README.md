@@ -17,7 +17,7 @@ handlers for `404 Not found` and `403 Forbidden` HTTP errors and much more.
 
 ### Requirements
 
-* PHP 5.3.* or higher
+* PHP 7.0.* or higher
 * [Opis Routing](http://www.opis.io/routing) 5.0.x-dev
 
 ### Installation
