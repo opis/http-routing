@@ -43,6 +43,7 @@ class DispatcherResolver extends BaseResolver
     public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): Dispatcher
     {
         $dispatcher = $route->get('dispatcher', 'default');
-        return $this->collection->get($dispatcher);
+        $factory = $this->collection->get($dispatcher);
+        return $factory();
     }
 }
