@@ -20,8 +20,8 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\Context as BaseContext;
 use Opis\Routing\DispatcherInterface;
-use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\DispatcherResolver as BaseResolver;
@@ -32,15 +32,13 @@ use Opis\Routing\DispatcherResolver as BaseResolver;
  */
 class DispatcherResolver extends BaseResolver
 {
-    /** @noinspection PhpDocSignatureInspection */
-    /** @noinspection PhpMissingParentCallCommonInspection */
     /**
-     * @param Request $path
-     * @param Route $route
-     * @param Router $router
+     * @param BaseRouter|Router $router
+     * @param BaseContext|Request $context
+     * @param BaseRoute|Route $route
      * @return DispatcherInterface
      */
-    public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): DispatcherInterface
+    public function resolve(BaseRouter $router, BaseContext $context, BaseRoute $route): DispatcherInterface
     {
         $dispatcher = $route->get('dispatcher', 'default');
         $factory = $this->collection->get($dispatcher);
