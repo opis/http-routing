@@ -20,7 +20,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Path;
+use Opis\Routing\Context as BaseContext;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
@@ -31,7 +31,7 @@ use Opis\Routing\FilterCollection;
  * @package Opis\HttpRouting
  *
  * @method RouteCollection getRouteCollection()
- * @method Route findRoute(Request $path)
+ * @method Route findRoute(Request $context)
  * @property Request $currentPath
  */
 class Router extends BaseRouter
@@ -59,59 +59,43 @@ class Router extends BaseRouter
     }
 
     /**
-     * @return array
-     */
-    public function getSpecialValues()
-    {
-        /** @var Request $request */
-        $request = $this->currentPath;
-
-        return $this->specials + [
-            'path' => $request->path(),
-            'request' => $request->request(),
-            'route' => $this->currentRoute
-        ];
-    }
-
-    /**
-     * @param Path $path
+     * @param BaseContext|Request $context
      * @return false|mixed
      */
-    public function route(Path $path)
+    public function route(BaseContext $context)
     {
-        /** @var Request $path */
-        $route = $this->findRoute($path);
+        $route = $this->findRoute($context);
 
         if ($route === false) {
-            return $this->raiseError(404, $path);
+            return $this->raiseError(404, $context);
         }
 
-        if (!$this->passFilter('after', $path, $route)) {
-            return $this->raiseError(404, $path);
+        if (!$this->passFilter('after', $context, $route)) {
+            return $this->raiseError(404, $context);
         }
 
-        if (!$this->passFilter('access', $path, $route)) {
-            return $this->raiseError(403, $path);
+        if (!$this->passFilter('access', $context, $route)) {
+            return $this->raiseError(403, $context);
         }
 
-        $dispatcher = $this->resolver->resolve($path, $route, $this);
-        $result = $dispatcher->dispatch($path, $route, $this);
+        $dispatcher = $this->resolver->resolve($this, $context, $route);
+        $result = $dispatcher->dispatch($this, $context, $route);
 
         if ($result instanceof HttpError) {
-            return $this->raiseError($result->errorCode(), $path);
+            return $this->raiseError($result->errorCode(), $context);
         }
 
         return $result;
     }
 
     /**
-     * @param Path $path
+     * @param Path $context
      * @param BaseRoute $route
      * @return array
      */
-    public function extract(Path $path, BaseRoute $route): array
+    public function extract(BaseContext $context, BaseRoute $route): array
     {
-        /** @var Request $path */
+        /** @var Request $context */
         /** @var Route $route */
 
         $names = [];
@@ -120,22 +104,22 @@ class Router extends BaseRouter
         }
         $names += $this->getCompiler()->getNames($route->getPattern());
         $regex = $this->getRouteCollection()->getRegex($route->getID());
-        $values = $this->getCompiler()->getValues($regex, (string) $path);
+        $values = $this->getCompiler()->getValues($regex, (string) $context);
 
         return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
     }
 
     /**
      * @param int $error
-     * @param Request $path
+     * @param Request $context
      * @return false|mixed
      */
-    protected function raiseError(int $error, Request $path)
+    protected function raiseError(int $error, Request $context)
     {
         $callback = $this->getRouteCollection()->getError($error);
 
         if ($callback !== null) {
-            return $callback($path);
+            return $callback($context);
         }
 
         return false;
@@ -143,18 +127,18 @@ class Router extends BaseRouter
 
     /**
      * @param $filter
-     * @param Request $path
+     * @param Request $context
      * @param Route $route
      * @return bool
      */
-    protected function passFilter($filter, Request $path, Route $route)
+    protected function passFilter($filter, Request $context, Route $route)
     {
         /** @var CallbackFilter[] $filters */
         $filters = $route->get('filters', []) + $this->getRouteCollection()->getFilters();
 
         foreach ($route->get($filter, []) as $name) {
             if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(true)->pass($path, $route, $this) === false) {
+                if ($filters[$name]->setBindMode(true)->pass($this, $context, $route) === false) {
                     return false;
                 }
             }
