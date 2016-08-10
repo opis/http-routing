@@ -21,7 +21,6 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\Context as BaseContext;
-use Opis\Routing\Context;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
