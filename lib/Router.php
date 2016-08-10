@@ -20,7 +20,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Path as BasePath;
+use Opis\Routing\Path;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
@@ -32,6 +32,7 @@ use Opis\Routing\FilterCollection;
  *
  * @method RouteCollection getRouteCollection()
  * @method Route findRoute(Request $path)
+ * @property Request $currentPath
  */
 class Router extends BaseRouter
 {
@@ -62,9 +63,12 @@ class Router extends BaseRouter
      */
     public function getSpecialValues()
     {
+        /** @var Request $request */
+        $request = $this->currentPath;
+
         return $this->specials + [
-            'path' => $this->currentPath->path(),
-            'request' => $this->currentPath->request(),
+            'path' => $request->path(),
+            'request' => $request->request(),
             'route' => $this->currentRoute
         ];
     }
@@ -75,7 +79,7 @@ class Router extends BaseRouter
      * @param Request $path
      * @return mixed|false
      */
-    public function route(BasePath $path)
+    public function route(Path $path)
     {
         $route = $this->findRoute($path);
         
@@ -106,7 +110,7 @@ class Router extends BaseRouter
      * @param Route $route
      * @return array
      */
-    public function extract(BasePath $path, BaseRoute $route): array
+    public function extract(Path $path, BaseRoute $route): array
     {
         $names = [];
         if(null !== $domain = $route->get('domain')){
