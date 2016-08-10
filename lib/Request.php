@@ -26,7 +26,7 @@ use Opis\Routing\Path as BasePath;
  * Class Path
  * @package Opis\HttpRouting
  */
-class Path extends BasePath
+class Request extends BasePath
 {
     /** @var  string */
     protected $path;

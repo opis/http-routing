@@ -34,7 +34,7 @@ class UserFilter implements FilterInterface
     /** @noinspection PhpDocSignatureInspection */
 
     /**
-     * @param Path $path
+     * @param Request $path
      * @param Route $route
      * @param Router $router
      * @return bool

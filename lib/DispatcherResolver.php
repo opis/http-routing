@@ -35,7 +35,7 @@ class DispatcherResolver extends BaseResolver
     /** @noinspection PhpDocSignatureInspection */
     /** @noinspection PhpMissingParentCallCommonInspection */
     /**
-     * @param Path $path
+     * @param Request $path
      * @param Route $route
      * @param Router $router
      * @return DispatcherInterface

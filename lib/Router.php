@@ -20,7 +20,6 @@
 
 namespace Opis\HttpRouting;
 
-use SplObjectStorage;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
@@ -32,7 +31,7 @@ use Opis\Routing\FilterCollection;
  * @package Opis\HttpRouting
  *
  * @method RouteCollection getRouteCollection()
- * @method Route findRoute(Path $path)
+ * @method Route findRoute(Request $path)
  */
 class Router extends BaseRouter
 {
@@ -61,7 +60,7 @@ class Router extends BaseRouter
     /** @noinspection PhpDocSignatureInspection */
     /** @noinspection PhpMissingParentCallCommonInspection */
     /**
-     * @param Path $path
+     * @param Request $path
      * @return mixed|false
      */
     public function route(BasePath $path)
@@ -91,7 +90,7 @@ class Router extends BaseRouter
     }
 
     /**
-     * @param Path $path
+     * @param Request $path
      * @param Route $route
      * @return array
      */
@@ -111,10 +110,10 @@ class Router extends BaseRouter
 
     /**
      * @param int $error
-     * @param Path $path
+     * @param Request $path
      * @return false|mixed
      */
-    protected function raiseError(int $error, Path $path)
+    protected function raiseError(int $error, Request $path)
     {
         $callback = $this->getRouteCollection()->getError($error);
 
@@ -127,11 +126,11 @@ class Router extends BaseRouter
 
     /**
      * @param $filter
-     * @param Path $path
+     * @param Request $path
      * @param Route $route
      * @return bool
      */
-    protected function passFilter($filter, Path $path, Route $route)
+    protected function passFilter($filter, Request $path, Route $route)
     {
         /** @var CallbackFilter[] $filters */
         $filters = $route->get('filters', []) + $this->getRouteCollection()->getFilters();

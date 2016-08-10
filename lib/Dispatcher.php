@@ -41,5 +41,5 @@ abstract class Dispatcher implements DispatcherInterface
         return $this->handle($path, $route, $router);
     }
 
-    abstract protected function handle(Path $path, Route $route, Router $router);
+    abstract protected function handle(Request $request, Route $route, Router $router);
 }
