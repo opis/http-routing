@@ -20,22 +20,28 @@
 
 namespace Opis\HttpRouting;
 
-class UserFilter extends AbstractFilter
+use Opis\Routing\Context as BaseContext;
+use Opis\Routing\Context;
+use Opis\Routing\FilterInterface;
+use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
+
+class UserFilter implements FilterInterface
 {
     /**
-     * @param Request $request
-     * @param Route $route
-     * @param Router $router
+     * @param BaseRouter|Router $router
+     * @param BaseContext|Context $context
+     * @param BaseRoute|Route $route
      * @return bool
      */
-    protected function passFilter(Request $request, Route $route, Router $router): bool
+    public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
     {
         /** @var CallbackFilter[] $filters */
         $filters = $route->get('filters', []) + $router->getRouteCollection()->getFilters();
 
         foreach ($route->get('before', []) as $name) {
             if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(false)->pass($request, $route, $router) === false) {
+                if ($filters[$name]->setBindMode(false)->pass($router, $context, $route) === false) {
                     return false;
                 }
             }
