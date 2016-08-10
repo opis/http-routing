@@ -55,7 +55,7 @@ class Context extends BaseContext
                                 string $domain = 'localhost',
                                 string $method = 'GET',
                                 bool $secure = false,
-                                string $request = null)
+                                $request = null)
     {
         $this->method = $method;
         $this->domain = $domain;
