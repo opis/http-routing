@@ -20,7 +20,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Dispatcher;
+use Opis\Routing\DispatcherInterface;
 use Opis\Routing\Path as BasePath;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
@@ -38,9 +38,9 @@ class DispatcherResolver extends BaseResolver
      * @param Path $path
      * @param Route $route
      * @param Router $router
-     * @return Dispatcher
+     * @return DispatcherInterface
      */
-    public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): Dispatcher
+    public function resolve(BasePath $path, BaseRoute $route, BaseRouter $router): DispatcherInterface
     {
         $dispatcher = $route->get('dispatcher', 'default');
         $factory = $this->collection->get($dispatcher);
