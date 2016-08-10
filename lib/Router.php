@@ -73,16 +73,15 @@ class Router extends BaseRouter
         ];
     }
 
-    /** @noinspection PhpDocSignatureInspection */
-    /** @noinspection PhpMissingParentCallCommonInspection */
     /**
-     * @param Request $path
-     * @return mixed|false
+     * @param Path $path
+     * @return false|mixed
      */
     public function route(Path $path)
     {
+        /** @var Request $path */
         $route = $this->findRoute($path);
-        
+
         if ($route === false) {
             return $this->raiseError(404, $path);
         }
@@ -106,17 +105,19 @@ class Router extends BaseRouter
     }
 
     /**
-     * @param Request $path
-     * @param Route $route
+     * @param Path $path
+     * @param BaseRoute $route
      * @return array
      */
     public function extract(Path $path, BaseRoute $route): array
     {
+        /** @var Request $path */
+        /** @var Route $route */
+
         $names = [];
         if(null !== $domain = $route->get('domain')){
             $names += $this->getRouteCollection()->getDomainCompiler()->getNames($domain);
         }
-
         $names += $this->getCompiler()->getNames($route->getPattern());
         $regex = $this->getRouteCollection()->getRegex($route->getID());
         $values = $this->getCompiler()->getValues($regex, (string) $path);
