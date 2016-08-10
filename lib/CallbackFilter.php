@@ -25,7 +25,6 @@ use Opis\Routing\Context as BaseContext;
 use Opis\Routing\FilterInterface;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\Router;
 use Serializable;
 use Opis\Closure\SerializableClosure;
 
