@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============================================================================ */
-use Opis\HttpRouting\Path;
+use Opis\HttpRouting\Request;
 use Opis\HttpRouting\Route;
 use Opis\HttpRouting\Router;
 use Opis\HttpRouting\HttpError;
@@ -52,7 +52,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     protected function exec($path, $domain = 'localhost', $method = 'GET', $secure = false)
     {
-        return $this->router->route(new Path($path, $domain, $method, $secure));
+        return $this->router->route(new Request($path, $domain, $method, $secure));
     }
 
     public function testBasicRouting()
