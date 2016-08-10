@@ -20,18 +20,18 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Path;
+use Opis\Routing\Context as BaseContext;
 
 /**
  * Class Path
  * @package Opis\HttpRouting
  */
-class Request extends Path
+class Request extends BaseContext
 {
     /** @var  string */
     protected $path;
 
-    /** @var Path */
+    /** @var string */
     protected $domain;
 
     /** @var string  */
@@ -63,14 +63,6 @@ class Request extends Path
         $this->secure = $secure;
         $this->request = $request;
         parent::__construct($path);
-    }
-
-    /**
-     * @return string
-     */
-    public function path(): string
-    {
-        return $this->path;
     }
 
     /**
