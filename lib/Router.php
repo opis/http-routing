@@ -57,6 +57,18 @@ class Router extends BaseRouter
         parent::__construct($routes, $resolver, $filters, $specials);
     }
 
+    /**
+     * @return array
+     */
+    public function getSpecialValues()
+    {
+        return $this->specials + [
+            'path' => $this->currentPath->path(),
+            'request' => $this->currentPath->request(),
+            'route' => $this->currentRoute
+        ];
+    }
+
     /** @noinspection PhpDocSignatureInspection */
     /** @noinspection PhpMissingParentCallCommonInspection */
     /**
