@@ -68,6 +68,14 @@ class Context extends BaseContext
     /**
      * @return string
      */
+    public function path(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return string
+     */
     public function domain(): string
     {
         return $this->domain;
