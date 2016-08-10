@@ -20,16 +20,18 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\Path;
+
 /**
  * Class Path
  * @package Opis\HttpRouting
  */
-class Request extends BasePath
+class Request extends Path
 {
     /** @var  string */
     protected $path;
 
-    /** @var BasePath */
+    /** @var Path */
     protected $domain;
 
     /** @var string  */
