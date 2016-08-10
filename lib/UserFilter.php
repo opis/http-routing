@@ -43,6 +43,4 @@ class UserFilter extends AbstractFilter
 
         return true;
     }
-
-
 }
