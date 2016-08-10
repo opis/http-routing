@@ -26,7 +26,7 @@ use Opis\Routing\Context as BaseContext;
  * Class Path
  * @package Opis\HttpRouting
  */
-class Request extends BaseContext
+class Context extends BaseContext
 {
     /** @var  string */
     protected $path;

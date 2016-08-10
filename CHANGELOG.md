@@ -14,7 +14,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - All classes were modified in order to support transition to PHP 7.0.x
 - Updated `opis/routing` dependency to version `5.0.x-dev`
 - Updated `phpunit/phpunit` dependency(dev mode) to version `5.4.*`
-- `Opis\HttpRouting\Path` class was renamed to `Opis\HttpRouting\Request` 
+- `Opis\HttpRouting\Path` class was renamed to `Opis\HttpRouting\Context` 
 
 ### Fixed
 - Nothing

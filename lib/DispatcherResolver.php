@@ -34,7 +34,7 @@ class DispatcherResolver extends BaseResolver
 {
     /**
      * @param BaseRouter|Router $router
-     * @param BaseContext|Request $context
+     * @param BaseContext|Context $context
      * @param BaseRoute|Route $route
      * @return DispatcherInterface
      */

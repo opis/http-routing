@@ -29,7 +29,7 @@ class RequestFilter implements FilterInterface
 {
     /**
      * @param BaseRouter|BaseRouter $router
-     * @param BaseContext|Request $context
+     * @param BaseContext|Context $context
      * @param BaseRoute|Route $route
      * @return bool
      */

@@ -55,7 +55,7 @@ class CallbackFilter implements FilterInterface, Serializable
 
     /**
      * @param BaseRouter|Router $router
-     * @param BaseContext|Request $context
+     * @param BaseContext|Context $context
      * @param BaseRoute|Route $route
      * @return bool
      */

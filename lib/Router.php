@@ -31,8 +31,8 @@ use Opis\Routing\FilterCollection;
  * @package Opis\HttpRouting
  *
  * @method RouteCollection getRouteCollection()
- * @method Route findRoute(Request $context)
- * @property Request $currentPath
+ * @method Route findRoute(Context $context)
+ * @property Context $currentPath
  */
 class Router extends BaseRouter
 {
@@ -59,7 +59,7 @@ class Router extends BaseRouter
     }
 
     /**
-     * @param BaseContext|Request $context
+     * @param BaseContext|Context $context
      * @return false|mixed
      */
     public function route(BaseContext $context)
@@ -89,13 +89,13 @@ class Router extends BaseRouter
     }
 
     /**
-     * @param Path $context
-     * @param BaseRoute $route
+     * @param BaseContext|Context $context
+     * @param BaseRoute|Route $route
      * @return array
      */
     public function extract(BaseContext $context, BaseRoute $route): array
     {
-        /** @var Request $context */
+        /** @var Context $context */
         /** @var Route $route */
 
         $names = [];
@@ -111,10 +111,10 @@ class Router extends BaseRouter
 
     /**
      * @param int $error
-     * @param Request $context
+     * @param Context $context
      * @return false|mixed
      */
-    protected function raiseError(int $error, Request $context)
+    protected function raiseError(int $error, Context $context)
     {
         $callback = $this->getRouteCollection()->getError($error);
 
@@ -127,11 +127,11 @@ class Router extends BaseRouter
 
     /**
      * @param $filter
-     * @param Request $context
+     * @param Context $context
      * @param Route $route
      * @return bool
      */
-    protected function passFilter($filter, Request $context, Route $route)
+    protected function passFilter($filter, Context $context, Route $route)
     {
         /** @var CallbackFilter[] $filters */
         $filters = $route->get('filters', []) + $this->getRouteCollection()->getFilters();
