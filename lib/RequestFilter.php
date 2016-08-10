@@ -20,45 +20,34 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\FilterInterface;
-use Opis\Routing\Path as BasePath;
-use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\Router as BaseRouter;
-
-/**
- * Class RequestFilter
- * @package Opis\HttpRouting
- */
-class RequestFilter implements FilterInterface
+class RequestFilter extends AbstractFilter
 {
-    /** @noinspection PhpDocSignatureInspection */
-
     /**
-     * @param Request $path
+     * @param Request $request
      * @param Route $route
      * @param Router $router
      * @return bool
      */
-    public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
+    protected function passFilter(Request $request, Route $route, Router $router): bool
     {
         //match secure
         if (null !== $secure = $route->get('secure')) {
-            if ($secure !== $path->isSecure()) {
+            if ($secure !== $request->isSecure()) {
                 return false;
             }
         }
 
         //match method
-        if (!in_array($path->method(), $route->get('method', ['GET']))) {
+        if (!in_array($request->method(), $route->get('method', ['GET']))) {
             return false;
         }
 
         // match domain
         if(null !== $domain = $route->get('domain')){
             $regex = $router->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getWildcards());
-            return preg_match($regex, (string) $path->domain());
+            return preg_match($regex, $request->domain());
         }
-        
+
         return true;
     }
 }

@@ -22,17 +22,9 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Serializable;
-use Opis\Routing\FilterInterface;
-use Opis\Routing\Path as BasePath;
-use Opis\Routing\Route as BaseRoute;
 use Opis\Closure\SerializableClosure;
-use Opis\Routing\Router as BaseRouter;
 
-/**
- * Class CallbackFilter
- * @package Opis\HttpRouting
- */
-class CallbackFilter implements FilterInterface, Serializable
+class CallbackFilter extends AbstractFilter implements Serializable
 {
     protected $callback;
     protected $doBind;
@@ -57,17 +49,15 @@ class CallbackFilter implements FilterInterface, Serializable
         return $this;
     }
 
-    /** @noinspection PhpDocSignatureInspection */
-
     /**
-     * @param Request $path
+     * @param Request $request
      * @param Route $route
      * @param Router $router
-     * @return mixed
+     * @return bool
      */
-    public function pass(BasePath $path, BaseRoute $route, BaseRouter $router)
+    protected function passFilter(Request $request, Route $route, Router $router): bool
     {
-        $values = $router->extract($path, $route);
+        $values = $router->extract($request, $route);
         if($this->doBind){
             $values = $router->bind($values, $route->getBindings());
         }
