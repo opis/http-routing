@@ -21,10 +21,15 @@
 namespace Opis\HttpRouting;
 
 use Closure;
+use Opis\Routing\Context as BaseContext;
+use Opis\Routing\FilterInterface;
+use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\Router as BaseRouter;
+use Opis\Routing\Router;
 use Serializable;
 use Opis\Closure\SerializableClosure;
 
-class CallbackFilter extends AbstractFilter implements Serializable
+class CallbackFilter implements FilterInterface, Serializable
 {
     protected $callback;
     protected $doBind;
@@ -50,14 +55,14 @@ class CallbackFilter extends AbstractFilter implements Serializable
     }
 
     /**
-     * @param Request $request
-     * @param Route $route
-     * @param Router $router
+     * @param BaseRouter|Router $router
+     * @param BaseContext|Request $context
+     * @param BaseRoute|Route $route
      * @return bool
      */
-    protected function passFilter(Request $request, Route $route, Router $router): bool
+    public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
     {
-        $values = $router->extract($request, $route);
+        $values = $router->extract($context, $route);
         if($this->doBind){
             $values = $router->bind($values, $route->getBindings());
         }
