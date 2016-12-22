@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Opis\\HttpRouting\\": "lib/"
+            "Opis\\HttpRouting\\": "src/"
         }
     },
     "autoload-dev": {
