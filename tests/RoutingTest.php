@@ -1,9 +1,6 @@
 <?php
 /* ===========================================================================
- * Opis Project
- * http://opis.io
- * ===========================================================================
- * Copyright 2013-2016 Marius Sarca
+ * Copyright 2013-2016 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ============================================================================ */
+
 use Opis\HttpRouting\Context;
 use Opis\HttpRouting\Route;
 use Opis\HttpRouting\Router;
