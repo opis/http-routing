@@ -19,13 +19,13 @@ namespace Opis\HttpRouting;
 
 use Closure;
 use Opis\Routing\Context as BaseContext;
-use Opis\Routing\FilterInterface;
+use Opis\Routing\IFilter;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 use Serializable;
 use Opis\Closure\SerializableClosure;
 
-class CallbackFilter implements FilterInterface, Serializable
+class CallbackFilter implements IFilter, Serializable
 {
     protected $callback;
     protected $doBind;
