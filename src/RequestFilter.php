@@ -18,11 +18,11 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\Context as BaseContext;
-use Opis\Routing\FilterInterface;
+use Opis\Routing\IFilter;
 use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\Router as BaseRouter;
 
-class RequestFilter implements FilterInterface
+class RequestFilter implements IFilter
 {
     /**
      * @param BaseRouter|BaseRouter $router
