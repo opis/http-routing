@@ -18,7 +18,9 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\Context as BaseContext;
+use Opis\Routing\IDispatcher;
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\RouteCollection;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
 
@@ -29,21 +31,26 @@ use Opis\Routing\FilterCollection;
  *
  * @method RouteCollection getRouteCollection()
  * @method Route findRoute(Context $context)
+ * @method Dispatcher getDispatcher()
  * @property Context $currentPath
  */
 class Router extends BaseRouter
 {
     /**
      * Router constructor.
+     * @param IDispatcher $dispatcher
      * @param RouteCollection $routes
-     * @param DispatcherResolver|null $resolver
      * @param FilterCollection|null $filters
      * @param array $specials
      */
-    public function __construct(RouteCollection $routes, DispatcherResolver $resolver = null, FilterCollection $filters = null, array $specials = [])
-    {
-        if ($resolver === null) {
-            $resolver = new DispatcherResolver();
+    public function __construct(
+        RouteCollection $routes,
+        IDispatcher $dispatcher = null,
+        FilterCollection $filters = null,
+        array $specials = []
+    ){
+        if($dispatcher === null){
+            $dispatcher = new Dispatcher();
         }
 
         if ($filters === null) {
@@ -68,11 +75,11 @@ class Router extends BaseRouter
         }
 
         if (!$this->passFilter('after', $context, $route)) {
-            return $this->raiseError(404, $context, $route);
+            return $this->raiseError(404, $context);
         }
 
         if (!$this->passFilter('access', $context, $route)) {
-            return $this->raiseError(403, $context, $route);
+            return $this->raiseError(403, $context);
         }
 
         $dispatcher = $this->resolver->resolve($this, $context, $route);
@@ -109,16 +116,11 @@ class Router extends BaseRouter
     /**
      * @param int $error
      * @param Context $context
-     * @param Route|null $route
-     * @return bool
+     * @return false|mixed
      */
-    protected function raiseError(int $error, Context $context, Route $route = null)
+    protected function raiseError(int $error, Context $context)
     {
-        if($route !== null){
-            $callback = $route->getError($error);
-        } else {
-            $callback = $this->getRouteCollection()->getError($error);
-        }
+        $callback = $this->getRouteCollection()->getError($error);
 
         if ($callback !== null) {
             return $callback($context);
