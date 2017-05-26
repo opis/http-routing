@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2016 The Opis Project
+ * Copyright 2013-2017 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Context as BaseContext;
-use Opis\Routing\DispatcherInterface;
-use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\DispatcherResolver as BaseResolver;
+use Opis\Routing\CompiledRoute as BaseCompilerRoute;
 
 /**
- * Class DispatcherResolver
+ * Class CompiledRoute
  * @package Opis\HttpRouting
+ * @property Route $route
+ * @method Route getRoute()
  */
-class DispatcherResolver extends BaseResolver
+class CompiledRoute extends BaseCompilerRoute
 {
-    /**
-     * @param BaseRouter|Router $router
-     * @param BaseContext|Context $context
-     * @param BaseRoute|Route $route
-     * @return DispatcherInterface
-     */
-    public function resolve(BaseRouter $router, BaseContext $context, BaseRoute $route): DispatcherInterface
+    public function getNames(): array
     {
-        $dispatcher = $route->get('dispatcher', 'default');
-        $factory = $this->collection->get($dispatcher);
-        return $factory();
+        if($this->names === null){
+            $names = [];
+            if(null !== $domain = $this->route->get('domain')){
+                /** @var RouteCollection $collection */
+                $collection = $this->route->getRouteCollection();
+                $names += $collection->getDomainCompiler()->getNames($domain);
+            }
+            $names += parent::getNames();
+            $this->names = $names;
+        }
+
+        return $this->names;
     }
 }

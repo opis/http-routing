@@ -5,14 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 5.0.x-dev
 ### Added
 - Support for PHP 7.0.x
-- Source files were moved form `lib` to `src`
 
 ### Removed
 - Support for PHP 5.x
-- `Opis\HttpRouting\Dispatcher` class
+- `Opis\HttpRouting\DispatcherResolver` class
 
 ### Changed
-- All classes were modified in order to support transition to PHP 7.0.x
+- Source files were moved form `lib` to `src`
+- All classes were refactored
 - Updated `opis/routing` dependency to version `5.0.x-dev`
 - Updated `phpunit/phpunit` dependency(dev mode) to version `5.4.*`
 - `Opis\HttpRouting\Path` class was renamed to `Opis\HttpRouting\Context` 

@@ -22,6 +22,8 @@ use Opis\Routing\Route as BaseRoute;
 /**
  * Class Route
  * @package Opis\HttpRouting
+ *
+ * @method RouteCollection getRouteCollection(): \Opis\Routing\RouteCollection
  */
 class Route extends BaseRoute
 {
@@ -68,7 +70,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @return CallbackFilter[]
+     * @return callable[]
      */
     public function getFilters(): array
     {
@@ -160,7 +162,7 @@ class Route extends BaseRoute
     public function filter(string $name, callable $filter): self
     {
         $filters = $this->get('filters', []);
-        $filters[$name] = new CallbackFilter($filter);
+        $filters[$name] = $filter;
         return $this->set('filters', $filters);
     }
 
@@ -168,9 +170,8 @@ class Route extends BaseRoute
      * @param string $name
      * @return Route
      */
-    public function dispatcher(string $name): self
+    public function middleware(string $name): self
     {
-        return $this->set('dispatcher', $name);
+        return $this->set('middleware', $name);
     }
-
 }

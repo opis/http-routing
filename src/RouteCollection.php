@@ -46,6 +46,9 @@ class RouteCollection extends BaseCollection
     /** @var    array */
     protected $errors = [];
 
+    /** @var array */
+    protected $middleware = [];
+
     /** @var  Compiler|null */
     protected $domainCompiler;
 
@@ -73,7 +76,7 @@ class RouteCollection extends BaseCollection
     /**
      * Get filters
      * 
-     * @return  CallbackFilter[]
+     * @return  callable[]
      */
     public function getFilters(): array
     {
@@ -88,6 +91,16 @@ class RouteCollection extends BaseCollection
     public function getDefaults(): array
     {
         return $this->defaults;
+    }
+
+    /**
+     * Get registered middleware
+     *
+     * @return callable[]
+     */
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
     }
 
     /**
@@ -191,7 +204,20 @@ class RouteCollection extends BaseCollection
      */
     public function filter(string $name, callable $filter): self
     {
-        $this->filters[$name] = new CallbackFilter($filter);
+        $this->filters[$name] = $filter;
+        return $this;
+    }
+
+    /**
+     * Add a middleware
+     *
+     * @param string $name
+     * @param callable $callback
+     * @return RouteCollection
+     */
+    public function middleware(string $name, callable $callback): self
+    {
+        $this->middleware[$name] = $callback;
         return $this;
     }
 
@@ -213,6 +239,7 @@ class RouteCollection extends BaseCollection
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'errors' => array_map($map, $this->errors),
+            'middleware' => array_map($map, $this->middleware),
         ]);
 
         SerializableClosure::exitContext();
@@ -237,5 +264,6 @@ class RouteCollection extends BaseCollection
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->errors = array_map($map, $object['errors']);
+        $this->middleware = array_map($map, $object['middleware']);
     }
 }

@@ -17,10 +17,12 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Context as BaseContext;
-use Opis\Routing\IFilter;
-use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\Router as BaseRouter;
+use Opis\Routing\{
+    IFilter,
+    Context as BaseContext,
+    Route as BaseRoute,
+    Router as BaseRouter
+};
 
 class RequestFilter implements IFilter
 {
@@ -46,7 +48,7 @@ class RequestFilter implements IFilter
 
         // match domain
         if(null !== $domain = $route->get('domain')){
-            $regex = $router->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getWildcards());
+            $regex = $route->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getWildcards());
             return preg_match($regex, $context->domain());
         }
 

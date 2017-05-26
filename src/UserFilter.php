@@ -17,10 +17,12 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Context as BaseContext;
-use Opis\Routing\IFilter;
-use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\Router as BaseRouter;
+use Opis\Routing\{
+    IFilter,
+    Context as BaseContext,
+    Route as BaseRoute,
+    Router as BaseRouter
+};
 
 class UserFilter implements IFilter
 {
@@ -32,12 +34,15 @@ class UserFilter implements IFilter
      */
     public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
     {
-        /** @var CallbackFilter[] $filters */
-        $filters = $route->get('filters', []) + $router->getRouteCollection()->getFilters();
+        /** @var callable[] $filters */
+        $filters = $route->getFilters();
+        $compiled = $router->getDispatcher()->compile($context, $route);
 
         foreach ($route->get('before', []) as $name) {
             if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(false)->pass($router, $context, $route) === false) {
+                $callback = $filters[$name];
+                $arguments = $compiled->getArguments($callback, false);
+                if(false === $callback(...$arguments)){
                     return false;
                 }
             }
