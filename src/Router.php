@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2016 The Opis Project
+ * Copyright 2013-2017 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\Context as BaseContext;
 use Opis\Routing\IDispatcher;
-use Opis\Routing\Route as BaseRoute;
 use Opis\Routing\RouteCollection;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
