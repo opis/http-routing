@@ -5,10 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 5.0.x-dev
 ### Added
 - Support for PHP 7.0.x
+- `Opis\HttpRouting\CompiledRoute` class
 
 ### Removed
 - Support for PHP 5.x
 - `Opis\HttpRouting\DispatcherResolver` class
+- `Opis\HttpRouting\CallbackFilter` class
 
 ### Changed
 - Source files were moved form `lib` to `src`
