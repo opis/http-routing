@@ -55,6 +55,6 @@ class Router extends BaseRouter
             $filters->addFilter(new RequestFilter())
                 ->addFilter(new UserFilter());
         }
-        parent::__construct($dispatcher, $routes, $filters, $specials);
+        parent::__construct($routes, $dispatcher, $filters, $specials);
     }
 }
