@@ -50,103 +50,11 @@ class Router extends BaseRouter
         if($dispatcher === null){
             $dispatcher = new Dispatcher();
         }
-
-        if ($filters === null) {
+        if($filters === null){
             $filters = new FilterCollection();
             $filters->addFilter(new RequestFilter())
-                    ->addFilter(new UserFilter());
+                ->addFilter(new UserFilter());
         }
-
-        parent::__construct($routes, $resolver, $filters, $specials);
+        parent::__construct($routes, $dispatcher, $filters, $specials);
     }
-
-    /**
-     * @param BaseContext|Context $context
-     * @return false|mixed
-     */
-    public function route(BaseContext $context)
-    {
-        $route = $this->findRoute($context);
-
-        if ($route === false) {
-            return $this->raiseError(404, $context);
-        }
-
-        if (!$this->passFilter('after', $context, $route)) {
-            return $this->raiseError(404, $context);
-        }
-
-        if (!$this->passFilter('access', $context, $route)) {
-            return $this->raiseError(403, $context);
-        }
-
-        $dispatcher = $this->resolver->resolve($this, $context, $route);
-        $result = $dispatcher->dispatch($this, $context, $route);
-
-        if ($result instanceof HttpError) {
-            return $this->raiseError($result->errorCode(), $context);
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param BaseContext|Context $context
-     * @param BaseRoute|Route $route
-     * @return array
-     */
-    public function extract(BaseContext $context, BaseRoute $route): array
-    {
-        /** @var Context $context */
-        /** @var Route $route */
-
-        $names = [];
-        if(null !== $domain = $route->get('domain')){
-            $names += $this->getRouteCollection()->getDomainCompiler()->getNames($domain);
-        }
-        $names += $this->getCompiler()->getNames($route->getPattern());
-        $regex = $this->getRouteCollection()->getRegex($route->getID());
-        $values = $this->getCompiler()->getValues($regex, (string) $context);
-
-        return array_intersect_key($values, array_flip($names)) + $route->getDefaults();
-    }
-
-    /**
-     * @param int $error
-     * @param Context $context
-     * @return false|mixed
-     */
-    protected function raiseError(int $error, Context $context)
-    {
-        $callback = $this->getRouteCollection()->getError($error);
-
-        if ($callback !== null) {
-            return $callback($context);
-        }
-
-        return false;
-    }
-
-    /**
-     * @param $filter
-     * @param Context $context
-     * @param Route $route
-     * @return bool
-     */
-    protected function passFilter($filter, Context $context, Route $route)
-    {
-        /** @var CallbackFilter[] $filters */
-        $filters = $route->get('filters', []) + $this->getRouteCollection()->getFilters();
-
-        foreach ($route->get($filter, []) as $name) {
-            if (isset($filters[$name])) {
-                if ($filters[$name]->setBindMode(true)->pass($this, $context, $route) === false) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
 }
