@@ -28,6 +28,8 @@ class Route extends BaseRoute
     /** @var array  */
     protected $cache = [];
 
+    protected $errors = [];
+
     /**
      * @return array
      */
@@ -78,6 +80,21 @@ class Route extends BaseRoute
             $this->cache[__FUNCTION__] = $this->get('filters', []) + $collection->getFilters();
         }
         return $this->cache[__FUNCTION__];
+    }
+
+    /**
+     * Get error
+     *
+     * @param   int $code
+     *
+     * @return  callable|null
+     */
+    public function getError(int $code)
+    {
+        if (isset($this->errors[$code])) {
+            return $this->errors[$code];
+        }
+        return $this->collection->getError($code);
     }
 
     /**
@@ -171,6 +188,30 @@ class Route extends BaseRoute
     public function dispatcher(string $name): self
     {
         return $this->set('dispatcher', $name);
+    }
+
+    /**
+     * Set error callback
+     *
+     * @param   callable $callback
+     * @return $this|Route
+     */
+    public function notFound(callable $callback): self
+    {
+        $this->errors[404] = $callback;
+        return $this;
+    }
+
+    /**
+     * Set error callback
+     *
+     * @param   callable $callback
+     * @return $this|Route
+     */
+    public function accessDenied(callable $callback): self
+    {
+        $this->errors[403] = $callback;
+        return $this;
     }
 
 }

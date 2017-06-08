@@ -68,11 +68,11 @@ class Router extends BaseRouter
         }
 
         if (!$this->passFilter('after', $context, $route)) {
-            return $this->raiseError(404, $context);
+            return $this->raiseError(404, $context, $route);
         }
 
         if (!$this->passFilter('access', $context, $route)) {
-            return $this->raiseError(403, $context);
+            return $this->raiseError(403, $context, $route);
         }
 
         $dispatcher = $this->resolver->resolve($this, $context, $route);
@@ -109,11 +109,16 @@ class Router extends BaseRouter
     /**
      * @param int $error
      * @param Context $context
-     * @return false|mixed
+     * @param Route|null $route
+     * @return bool
      */
-    protected function raiseError(int $error, Context $context)
+    protected function raiseError(int $error, Context $context, Route $route = null)
     {
-        $callback = $this->getRouteCollection()->getError($error);
+        if($route !== null){
+            $callback = $route->getError($error);
+        } else {
+            $callback = $this->getRouteCollection()->getError($error);
+        }
 
         if ($callback !== null) {
             return $callback($context);
