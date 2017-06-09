@@ -89,8 +89,9 @@ class Route extends BaseRoute
      */
     public function getError(int $code)
     {
-        if (isset($this->errors[$code])) {
-            return $this->errors[$code];
+        $errors = $this->get('http_errors', []);
+        if (isset($errors[$code])) {
+            return $errors[$code];
         }
         return $this->collection->getError($code);
     }
