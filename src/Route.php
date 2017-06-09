@@ -28,8 +28,6 @@ class Route extends BaseRoute
     /** @var array  */
     protected $cache = [];
 
-    protected $errors = [];
-
     /**
      * @return array
      */
@@ -198,7 +196,9 @@ class Route extends BaseRoute
      */
     public function notFound(callable $callback): self
     {
-        $this->errors[404] = $callback;
+        $errors = $this->get('http_errors', []);
+        $errors[404] = $callback;
+        $this->set('http_errors', $errors);
         return $this;
     }
 
@@ -210,7 +210,9 @@ class Route extends BaseRoute
      */
     public function accessDenied(callable $callback): self
     {
-        $this->errors[403] = $callback;
+        $errors = $this->get('http_errors', []);
+        $errors[403] = $callback;
+        $this->set('http_errors', $errors);
         return $this;
     }
 
