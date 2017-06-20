@@ -18,11 +18,9 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\IDispatcher;
-use Opis\Routing\RouteCollection;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
 
-/** @noinspection PhpMissingParentCallCommonInspection */
 /**
  * Class Router
  * @package Opis\HttpRouting
