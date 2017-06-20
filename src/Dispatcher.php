@@ -75,7 +75,7 @@ class Dispatcher implements IDispatcher
             /** @var callable $callback */
             $callback = $collection->getMiddleware()[$middleware] ?? null;
             if($callback !== null){
-                $content = $callback($content, $router, $context, $route);
+                $content = $callback($content, $route, $context, $router);
                 if($content instanceof HttpError){
                     return $this->raiseError($content->errorCode(), $context);
                 }
