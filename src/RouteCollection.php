@@ -207,7 +207,7 @@ class RouteCollection extends BaseCollection
         $map = [static::class, 'wrapClosures'];
 
         $object = serialize([
-            'parent' => parent::serialize(),
+            'parent' => $this->getSerialize(),
             'wildcards' => $this->wildcards,
             'filters' => $this->filters,
             'bindings' => array_map($map, $this->bindings),
@@ -230,7 +230,7 @@ class RouteCollection extends BaseCollection
         $object = unserialize($data);
         $map = [static::class, 'unwrapClosures'];
 
-        parent::unserialize($object['parent']);
+        $this->setUnserialize($object['parent']);
 
         $this->wildcards = $object['wildcards'];
         $this->filters = $object['filters'];
