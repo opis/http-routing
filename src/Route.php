@@ -70,7 +70,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @return callable[]
+     * @return CallbackFilter[]
      */
     public function getFilters(): array
     {
@@ -190,33 +190,4 @@ class Route extends BaseRoute
     {
         return $this->set('middleware', $name);
     }
-
-    /**
-     * Set error callback
-     *
-     * @param   callable $callback
-     * @return $this|Route
-     */
-    public function notFound(callable $callback): self
-    {
-        $errors = $this->get('http_errors', []);
-        $errors[404] = $callback;
-        $this->set('http_errors', $errors);
-        return $this;
-    }
-
-    /**
-     * Set error callback
-     *
-     * @param   callable $callback
-     * @return $this|Route
-     */
-    public function accessDenied(callable $callback): self
-    {
-        $errors = $this->get('http_errors', []);
-        $errors[403] = $callback;
-        $this->set('http_errors', $errors);
-        return $this;
-    }
-
 }
