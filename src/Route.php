@@ -18,12 +18,13 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\RouteCollection;
 
 /**
  * Class Route
  * @package Opis\HttpRouting
  *
- * @method RouteCollection getRouteCollection(): \Opis\Routing\RouteCollection
+ * @method RouteCollection getRouteCollection(): RouteCollection
  */
 class Route extends BaseRoute
 {
@@ -70,7 +71,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @return CallbackFilter[]
+     * @return callable[]
      */
     public function getFilters(): array
     {
