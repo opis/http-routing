@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "opis/routing": "dev-refactor"
+        "opis/routing": "5.0.x-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "5.4.*"
