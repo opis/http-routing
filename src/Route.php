@@ -18,13 +18,12 @@
 namespace Opis\HttpRouting;
 
 use Opis\Routing\Route as BaseRoute;
-use Opis\Routing\RouteCollection;
 
 /**
  * Class Route
  * @package Opis\HttpRouting
  *
- * @method RouteCollection getRouteCollection(): RouteCollection
+ * @method RouteCollection getRouteCollection()
  */
 class Route extends BaseRoute
 {
@@ -96,7 +95,9 @@ class Route extends BaseRoute
         if (isset($errors[$code])) {
             return $errors[$code];
         }
-        return $this->collection->getError($code);
+        /** @var RouteCollection $collection */
+        $collection = $this->collection;
+        return $collection->getError($code);
     }
 
     /**
@@ -130,21 +131,6 @@ class Route extends BaseRoute
     public function secure(bool $value = true): self
     {
         return $this->set('secure', $value);
-    }
-
-    /**
-     * Set a callback
-     *
-     * @param string $name
-     * @param callable $callback
-     * @return Route
-     */
-    public function callback(string $name, callable $callback): self
-    {
-        $callbacks = $this->get('callbacks', []);
-        $callbacks[$name] = $callback;
-        $this->set('callbacks', $callbacks);
-        return $this;
     }
 
     /**
