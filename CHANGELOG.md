@@ -18,6 +18,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Updated `opis/routing` dependency to version `5.0.x-dev`
 - Updated `phpunit/phpunit` dependency(dev mode) to version `5.4.*`
 - `Opis\HttpRouting\Path` class was renamed to `Opis\HttpRouting\Context` 
+- `Opis\HttpRouting\Route::filter` was renamed to `callback`
+- `Opis\HttpRouting\Route::getFilters` was renamed to `getCallbacks`
+- `Opis\HttpRouting\RouteCollection::filter` was renamed to `callback`
+- `Opis\HttpRouting\RouteCollection::getFilters` was renamed to `getCallbacks`
 
 ### Fixed
 - Nothing

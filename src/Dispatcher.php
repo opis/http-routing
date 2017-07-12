@@ -54,7 +54,7 @@ class Dispatcher implements IDispatcher
         }
 
         $collection = $route->getRouteCollection();
-        $filters = $route->getFilters();
+        $filters = $route->getCallbacks();
         $compiled = $this->compile($context, $route);
 
         if(!$this->passUserFilter('after', $filters, $compiled, true)){

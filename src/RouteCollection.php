@@ -38,7 +38,7 @@ class RouteCollection extends BaseCollection
     protected $bindings = [];
 
     /** @var    callable[] */
-    protected $filters = [];
+    protected $callbacks = [];
 
     /** @var    array */
     protected $defaults = [];
@@ -78,9 +78,9 @@ class RouteCollection extends BaseCollection
      * 
      * @return  callable[]
      */
-    public function getFilters(): array
+    public function getCallbacks(): array
     {
-        return $this->filters;
+        return $this->callbacks;
     }
 
     /**
@@ -196,15 +196,15 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Add a filter
+     * Add a callback
      *
      * @param   string $name
-     * @param   callable $filter
+     * @param   callable $callback
      * @return $this|RouteCollection
      */
-    public function filter(string $name, callable $filter): self
+    public function callback(string $name, callable $callback): self
     {
-        $this->filters[$name] = $filter;
+        $this->callbacks[$name] = $callback;
         return $this;
     }
 
@@ -235,7 +235,7 @@ class RouteCollection extends BaseCollection
         $object = serialize([
             'parent' => $this->getSerialize(),
             'wildcards' => $this->wildcards,
-            'filters' => $this->filters,
+            'filters' => $this->callbacks,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
             'errors' => array_map($map, $this->errors),
@@ -260,7 +260,7 @@ class RouteCollection extends BaseCollection
         $this->setUnserialize($object['parent']);
 
         $this->wildcards = $object['wildcards'];
-        $this->filters = $object['filters'];
+        $this->callbacks = $object['filters'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
         $this->errors = array_map($map, $object['errors']);

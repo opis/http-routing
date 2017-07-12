@@ -157,7 +157,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->filter('foo', function() {
+            ->callback('foo', function() {
                 return true;
             })
             ->before('foo');
@@ -170,7 +170,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->filter('foo', function() {
+            ->callback('foo', function() {
                 return false;
             })
             ->before('foo');
@@ -180,7 +180,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testGlobalBeforeFilterSuccess()
     {
-        $this->collection->filter('foo', function() {
+        $this->collection->callback('foo', function() {
             return true;
         });
 
@@ -194,7 +194,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testGlobalBeforeFilterFail()
     {
-        $this->collection->filter('foo', function() {
+        $this->collection->callback('foo', function() {
             return false;
         });
 
@@ -211,7 +211,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->filter('foo', function($x) {
+            ->callback('foo', function($x) {
                 return $x == 'X';
             })
             ->before('foo');
@@ -224,7 +224,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->filter('foo', function($x) {
+            ->callback('foo', function($x) {
                 return $x != 'X';
             })
             ->before('foo');
@@ -234,7 +234,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testGlobalFilterSpecialValuesSuccess()
     {
-        $this->collection->filter('foo', function($x) {
+        $this->collection->callback('foo', function($x) {
             return $x == 'X';
         });
 
@@ -248,7 +248,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
 
     public function testGlobalFilterSpecialValuesFail()
     {
-        $this->collection->filter('foo', function($x) {
+        $this->collection->callback('foo', function($x) {
             return $x != 'X';
         });
 

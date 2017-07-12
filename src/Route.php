@@ -72,12 +72,12 @@ class Route extends BaseRoute
     /**
      * @return callable[]
      */
-    public function getFilters(): array
+    public function getCallbacks(): array
     {
         if(!isset($this->cache[__FUNCTION__])){
             /** @var RouteCollection $collection */
             $collection = $this->collection;
-            $this->cache[__FUNCTION__] = $this->get('filters', []) + $collection->getFilters();
+            $this->cache[__FUNCTION__] = $this->get('callbacks', []) + $collection->getCallbacks();
         }
         return $this->cache[__FUNCTION__];
     }
@@ -174,14 +174,14 @@ class Route extends BaseRoute
 
     /**
      * @param string $name
-     * @param callable $filter
+     * @param callable $callback
      * @return Route
      */
-    public function filter(string $name, callable $filter): self
+    public function callback(string $name, callable $callback): self
     {
-        $filters = $this->get('filters', []);
-        $filters[$name] = $filter;
-        return $this->set('filters', $filters);
+        $list = $this->get('callbacks', []);
+        $list[$name] = $callback;
+        return $this->set('callbacks', $list);
     }
 
     /**
