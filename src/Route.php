@@ -133,6 +133,21 @@ class Route extends BaseRoute
     }
 
     /**
+     * Set a callback
+     *
+     * @param string $name
+     * @param callable $callback
+     * @return Route
+     */
+    public function callback(string $name, callable $callback): self
+    {
+        $callbacks = $this->get('callbacks', []);
+        $callbacks[$name] = $callback;
+        $this->set('callbacks', $callbacks);
+        return $this;
+    }
+
+    /**
      * @param string|array $filters
      * @return Route
      */
