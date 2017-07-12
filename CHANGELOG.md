@@ -20,6 +20,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `Opis\HttpRouting\Path` class was renamed to `Opis\HttpRouting\Context` 
 - `Opis\HttpRouting\Route::filter` was renamed to `callback`
 - `Opis\HttpRouting\Route::getFilters` was renamed to `getCallbacks`
+- `Opis\HttpRouting\Route::before` was renamed to `filter`
+- `Opis\HttpRouting\Route::after` was renamed to `validate`
 - `Opis\HttpRouting\RouteCollection::filter` was renamed to `callback`
 - `Opis\HttpRouting\RouteCollection::getFilters` was renamed to `getCallbacks`
 

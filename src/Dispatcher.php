@@ -54,14 +54,14 @@ class Dispatcher implements IDispatcher
         }
 
         $collection = $route->getRouteCollection();
-        $filters = $route->getCallbacks();
+        $callbacks = $route->getCallbacks();
         $compiled = $this->compile($context, $route);
 
-        if(!$this->passUserFilter('after', $filters, $compiled, true)){
+        if(!$this->passUserFilter('validate', $callbacks, $compiled, true)){
             return $this->raiseError(404, $context);
         }
 
-        if(!$this->passUserFilter('access', $filters, $compiled, true)){
+        if(!$this->passUserFilter('access', $callbacks, $compiled, true)){
             return $this->raiseError(403, $context);
         }
 
@@ -113,12 +113,19 @@ class Dispatcher implements IDispatcher
         return null;
     }
 
-    protected function passUserFilter(string $filter, array $filters, CompiledRoute $compiled, bool $bind): bool
+    /**
+     * @param string $filter
+     * @param callable[] $callbacks
+     * @param CompiledRoute $compiled
+     * @param bool $bind
+     * @return bool
+     */
+    protected function passUserFilter(string $filter, array $callbacks, CompiledRoute $compiled, bool $bind): bool
     {
         foreach ($compiled->getRoute()->get($filter, []) as $name){
-            if(isset($filters[$name])){
-                $arguments = $compiled->getArguments($filters[$name], $bind);
-                if(false === $filters[$name](...$arguments)){
+            if(isset($callbacks[$name])){
+                $arguments = $compiled->getArguments($callbacks[$name], $bind);
+                if(false === $callbacks[$name](...$arguments)){
                     return false;
                 }
             }

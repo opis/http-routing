@@ -134,42 +134,42 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string|array $filters
+     * @param string|array $callbacks
      * @return Route
      */
-    public function before($filters): self
+    public function filter($callbacks): self
     {
-        if (!is_array($filters)) {
-            $filters = [(string) $filters];
+        if (!is_array($callbacks)) {
+            $callbacks = [(string) $callbacks];
         }
 
-        return $this->set('before', $filters);
+        return $this->set('filter', $callbacks);
     }
 
     /**
-     * @param string|array $filters
+     * @param string|array $callbacks
      * @return Route
      */
-    public function after($filters): self
+    public function validate($callbacks): self
     {
-        if (!is_array($filters)) {
-            $filters = [(string) $filters];
+        if (!is_array($callbacks)) {
+            $callbacks = [(string) $callbacks];
         }
 
-        return $this->set('after', $filters);
+        return $this->set('validate', $callbacks);
     }
 
     /**
-     * @param string|array $filters
+     * @param string|array $callbacks
      * @return Route
      */
-    public function access($filters): self
+    public function access($callbacks): self
     {
-        if (!is_array($filters)) {
-            $filters = [(string) $filters];
+        if (!is_array($callbacks)) {
+            $callbacks = [(string) $callbacks];
         }
 
-        return $this->set('access', $filters);
+        return $this->set('access', $callbacks);
     }
 
     /**

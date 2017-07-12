@@ -160,7 +160,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
             ->callback('foo', function() {
                 return true;
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals('OK', $this->exec('/'));
     }
@@ -173,7 +173,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
             ->callback('foo', function() {
                 return false;
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/'));
     }
@@ -187,7 +187,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals('OK', $this->exec('/'));
     }
@@ -201,7 +201,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/'));
     }
@@ -214,7 +214,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
             ->callback('foo', function($x) {
                 return $x == 'X';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals('OK', $this->exec('/'));
     }
@@ -227,7 +227,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
             ->callback('foo', function($x) {
                 return $x != 'X';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/'));
     }
@@ -241,7 +241,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals('OK', $this->exec('/'));
     }
@@ -255,7 +255,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
         $this->route('/', function() {
                 return 'OK';
             })
-            ->before('foo');
+            ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/'));
     }

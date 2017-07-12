@@ -34,13 +34,13 @@ class UserFilter implements IFilter
      */
     public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
     {
-        /** @var callable[] $filters */
-        $filters = $route->getCallbacks();
+        /** @var callable[] $callbacks */
+        $callbacks = $route->getCallbacks();
         $compiled = $router->getDispatcher()->compile($context, $route);
 
-        foreach ($route->get('before', []) as $name) {
-            if (isset($filters[$name])) {
-                $callback = $filters[$name];
+        foreach ($route->get('filter', []) as $name) {
+            if (isset($callbacks[$name])) {
+                $callback = $callbacks[$name];
                 $arguments = $compiled->getArguments($callback, false);
                 if(false === $callback(...$arguments)){
                     return false;
