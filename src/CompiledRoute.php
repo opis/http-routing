@@ -27,19 +27,19 @@ use Opis\Routing\CompiledRoute as BaseCompilerRoute;
  */
 class CompiledRoute extends BaseCompilerRoute
 {
-    public function getNames(): array
+    public function getKeys(): array
     {
-        if($this->names === null){
-            $names = [];
+        if($this->keys === null){
+            $keys = [];
             if(null !== $domain = $this->route->get('domain')){
                 /** @var RouteCollection $collection */
                 $collection = $this->route->getRouteCollection();
-                $names += $collection->getDomainCompiler()->getNames($domain);
+                $keys += $collection->getDomainCompiler()->getKeys($domain);
             }
-            $names += parent::getNames();
-            $this->names = $names;
+            $keys += parent::getKeys();
+            $this->names = $keys;
         }
 
-        return $this->names;
+        return $this->keys;
     }
 }
