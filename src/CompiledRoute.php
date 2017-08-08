@@ -37,7 +37,7 @@ class CompiledRoute extends BaseCompilerRoute
                 $keys += $collection->getDomainCompiler()->getKeys($domain);
             }
             $keys += parent::getKeys();
-            $this->names = $keys;
+            $this->keys = $keys;
         }
 
         return $this->keys;
