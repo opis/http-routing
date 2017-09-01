@@ -109,7 +109,7 @@ class RouteCollection extends BaseCollection
     {
         if($this->domainCompiler === null){
             $this->domainCompiler = new Compiler([
-                Compiler::TAG_SEPARATOR => '.',
+                Compiler::SEPARATOR_MARK => '.',
                 Compiler::CAPTURE_MODE => Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL
             ]);
         }
