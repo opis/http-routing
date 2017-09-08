@@ -31,13 +31,29 @@ class RoutingTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {        
         $this->collection = new RouteCollection();
-        $this->router = new Router($this->collection, null, null, array('x' => 'X'));
-        $this->collection->notFound(function() {
-            return 404;
-        });
-        $this->collection->accessDenied(function() {
-            return 403;
-        });
+        $dispatcher = new class extends \Opis\HttpRouting\Dispatcher {
+            /**
+             * Get a 403 response
+             * @param Context $context
+             * @return mixed
+             */
+            protected function getNotFoundResponse(Context $context)
+            {
+                return 404;
+            }
+
+            /**
+             * Get a 403 response
+             * @param Context $context
+             * @return mixed
+             */
+            protected function getAccessDeniedResponse(Context $context)
+            {
+                return 403;
+            }
+
+        };
+        $this->router = new Router($this->collection, $dispatcher, null, array('x' => 'X'));
     }
 
     protected function route($pattern, $action, $method = 'GET')
@@ -80,7 +96,7 @@ class RoutingTest extends PHPUnit_Framework_TestCase
     public function testNotFound3()
     {
         $this->route('/', function() {
-            return HttpError::pageNotFound();
+            return 404;
         });
 
         $this->assertEquals(404, $this->exec('/'));
