@@ -30,7 +30,7 @@ use Opis\Routing\{
  * @property Router $router
  * @method Route findRoute()
  */
-class Dispatcher implements IDispatcher
+abstract class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
 
@@ -50,39 +50,21 @@ class Dispatcher implements IDispatcher
         $route = $this->findRoute();
 
         if($route === null){
-            return $this->raiseError(404, $context);
+            return $this->getNotFoundResponse($context);
         }
 
-        $collection = $route->getRouteCollection();
         $callbacks = $route->getCallbacks();
         $compiled = $this->compile($context, $route);
 
         if(!$this->passUserFilter('validate', $callbacks, $compiled, true)){
-            return $this->raiseError(404, $context);
+            return $this->getNotFoundResponse($context);
         }
 
         if(!$this->passUserFilter('access', $callbacks, $compiled, true)){
-            return $this->raiseError(403, $context);
+            return $this->getAccessDeniedResponse($context);
         }
 
-        $content = $compiled->invokeAction();
-
-        if($content instanceof HttpError){
-            return $this->raiseError($content->errorCode(), $context);
-        }
-
-        if(null !== $middleware = $route->get('middleware')){
-            /** @var callable $callback */
-            $callback = $collection->getMiddleware()[$middleware] ?? null;
-            if($callback !== null){
-                $content = $callback($content, $route, $context, $router);
-                if($content instanceof HttpError){
-                    return $this->raiseError($content->errorCode(), $context);
-                }
-            }
-        }
-
-        return $content;
+        return $compiled->invokeAction();
     }
 
     public function compile(Context $context, Route $route): CompiledRoute
@@ -96,6 +78,20 @@ class Dispatcher implements IDispatcher
 
         return $this->compiled[$cid][$rid];
     }
+
+    /**
+     * Get a 403 response
+     * @param Context $context
+     * @return mixed
+     */
+    protected abstract function getNotFoundResponse(Context $context);
+
+    /**
+     * Get a 403 response
+     * @param Context $context
+     * @return mixed
+     */
+    protected abstract function getAccessDeniedResponse(Context $context);
 
     /**
      * @param int $code

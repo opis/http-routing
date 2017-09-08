@@ -41,18 +41,16 @@ class Router extends BaseRouter
      */
     public function __construct(
         RouteCollection $routes,
-        IDispatcher $dispatcher = null,
+        IDispatcher $dispatcher,
         FilterCollection $filters = null,
         array $specials = []
     ){
-        if($dispatcher === null){
-            $dispatcher = new Dispatcher();
-        }
         if($filters === null){
             $filters = new FilterCollection();
             $filters->addFilter(new RequestFilter())
                 ->addFilter(new UserFilter());
         }
+
         parent::__construct($routes, $dispatcher, $filters, $specials);
     }
 }
