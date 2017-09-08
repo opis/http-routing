@@ -42,9 +42,6 @@ class RouteCollection extends BaseCollection
     /** @var    array */
     protected $defaults = [];
 
-    /** @var    array */
-    protected $errors = [];
-
     /** @var  Compiler|null */
     protected $domainCompiler;
 
@@ -104,21 +101,6 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Get error
-     * 
-     * @param   int $code
-     * 
-     * @return  callable|null
-     */
-    public function getError(int $code)
-    {
-        if (isset($this->errors[$code])) {
-            return $this->errors[$code];
-        }
-        return null;
-    }
-
-    /**
      * Set a wildcard
      *
      * @param   string $name
@@ -158,30 +140,6 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Set error callback
-     *
-     * @param   callable $callback
-     * @return $this|RouteCollection
-     */
-    public function notFound(callable $callback): self
-    {
-        $this->errors[404] = $callback;
-        return $this;
-    }
-
-    /**
-     * Set error callback
-     *
-     * @param   callable $callback
-     * @return $this|RouteCollection
-     */
-    public function accessDenied(callable $callback): self
-    {
-        $this->errors[403] = $callback;
-        return $this;
-    }
-
-    /**
      * Add a callback
      *
      * @param   string $name
@@ -211,7 +169,6 @@ class RouteCollection extends BaseCollection
             'filters' => $this->callbacks,
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
-            'errors' => array_map($map, $this->errors),
         ]);
 
         SerializableClosure::exitContext();
@@ -235,6 +192,5 @@ class RouteCollection extends BaseCollection
         $this->callbacks = $object['filters'];
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
-        $this->errors = array_map($map, $object['errors']);
     }
 }
