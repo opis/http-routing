@@ -33,7 +33,7 @@ class RouteCollection extends BaseCollection
     /** @var    array */
     protected $wildcards = [];
 
-    /** @var    callable[] */
+    /** @var   callable[] */
     protected $bindings = [];
 
     /** @var    callable[] */
@@ -166,7 +166,7 @@ class RouteCollection extends BaseCollection
         $object = serialize([
             'parent' => $this->getSerialize(),
             'wildcards' => $this->wildcards,
-            'filters' => $this->callbacks,
+            'callbacks' => array_map($map, $this->callbacks),
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
         ]);
@@ -189,7 +189,7 @@ class RouteCollection extends BaseCollection
         $this->setUnserialize($object['parent']);
 
         $this->wildcards = $object['wildcards'];
-        $this->callbacks = $object['filters'];
+        $this->callbacks = array_map($map, $object['callbacks']);
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
     }
