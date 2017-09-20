@@ -83,24 +83,6 @@ class Route extends BaseRoute
     }
 
     /**
-     * Get error
-     *
-     * @param   int $code
-     *
-     * @return  callable|null
-     */
-    public function getError(int $code)
-    {
-        $errors = $this->get('http_errors', []);
-        if (isset($errors[$code])) {
-            return $errors[$code];
-        }
-        /** @var RouteCollection $collection */
-        $collection = $this->collection;
-        return $collection->getError($code);
-    }
-
-    /**
      * @param string $value
      * @return Route
      */
@@ -182,14 +164,5 @@ class Route extends BaseRoute
         $list = $this->get('callbacks', []);
         $list[$name] = $callback;
         return $this->set('callbacks', $list);
-    }
-
-    /**
-     * @param string $name
-     * @return Route
-     */
-    public function middleware(string $name): self
-    {
-        return $this->set('middleware', $name);
     }
 }

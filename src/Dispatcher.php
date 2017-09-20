@@ -94,22 +94,6 @@ abstract class Dispatcher implements IDispatcher
     protected abstract function getAccessDeniedResponse(Context $context);
 
     /**
-     * @param int $code
-     * @param Context $context
-     * @return null
-     */
-    protected function raiseError(int $code, Context $context)
-    {
-        $callback = $this->router->getRouteCollection()->getError($code);
-
-        if($callback !== null){
-            return $callback($context);
-        }
-
-        return null;
-    }
-
-    /**
      * @param string $filter
      * @param callable[] $callbacks
      * @param CompiledRoute $compiled
