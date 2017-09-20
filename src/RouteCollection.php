@@ -17,8 +17,6 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Closure\SerializableClosure;
-use Opis\Routing\ClosureWrapperTrait;
 use Opis\Routing\Compiler;
 use Opis\Routing\RouteCollection as BaseCollection;
 
@@ -28,8 +26,6 @@ use Opis\Routing\RouteCollection as BaseCollection;
  */
 class RouteCollection extends BaseCollection
 {
-    use ClosureWrapperTrait;
-
     /** @var    array */
     protected $placeholders = [];
 
@@ -165,44 +161,33 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Serialize
-     * 
-     * @return  string
+     * @return array
      */
-    public function serialize()
+    protected function getSerialize()
     {
-        SerializableClosure::enterContext();
-
         $map = [static::class, 'wrapClosures'];
 
-        $object = serialize([
-            'parent' => $this->getSerialize(),
+        return [
+            'parent' => parent::getSerialize(),
             'placeholders' => $this->placeholders,
             'callbacks' => array_map($map, $this->callbacks),
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
-        ]);
-
-        SerializableClosure::exitContext();
-
-        return $object;
+        ];
     }
 
     /**
-     * Unserialize
-     * 
-     * @param   string  $data
+     * @param $object
      */
-    public function unserialize($data)
+    protected function setUnserialize($object)
     {
-        $object = unserialize($data);
         $map = [static::class, 'unwrapClosures'];
-
-        $this->setUnserialize($object['parent']);
 
         $this->placeholders = $object['placeholders'];
         $this->callbacks = array_map($map, $object['callbacks']);
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);
+
+        parent::setUnserialize($object['parent']);
     }
 }
