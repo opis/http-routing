@@ -31,7 +31,7 @@ class RouteCollection extends BaseCollection
     use ClosureWrapperTrait;
 
     /** @var    array */
-    protected $wildcards = [];
+    protected $placeholders = [];
 
     /** @var   callable[] */
     protected $bindings = [];
@@ -51,9 +51,9 @@ class RouteCollection extends BaseCollection
      * 
      * @return  array
      */
-    public function getWildcards(): array
+    public function getPlaceholders(): array
     {
-        return $this->wildcards;
+        return $this->placeholders;
     }
 
     /**
@@ -109,7 +109,19 @@ class RouteCollection extends BaseCollection
      */
     public function wildcard(string $name, $value): self
     {
-        $this->wildcards[$name] = $value;
+        return $this->placeholder($name, $value);
+    }
+
+    /**
+     * Add a placeholder
+     *
+     * @param string $name
+     * @param $value
+     * @return $this|RouteCollection
+     */
+    public function placeholder(string $name, $value): self
+    {
+        $this->placeholders[$name] = $value;
         return $this;
     }
 
@@ -165,7 +177,7 @@ class RouteCollection extends BaseCollection
 
         $object = serialize([
             'parent' => $this->getSerialize(),
-            'wildcards' => $this->wildcards,
+            'placeholders' => $this->placeholders,
             'callbacks' => array_map($map, $this->callbacks),
             'bindings' => array_map($map, $this->bindings),
             'defaults' => array_map($map, $this->defaults),
@@ -188,7 +200,7 @@ class RouteCollection extends BaseCollection
 
         $this->setUnserialize($object['parent']);
 
-        $this->wildcards = $object['wildcards'];
+        $this->placeholders = $object['placeholders'];
         $this->callbacks = array_map($map, $object['callbacks']);
         $this->bindings = array_map($map, $object['bindings']);
         $this->defaults = array_map($map, $object['defaults']);

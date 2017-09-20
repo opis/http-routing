@@ -33,12 +33,12 @@ class Route extends BaseRoute
     /**
      * @return array
      */
-    public function getWildcards(): array
+    public function getPlaceholders(): array
     {
         if(!isset($this->cache[__FUNCTION__])){
             /** @var RouteCollection $collection */
             $collection = $this->collection;
-            $this->cache[__FUNCTION__] = parent::getWildcards() + $collection->getWildcards();
+            $this->cache[__FUNCTION__] = parent::getPlaceholders() + $collection->getPlaceholders();
         }
         return $this->cache[__FUNCTION__];
     }
