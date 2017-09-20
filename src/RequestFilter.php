@@ -48,7 +48,7 @@ class RequestFilter implements IFilter
 
         // match domain
         if(null !== $domain = $route->get('domain')){
-            $regex = $route->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getWildcards());
+            $regex = $route->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getPlaceholders());
             return preg_match($regex, $context->domain());
         }
 
