@@ -17,6 +17,7 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\ClosureWrapperTrait;
 use Opis\Routing\Compiler;
 use Opis\Routing\RouteCollection as BaseCollection;
 
@@ -26,6 +27,8 @@ use Opis\Routing\RouteCollection as BaseCollection;
  */
 class RouteCollection extends BaseCollection
 {
+    use ClosureWrapperTrait;
+
     /** @var    array */
     protected $placeholders = [];
 
