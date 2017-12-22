@@ -32,26 +32,11 @@ class RoutingTest extends PHPUnit_Framework_TestCase
     {        
         $this->collection = new RouteCollection();
         $dispatcher = new class extends \Opis\HttpRouting\Dispatcher {
-            /**
-             * Get a 403 response
-             * @param Context $context
-             * @return mixed
-             */
-            protected function getNotFoundResponse(Context $context)
-            {
-                return 404;
-            }
 
-            /**
-             * Get a 403 response
-             * @param Context $context
-             * @return mixed
-             */
-            protected function getAccessDeniedResponse(Context $context)
+            protected function getErrorResponse(Context $context, HttpError $error)
             {
-                return 403;
+                return $error->getCode();
             }
-
         };
         $this->router = new Router($this->collection, $dispatcher, null, array('x' => 'X'));
     }
