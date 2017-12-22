@@ -41,11 +41,6 @@ class RequestFilter implements IFilter
             }
         }
 
-        //match method
-        if (!in_array($context->method(), $route->get('method', ['GET']))) {
-            return false;
-        }
-
         // match domain
         if(null !== $domain = $route->get('domain')){
             $regex = $route->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getPlaceholders());
