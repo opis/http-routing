@@ -25,9 +25,6 @@ use Opis\Routing\Context as BaseContext;
  */
 class Context extends BaseContext
 {
-    /** @var  string */
-    protected $path;
-
     /** @var string */
     protected $domain;
 
