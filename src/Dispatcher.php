@@ -50,18 +50,45 @@ abstract class Dispatcher implements IDispatcher
         $route = $this->findRoute();
 
         if($route === null){
-            return $this->getNotFoundResponse($context);
+            return $this->getErrorResponse($context, new HttpError(404));
         }
 
+        if (!in_array($context->method(), $route->get('method', ['GET']))) {
+            return $this->getErrorResponse($context, new HttpError(405));
+        }
+
+        $error = null;
         $callbacks = $route->getCallbacks();
         $compiled = $this->compile($context, $route);
 
-        if(!$this->passUserFilter('validate', $callbacks, $compiled, true)){
-            return $this->getNotFoundResponse($context);
+        $filter = function (string $filter, bool $bind = true) use($callbacks, $compiled, &$error){
+            foreach ($compiled->getRoute()->get($filter, []) as $name){
+                if(isset($callbacks[$name])){
+                    $arguments = $compiled->getArguments($callbacks[$name], $bind);
+                    $result = $callbacks[$name](...$arguments);
+                    if(false === $result){
+                        return false;
+                    } elseif ($result instanceof HttpError){
+                        $error = $result;
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+
+        if(!$filter('validate')){
+            if($error === null){
+                $error = new HttpError(404);
+            }
+            return $this->getErrorResponse($context, $error);
         }
 
-        if(!$this->passUserFilter('access', $callbacks, $compiled, true)){
-            return $this->getAccessDeniedResponse($context);
+        if(!$filter('access')){
+            if($error === null){
+                $error = new HttpError(403);
+            }
+            return $this->getErrorResponse($context, $error);
         }
 
         return $compiled->invokeAction();
@@ -80,38 +107,9 @@ abstract class Dispatcher implements IDispatcher
     }
 
     /**
-     * Get a 403 response
      * @param Context $context
+     * @param HttpError $error
      * @return mixed
      */
-    protected abstract function getNotFoundResponse(Context $context);
-
-    /**
-     * Get a 403 response
-     * @param Context $context
-     * @return mixed
-     */
-    protected abstract function getAccessDeniedResponse(Context $context);
-
-    /**
-     * @param string $filter
-     * @param callable[] $callbacks
-     * @param CompiledRoute $compiled
-     * @param bool $bind
-     * @return bool
-     */
-    protected function passUserFilter(string $filter, array $callbacks, CompiledRoute $compiled, bool $bind): bool
-    {
-        foreach ($compiled->getRoute()->get($filter, []) as $name){
-            if(isset($callbacks[$name])){
-                $arguments = $compiled->getArguments($callbacks[$name], $bind);
-                if(false === $callbacks[$name](...$arguments)){
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
+    protected abstract function getErrorResponse(Context $context, HttpError $error);
 }
