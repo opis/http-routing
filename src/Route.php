@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ use Opis\Routing\Route as BaseRoute;
  */
 class Route extends BaseRoute
 {
-    /** @var array  */
+    /** @var array */
     protected $cache = [];
 
     /**
@@ -35,7 +35,7 @@ class Route extends BaseRoute
      */
     public function getPlaceholders(): array
     {
-        if(!isset($this->cache[__FUNCTION__])){
+        if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
             $collection = $this->collection;
             $this->cache[__FUNCTION__] = parent::getPlaceholders() + $collection->getPlaceholders();
@@ -48,7 +48,7 @@ class Route extends BaseRoute
      */
     public function getDefaults(): array
     {
-        if(!isset($this->cache[__FUNCTION__])){
+        if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
             $collection = $this->collection;
             $this->cache[__FUNCTION__] = parent::getDefaults() + $collection->getDefaults();
@@ -61,7 +61,7 @@ class Route extends BaseRoute
      */
     public function getBindings(): array
     {
-        if(!isset($this->cache[__FUNCTION__])){
+        if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
             $collection = $this->collection;
             $this->cache[__FUNCTION__] = parent::getBindings() + $collection->getBindings();
@@ -74,7 +74,7 @@ class Route extends BaseRoute
      */
     public function getCallbacks(): array
     {
-        if(!isset($this->cache[__FUNCTION__])){
+        if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
             $collection = $this->collection;
             $this->cache[__FUNCTION__] = $this->get('callbacks', []) + $collection->getCallbacks();
@@ -92,13 +92,13 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string|array $method
+     * @param string[] ...$method
      * @return Route
      */
-    public function method($method): self
+    public function method(string ...$method): self
     {
-        if (!is_array($method)) {
-            $method = [$method];
+        if (empty($method)) {
+            $method[] = 'GET';
         }
 
         $method = array_map('strtoupper', $method);
@@ -116,42 +116,21 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string|array $callbacks
+     * @param string[] ...$callbacks
      * @return Route
      */
-    public function filter($callbacks): self
+    public function filter(string ...$callbacks): self
     {
-        if (!is_array($callbacks)) {
-            $callbacks = [(string) $callbacks];
-        }
-
         return $this->set('filter', $callbacks);
     }
 
     /**
-     * @param string|array $callbacks
+     * @param string[] ...$callbacks
      * @return Route
      */
-    public function validate($callbacks): self
+    public function guard(string ...$callbacks): self
     {
-        if (!is_array($callbacks)) {
-            $callbacks = [(string) $callbacks];
-        }
-
-        return $this->set('validate', $callbacks);
-    }
-
-    /**
-     * @param string|array $callbacks
-     * @return Route
-     */
-    public function access($callbacks): self
-    {
-        if (!is_array($callbacks)) {
-            $callbacks = [(string) $callbacks];
-        }
-
-        return $this->set('access', $callbacks);
+        return $this->set('guard', $callbacks);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Http\Request;
 use Opis\Routing\{
     IFilter,
-    Context as BaseContext,
     Route as BaseRoute,
     Router as BaseRouter
 };
@@ -28,23 +28,26 @@ class RequestFilter implements IFilter
 {
     /**
      * @param BaseRouter|BaseRouter $router
-     * @param BaseContext|Context $context
      * @param BaseRoute|Route $route
      * @return bool
+     * @throws \Exception
      */
-    public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
+    public function filter(BaseRouter $router, BaseRoute $route): bool
     {
+        /** @var Request $request */
+        $request = $router->getContext()->data();
+
         //match secure
         if (null !== $secure = $route->get('secure')) {
-            if ($secure !== $context->isSecure()) {
+            if ($secure !== $request->isSecure()) {
                 return false;
             }
         }
 
         // match domain
-        if(null !== $domain = $route->get('domain')){
-            $regex = $route->getRouteCollection()->getDomainCompiler()->getRegex($domain, $route->getPlaceholders());
-            return preg_match($regex, $context->domain());
+        if (null !== $domain = $route->get('domain')) {
+            $regex = $route->getRouteCollection()->getDomainBuilder()->getRegex($domain, $route->getPlaceholders());
+            return preg_match($regex, $request->host());
         }
 
         return true;

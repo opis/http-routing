@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,99 +17,59 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Http\Request;
+use Opis\Http\Response;
 use Opis\Routing\{
-    Context as BaseContext, DispatcherTrait, IDispatcher, Router as BaseRouter
+    DispatcherTrait, IDispatcher, Router as BaseRouter
 };
 
 /**
- * Class Dispatcher
- * @package Opis\HttpRouting
- *
- * @property Route $route
- * @property Context $context
  * @property Router $router
  * @method Route findRoute()
  */
-abstract class Dispatcher implements IDispatcher
+class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
 
-    /** @var array */
-    protected $compiled = [];
-
     /**
      * @param BaseRouter|Router $router
-     * @param BaseContext|Context $context
      * @return mixed
+     * @throws \Exception
      */
-    public function dispatch(BaseRouter $router, BaseContext $context)
+    public function dispatch(BaseRouter $router)
     {
-        $this->router = $router;
-        $this->context = $context;
+        $route = $this->findRoute($router);
 
-        $route = $this->findRoute();
-
-        if($route === null){
-            return $this->getErrorResponse($context, new HttpError(404));
+        if ($route === null) {
+            return (new Response("Not Found"))->setStatusCode(404);
         }
 
-        if (!in_array($context->method(), $route->get('method', ['GET']))) {
-            return $this->getErrorResponse($context, new HttpError(405));
+        /** @var Request $request */
+        $request = $router->getContext()->data();
+
+        if (!in_array($request->method(), $route->get('method', ['GET']))) {
+            return (new Response("Method Not Allowed"))->setStatusCode(405);
         }
 
-        $error = null;
         $callbacks = $route->getCallbacks();
-        $compiled = $this->compile($context, $route);
+        $compacted = $router->compact($route);
 
-        $filter = function (string $filter, bool $bind = true) use($callbacks, $compiled, &$error){
-            foreach ($compiled->getRoute()->get($filter, []) as $name){
-                if(isset($callbacks[$name])){
-                    $arguments = $compiled->getArguments($callbacks[$name], $bind);
-                    $result = $callbacks[$name](...$arguments);
-                    if(false === $result){
-                        return false;
-                    } elseif ($result instanceof HttpError){
-                        $error = $result;
-                        return false;
-                    }
+        foreach ($route->get('guard', []) as $name) {
+            if (isset($callbacks[$name])) {
+                $callback = $callbacks[$name];
+                $arguments = $compacted->getArguments($callback);
+                if (false === $callback(...$arguments)) {
+                    return (new Response("Not Found"))->setStatusCode(404);
                 }
             }
-            return true;
-        };
-
-        if(!$filter('validate')){
-            if($error === null){
-                $error = new HttpError(404);
-            }
-            return $this->getErrorResponse($context, $error);
         }
 
-        if(!$filter('access')){
-            if($error === null){
-                $error = new HttpError(403);
-            }
-            return $this->getErrorResponse($context, $error);
+        $result = $compacted->invokeAction();
+
+        if (!$result instanceof Response) {
+            $result = new Response($result);
         }
 
-        return $compiled->invokeAction();
+        return $result;
     }
-
-    public function compile(Context $context, Route $route): CompiledRoute
-    {
-        $cid = spl_object_hash($context);
-        $rid = spl_object_hash($route);
-
-        if(!isset($this->compiled[$cid][$rid])){
-            return $this->compiled[$cid][$rid] = new CompiledRoute($context, $route, $this->getExtraVariables());
-        }
-
-        return $this->compiled[$cid][$rid];
-    }
-
-    /**
-     * @param Context $context
-     * @param HttpError $error
-     * @return mixed
-     */
-    protected abstract function getErrorResponse(Context $context, HttpError $error);
 }

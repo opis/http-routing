@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\CompiledRoute as BaseCompilerRoute;
+use Opis\Routing\CompactRoute as BaseCompactRoute;
 
 /**
  * Class CompiledRoute
@@ -25,16 +25,16 @@ use Opis\Routing\CompiledRoute as BaseCompilerRoute;
  * @property Route $route
  * @method Route getRoute()
  */
-class CompiledRoute extends BaseCompilerRoute
+class CompactRoute extends BaseCompactRoute
 {
     public function getNames(): array
     {
-        if($this->names === null){
+        if ($this->names === null) {
             $names = [];
-            if(null !== $domain = $this->route->get('domain')){
+            if (null !== $domain = $this->route->get('domain')) {
                 /** @var RouteCollection $collection */
                 $collection = $this->route->getRouteCollection();
-                $names += $collection->getDomainCompiler()->getNames($domain);
+                $names += $collection->getDomainBuilder()->getNames($domain);
             }
             $names += parent::getNames();
             $this->names = $names;

@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,55 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Routing\GlobalValues;
 use Opis\Routing\IDispatcher;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
+use Opis\Routing\Route as BaseRoute;
 
 /**
  * Class Router
  * @package Opis\HttpRouting
  *
  * @method RouteCollection getRouteCollection()
- * @method Route findRoute(Context $context)
  * @method Dispatcher getDispatcher()
- * @property Context $currentPath
  */
 class Router extends BaseRouter
 {
     /**
      * Router constructor.
-     * @param IDispatcher $dispatcher
      * @param RouteCollection $routes
+     * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
-     * @param array $specials
+     * @param GlobalValues $global
      */
     public function __construct(
         RouteCollection $routes,
-        IDispatcher $dispatcher,
+        IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
-        array $specials = []
-    ){
-        if($filters === null){
+        GlobalValues $global = null
+    )
+    {
+        if ($dispatcher === null) {
+            $dispatcher = new Dispatcher();
+        }
+
+        if ($filters === null) {
             $filters = new FilterCollection();
             $filters->addFilter(new RequestFilter())
                 ->addFilter(new UserFilter());
         }
 
-        parent::__construct($routes, $dispatcher, $filters, $specials);
+        parent::__construct($routes, $dispatcher, $filters, $global);
+    }
+
+    /**
+     * @param BaseRoute|Route $route
+     * @return CompactRoute
+     * @throws \Exception
+     */
+    public function compact(BaseRoute $route)
+    {
+        return new CompactRoute($route, $this->getContext(), $this->getGlobalValues());
     }
 }

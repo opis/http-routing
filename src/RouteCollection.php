@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Pattern\Builder;
 use Opis\Routing\ClosureWrapperTrait;
-use Opis\Routing\Compiler;
 use Opis\Routing\RouteCollection as BaseCollection;
 
 /**
@@ -41,13 +41,13 @@ class RouteCollection extends BaseCollection
     /** @var    array */
     protected $defaults = [];
 
-    /** @var  Compiler|null */
-    protected $domainCompiler;
+    /** @var  Builder|null */
+    protected $domainBuilder;
 
 
     /**
      * Get wildcards
-     * 
+     *
      * @return  array
      */
     public function getPlaceholders(): array
@@ -56,8 +56,8 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Get bindings 
-     * 
+     * Get bindings
+     *
      * @return  callable[]
      */
     public function getBindings(): array
@@ -67,7 +67,7 @@ class RouteCollection extends BaseCollection
 
     /**
      * Get filters
-     * 
+     *
      * @return  callable[]
      */
     public function getCallbacks(): array
@@ -77,7 +77,7 @@ class RouteCollection extends BaseCollection
 
     /**
      * Get default values
-     * 
+     *
      * @return  array
      */
     public function getDefaults(): array
@@ -86,29 +86,17 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * @return Compiler
+     * @return Builder
      */
-    public function getDomainCompiler(): Compiler
+    public function getDomainBuilder(): Builder
     {
-        if($this->domainCompiler === null){
-            $this->domainCompiler = new Compiler([
-                Compiler::SEGMENT_DELIMITER => '.',
-                Compiler::CAPTURE_MODE => Compiler::CAPTURE_RIGHT | Compiler::CAPTURE_TRAIL
+        if ($this->domainBuilder === null) {
+            $this->domainBuilder = new Builder([
+                Builder::SEGMENT_DELIMITER => '.',
+                Builder::CAPTURE_MODE => Builder::CAPTURE_RIGHT | Builder::CAPTURE_TRAIL
             ]);
         }
-        return $this->domainCompiler;
-    }
-
-    /**
-     * Set a wildcard
-     *
-     * @param   string $name
-     * @param   mixed $value
-     * @return $this|RouteCollection
-     */
-    public function wildcard(string $name, $value): self
-    {
-        return $this->placeholder($name, $value);
+        return $this->domainBuilder;
     }
 
     /**
@@ -165,6 +153,7 @@ class RouteCollection extends BaseCollection
 
     /**
      * @return array
+     * @throws \Exception
      */
     protected function getSerialize()
     {

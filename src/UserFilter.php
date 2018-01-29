@@ -1,6 +1,6 @@
 <?php
 /* ===========================================================================
- * Copyright 2013-2017 The Opis Project
+ * Copyright 2013-2018 The Opis Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,30 +19,30 @@ namespace Opis\HttpRouting;
 
 use Opis\Routing\{
     IFilter,
-    Context as BaseContext,
     Route as BaseRoute,
     Router as BaseRouter
 };
 
 class UserFilter implements IFilter
 {
+
     /**
      * @param BaseRouter|Router $router
-     * @param BaseContext|Context $context
      * @param BaseRoute|Route $route
      * @return bool
+     * @throws \Exception
      */
-    public function pass(BaseRouter $router, BaseContext $context, BaseRoute $route): bool
+    public function filter(BaseRouter $router, BaseRoute $route): bool
     {
         /** @var callable[] $callbacks */
         $callbacks = $route->getCallbacks();
-        $compiled = $router->getDispatcher()->compile($context, $route);
+        $compacted = $router->compact($route);
 
         foreach ($route->get('filter', []) as $name) {
             if (isset($callbacks[$name])) {
                 $callback = $callbacks[$name];
-                $arguments = $compiled->getArguments($callback, false);
-                if(false === $callback(...$arguments)){
+                $arguments = $compacted->getArguments($callback, false);
+                if (false === $callback(...$arguments)) {
                     return false;
                 }
             }
