@@ -62,7 +62,6 @@ class Router extends BaseRouter
     /**
      * @param BaseRoute|Route $route
      * @return CompactRoute
-     * @throws \Exception
      */
     public function compact(BaseRoute $route)
     {

@@ -41,7 +41,6 @@ class RoutingTest extends TestCase
      * @param $action
      * @param string $method
      * @return Route
-     * @throws Exception
      */
     protected function route($pattern, $action, $method = 'GET')
     {
@@ -57,7 +56,6 @@ class RoutingTest extends TestCase
      * @param string $method
      * @param bool $secure
      * @return \Opis\Http\Response
-     * @throws Exception
      */
     protected function exec($path, $domain = 'localhost', $method = 'GET', $secure = false)
     {
@@ -69,9 +67,6 @@ class RoutingTest extends TestCase
         return $this->router->route(new Context($request->path(), $request));
     }
 
-    /**
-     * @throws Exception
-     */
     public function testBasicRouting()
     {
         $this->route('/', function () {
@@ -84,17 +79,11 @@ class RoutingTest extends TestCase
         $this->assertEquals('OK', $response->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testNotFound1()
     {
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testNotFound2()
     {
         $this->route('/', function () {
@@ -104,9 +93,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/foo')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testNotFound3()
     {
         $this->route('/', function () {
@@ -116,9 +102,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParam()
     {
         $this->route('/{foo}', function ($foo) {
@@ -128,9 +111,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParamConstraintSuccess()
     {
         $this->route('/{foo}', function ($foo) {
@@ -141,9 +121,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParamConstraintFail()
     {
         $this->route('/{foo}', function ($foo) {
@@ -154,9 +131,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/123')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParamOptional1()
     {
         $this->route('/{foo?}', function ($foo) {
@@ -166,9 +140,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParamOptional2()
     {
         $this->route('/{foo?}', function ($foo = 'bar') {
@@ -178,9 +149,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testParamOptional3()
     {
         $this->route('/{foo?}', function ($foo) {
@@ -191,9 +159,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testMultipleParams()
     {
         $this->route('/{foo}/{bar}', function ($bar, $foo) {
@@ -203,9 +168,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('barfoo', $this->exec('/foo/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalBeforeFilterSuccess()
     {
         $this->route('/', function () {
@@ -219,9 +181,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalBeforeFilterFail()
     {
         $this->route('/', function () {
@@ -235,9 +194,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalBeforeFilterSuccess()
     {
         $this->collection->callback('foo', function () {
@@ -252,9 +208,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalBeforeFilterFail()
     {
         $this->collection->callback('foo', function () {
@@ -269,9 +222,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalFilterGlobalValuesSuccess()
     {
         $this->route('/', function () {
@@ -285,9 +235,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalFilterGlobalValuesFail()
     {
         $this->route('/', function () {
@@ -301,9 +248,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalFilterGlobalValuesSuccess()
     {
         $this->collection->callback('foo', function ($x) {
@@ -318,9 +262,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalFilterGlobalValuesFail()
     {
         $this->collection->callback('foo', function ($x) {
@@ -335,9 +276,6 @@ class RoutingTest extends TestCase
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalBinding1()
     {
         $this->route('/{foo}', function ($foo) {
@@ -350,9 +288,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testLocalBinding2()
     {
         $this->route('/', function ($foo) {
@@ -365,9 +300,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalBinding1()
     {
         $this->collection->bind('foo', function ($foo) {
@@ -381,9 +313,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobalBinding2()
     {
         $this->collection->bind('foo', function () {
@@ -397,9 +326,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('BAR', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobals1()
     {
         $this->route('/', function ($x) {
@@ -409,9 +335,6 @@ class RoutingTest extends TestCase
         $this->assertEquals('X', $this->exec('/')->getBody());
     }
 
-    /**
-     * @throws Exception
-     */
     public function testGlobals2()
     {
         $this->route('/', function ($y) {

@@ -30,7 +30,6 @@ class RequestFilter implements IFilter
      * @param BaseRouter|BaseRouter $router
      * @param BaseRoute|Route $route
      * @return bool
-     * @throws \Exception
      */
     public function filter(BaseRouter $router, BaseRoute $route): bool
     {

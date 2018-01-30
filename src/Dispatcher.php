@@ -24,8 +24,7 @@ use Opis\Routing\{
 };
 
 /**
- * @property Router $router
- * @method Route findRoute()
+ * @method Route findRoute(Router $router)
  */
 class Dispatcher implements IDispatcher
 {
@@ -34,7 +33,6 @@ class Dispatcher implements IDispatcher
     /**
      * @param BaseRouter|Router $router
      * @return mixed
-     * @throws \Exception
      */
     public function dispatch(BaseRouter $router)
     {

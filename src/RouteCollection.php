@@ -153,7 +153,6 @@ class RouteCollection extends BaseCollection
 
     /**
      * @return array
-     * @throws \Exception
      */
     protected function getSerialize()
     {

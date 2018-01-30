@@ -30,7 +30,6 @@ class UserFilter implements IFilter
      * @param BaseRouter|Router $router
      * @param BaseRoute|Route $route
      * @return bool
-     * @throws \Exception
      */
     public function filter(BaseRouter $router, BaseRoute $route): bool
     {
