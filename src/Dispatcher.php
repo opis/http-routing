@@ -50,19 +50,19 @@ class Dispatcher implements IDispatcher
         }
 
         $callbacks = $route->getCallbacks();
-        $compacted = $router->compact($route);
+        $invoker = $router->resolveInvoker($route);
 
         foreach ($route->get('guard', []) as $name) {
             if (isset($callbacks[$name])) {
                 $callback = $callbacks[$name];
-                $arguments = $compacted->getArguments($callback);
+                $arguments = $invoker->getArgumentResolver()->resolve($callback);
                 if (false === $callback(...$arguments)) {
                     return (new Response("Not Found"))->setStatusCode(404);
                 }
             }
         }
 
-        $result = $compacted->invokeAction();
+        $result = $invoker->invokeAction();
 
         if (!$result instanceof Response) {
             $result = new Response($result);

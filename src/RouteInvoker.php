@@ -17,7 +17,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\CompactRoute as BaseCompactRoute;
+use Opis\Routing\RouteInvoker as BaseRouteInvoker;
 
 /**
  * Class CompiledRoute
@@ -25,7 +25,7 @@ use Opis\Routing\CompactRoute as BaseCompactRoute;
  * @property Route $route
  * @method Route getRoute()
  */
-class CompactRoute extends BaseCompactRoute
+class RouteInvoker extends BaseRouteInvoker
 {
     public function getNames(): array
     {

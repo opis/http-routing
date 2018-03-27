@@ -31,7 +31,7 @@ class RoutingTest extends TestCase
     public function setUp()
     {
         $this->collection = new RouteCollection();
-        $global = new \Opis\Routing\GlobalValues();
+        $global = new \ArrayObject();
         $global['x'] = 'X';
         $this->router = new Router($this->collection, null, null, $global);
     }
@@ -44,10 +44,7 @@ class RoutingTest extends TestCase
      */
     protected function route($pattern, $action, $method = 'GET')
     {
-        $route = new Route($pattern, $action);
-        $route->method($method);
-        $this->collection->addRoute($route);
-        return $route;
+        return $this->collection->createRoute($pattern, $action)->method($method);
     }
 
     /**

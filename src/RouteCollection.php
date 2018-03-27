@@ -23,7 +23,7 @@ use Opis\Routing\RouteCollection as BaseCollection;
 
 /**
  * Class RouteCollection
- * @package Opis\HttpRouting
+ * @method Route createRoute(string $pattern, callable $action, string $name = null)
  */
 class RouteCollection extends BaseCollection
 {
@@ -44,6 +44,16 @@ class RouteCollection extends BaseCollection
     /** @var  Builder|null */
     protected $domainBuilder;
 
+    /**
+     * @inheritDoc
+     */
+    public function __construct(callable $factory = null, Builder $builder = null, string $sortKey = null)
+    {
+        $factory = $factory ?? function ($collection, $id, $pattern, $action, $name) {
+            return new Route($collection, $id, $pattern, $action, $name);
+        };
+        parent::__construct($factory, $builder, $sortKey);
+    }
 
     /**
      * Get wildcards

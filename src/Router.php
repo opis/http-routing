@@ -17,16 +17,15 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Routing\GlobalValues;
+use ArrayAccess;
+use Opis\Routing\Context;
 use Opis\Routing\IDispatcher;
+use Opis\Routing\RouteInvoker as BaseRouteInvoker;
 use Opis\Routing\Router as BaseRouter;
 use Opis\Routing\FilterCollection;
 use Opis\Routing\Route as BaseRoute;
 
 /**
- * Class Router
- * @package Opis\HttpRouting
- *
  * @method RouteCollection getRouteCollection()
  * @method Dispatcher getDispatcher()
  */
@@ -37,13 +36,13 @@ class Router extends BaseRouter
      * @param RouteCollection $routes
      * @param IDispatcher|null $dispatcher
      * @param FilterCollection|null $filters
-     * @param GlobalValues $global
+     * @param ArrayAccess $global
      */
     public function __construct(
         RouteCollection $routes,
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
-        GlobalValues $global = null
+        ArrayAccess $global = null
     )
     {
         if ($dispatcher === null) {
@@ -60,11 +59,10 @@ class Router extends BaseRouter
     }
 
     /**
-     * @param BaseRoute|Route $route
-     * @return CompactRoute
+     * @inheritDoc
      */
-    public function compact(BaseRoute $route)
+    protected function createInvoker(BaseRoute $route, Context $context): BaseRouteInvoker
     {
-        return new CompactRoute($route, $this->getContext(), $this->getGlobalValues());
+        return new RouteInvoker($route, $context, $this->getGlobalValues());
     }
 }

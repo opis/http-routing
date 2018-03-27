@@ -35,12 +35,12 @@ class UserFilter implements IFilter
     {
         /** @var callable[] $callbacks */
         $callbacks = $route->getCallbacks();
-        $compacted = $router->compact($route);
+        $invoker = $router->resolveInvoker($route);
 
         foreach ($route->get('filter', []) as $name) {
             if (isset($callbacks[$name])) {
                 $callback = $callbacks[$name];
-                $arguments = $compacted->getArguments($callback, false);
+                $arguments = $invoker->getArgumentResolver()->resolve($callback, false);
                 if (false === $callback(...$arguments)) {
                     return false;
                 }
