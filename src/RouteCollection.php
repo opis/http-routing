@@ -49,9 +49,15 @@ class RouteCollection extends BaseCollection
      */
     public function __construct(callable $factory = null, Builder $builder = null, string $sortKey = null)
     {
-        $factory = $factory ?? function ($collection, $id, $pattern, $action, $name) {
-            return new Route($collection, $id, $pattern, $action, $name);
-        };
+        $factory = $factory ?? function (
+                RouteCollection $collection,
+                string $id,
+                string $pattern,
+                callable $action,
+                string $name = null
+            ) {
+                return new Route($collection, $id, $pattern, $action, $name);
+            };
         parent::__construct($factory, $builder, $sortKey);
     }
 
@@ -103,7 +109,7 @@ class RouteCollection extends BaseCollection
         if ($this->domainBuilder === null) {
             $this->domainBuilder = new Builder([
                 Builder::SEGMENT_DELIMITER => '.',
-                Builder::CAPTURE_MODE => Builder::CAPTURE_RIGHT | Builder::CAPTURE_TRAIL
+                Builder::CAPTURE_MODE => Builder::CAPTURE_RIGHT | Builder::CAPTURE_TRAIL,
             ]);
         }
         return $this->domainBuilder;

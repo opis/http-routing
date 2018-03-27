@@ -43,8 +43,7 @@ class Router extends BaseRouter
         IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
         ArrayAccess $global = null
-    )
-    {
+    ) {
         if ($dispatcher === null) {
             $dispatcher = new Dispatcher();
         }
