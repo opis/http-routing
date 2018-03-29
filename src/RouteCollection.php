@@ -120,7 +120,7 @@ class RouteCollection extends BaseCollection
      *
      * @param string $name
      * @param $value
-     * @return self|RouteCollection
+     * @return static|RouteCollection
      */
     public function placeholder(string $name, $value): self
     {
@@ -133,7 +133,7 @@ class RouteCollection extends BaseCollection
      *
      * @param   string $name
      * @param   callable $callback
-     * @return  self|RouteCollection
+     * @return  static|RouteCollection
      */
     public function bind(string $name, callable $callback): self
     {
@@ -146,7 +146,7 @@ class RouteCollection extends BaseCollection
      *
      * @param   string $name
      * @param   mixed $value
-     * @return  self|RouteCollection
+     * @return  static|RouteCollection
      */
     public function implicit(string $name, $value): self
     {
@@ -159,7 +159,7 @@ class RouteCollection extends BaseCollection
      *
      * @param   string $name
      * @param   callable $callback
-     * @return  self|RouteCollection
+     * @return  static|RouteCollection
      */
     public function callback(string $name, callable $callback): self
     {
