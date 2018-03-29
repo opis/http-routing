@@ -36,6 +36,11 @@ class RequestFilter implements IFilter
         /** @var Request $request */
         $request = $router->getContext()->data();
 
+        // filter method
+        if (!in_array($request->method(), $route->get('method', ['GET']))) {
+            return false;
+        }
+
         //match secure
         if (null !== $secure = $route->get('secure')) {
             if ($secure !== $request->isSecure()) {
