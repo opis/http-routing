@@ -84,7 +84,7 @@ class Route extends BaseRoute
 
     /**
      * @param string $value
-     * @return Route
+     * @return static|Route
      */
     public function domain(string $value): self
     {
@@ -93,7 +93,7 @@ class Route extends BaseRoute
 
     /**
      * @param string[] ...$method
-     * @return Route
+     * @return static|Route
      */
     public function method(string ...$method): self
     {
@@ -108,7 +108,7 @@ class Route extends BaseRoute
 
     /**
      * @param bool $value
-     * @return Route
+     * @return static|Route
      */
     public function secure(bool $value = true): self
     {
@@ -117,7 +117,7 @@ class Route extends BaseRoute
 
     /**
      * @param string[] ...$callbacks
-     * @return Route
+     * @return static|Route
      */
     public function filter(string ...$callbacks): self
     {
@@ -126,7 +126,7 @@ class Route extends BaseRoute
 
     /**
      * @param string[] ...$callbacks
-     * @return Route
+     * @return static|Route
      */
     public function guard(string ...$callbacks): self
     {
@@ -136,7 +136,7 @@ class Route extends BaseRoute
     /**
      * @param string $name
      * @param callable $callback
-     * @return Route
+     * @return static|Route
      */
     public function callback(string $name, callable $callback): self
     {
