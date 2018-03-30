@@ -17,7 +17,7 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Pattern\Builder;
+use Opis\Pattern\RegexBuilder;
 use Opis\Routing\ClosureWrapperTrait;
 use Opis\Routing\RouteCollection as BaseCollection;
 
@@ -41,13 +41,13 @@ class RouteCollection extends BaseCollection
     /** @var    array */
     protected $defaults = [];
 
-    /** @var  Builder|null */
+    /** @var  RegexBuilder|null */
     protected $domainBuilder;
 
     /**
      * @inheritDoc
      */
-    public function __construct(callable $factory = null, Builder $builder = null, string $sortKey = null, bool $sortDescending = true)
+    public function __construct(callable $factory = null, RegexBuilder $builder = null, string $sortKey = null, bool $sortDescending = true)
     {
         $factory = $factory ?? function (
                 RouteCollection $collection,
@@ -102,14 +102,14 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * @return Builder
+     * @return RegexBuilder
      */
-    public function getDomainBuilder(): Builder
+    public function getDomainBuilder(): RegexBuilder
     {
         if ($this->domainBuilder === null) {
-            $this->domainBuilder = new Builder([
-                Builder::SEGMENT_DELIMITER => '.',
-                Builder::CAPTURE_MODE => Builder::CAPTURE_RIGHT | Builder::CAPTURE_TRAIL,
+            $this->domainBuilder = new RegexBuilder([
+                RegexBuilder::SEPARATOR_SYMBOL => '.',
+                RegexBuilder::CAPTURE_MODE => RegexBuilder::CAPTURE_RIGHT,
             ]);
         }
         return $this->domainBuilder;
