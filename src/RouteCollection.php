@@ -47,7 +47,7 @@ class RouteCollection extends BaseCollection
     /**
      * @inheritDoc
      */
-    public function __construct(callable $factory = null, Builder $builder = null, string $sortKey = null)
+    public function __construct(callable $factory = null, Builder $builder = null, string $sortKey = null, bool $sortDescending = true)
     {
         $factory = $factory ?? function (
                 RouteCollection $collection,
@@ -58,7 +58,7 @@ class RouteCollection extends BaseCollection
             ) {
                 return new Route($collection, $id, $pattern, $action, $name);
             };
-        parent::__construct($factory, $builder, $sortKey);
+        parent::__construct($factory, $builder, $sortKey, $sortDescending);
     }
 
     /**
