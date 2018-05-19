@@ -17,12 +17,12 @@
 
 namespace Opis\HttpRouting;
 
-use Opis\Http\Request;
 use Opis\Routing\{
     IFilter,
     Route as BaseRoute,
     Router as BaseRouter
 };
+use Psr\Http\Message\RequestInterface;
 
 class RequestFilter implements IFilter
 {
@@ -33,25 +33,24 @@ class RequestFilter implements IFilter
      */
     public function filter(BaseRouter $router, BaseRoute $route): bool
     {
-        /** @var Request $request */
+        /** @var RequestInterface $request */
         $request = $router->getContext()->data();
 
-        // filter method
-        if (!in_array($request->method(), $route->get('method', ['GET']))) {
+        if (!in_array($request->getMethod(), $route->get('method', ['GET']))) {
             return false;
         }
 
-        //match secure
         if (null !== $secure = $route->get('secure')) {
-            if ($secure !== $request->isSecure()) {
+            if ($secure && $request->getUri()->getScheme() !== 'https') {
                 return false;
             }
         }
 
-        // match domain
         if (null !== $domain = $route->get('domain')) {
             $regex = $route->getRouteCollection()->getDomainBuilder()->getRegex($domain, $route->getPlaceholders());
-            return preg_match($regex, $request->host());
+            if(!preg_match($regex, $request->getUri()->getHost())) {
+                return false;
+            }
         }
 
         return true;

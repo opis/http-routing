@@ -18,12 +18,9 @@
 namespace Opis\HttpRouting;
 
 use ArrayAccess;
-use Opis\Routing\Context;
-use Opis\Routing\IDispatcher;
-use Opis\Routing\RouteInvoker as BaseRouteInvoker;
-use Opis\Routing\Router as BaseRouter;
-use Opis\Routing\FilterCollection;
-use Opis\Routing\Route as BaseRoute;
+use Opis\Routing\{
+    Context, IDispatcher, RouteInvoker as BaseRouteInvoker, Router as BaseRouter, FilterCollection, Route as BaseRoute
+};
 
 /**
  * @method RouteCollection getRouteCollection()
@@ -34,19 +31,16 @@ class Router extends BaseRouter
     /**
      * Router constructor.
      * @param RouteCollection $routes
-     * @param IDispatcher|null $dispatcher
+     * @param IDispatcher $dispatcher
      * @param FilterCollection|null $filters
      * @param ArrayAccess $global
      */
     public function __construct(
         RouteCollection $routes,
-        IDispatcher $dispatcher = null,
+        IDispatcher $dispatcher,
         FilterCollection $filters = null,
         ArrayAccess $global = null
     ) {
-        if ($dispatcher === null) {
-            $dispatcher = new Dispatcher();
-        }
 
         if ($filters === null) {
             $filters = new FilterCollection();

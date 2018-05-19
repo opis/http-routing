@@ -27,13 +27,33 @@ class RoutingTest extends TestCase
     protected $router;
     /** @var  RouteCollection */
     protected $collection;
+    /** @var \Opis\HttpRouting\IResponseFactory */
+    protected $factory;
 
     public function setUp()
     {
         $this->collection = new RouteCollection();
         $global = new \ArrayObject();
         $global['x'] = 'X';
-        $this->router = new Router($this->collection, null, null, $global);
+        $this->factory = $factory = new class implements \Opis\HttpRouting\IResponseFactory {
+            /**
+             * @inheritDoc
+             */
+            public function createResponse(string $stream = 'php://memory'): \Psr\Http\Message\ResponseInterface
+            {
+                return new \Zend\Diactoros\Response($stream);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function createStream(string $stream, string $mode = 'r'): \Psr\Http\Message\StreamInterface
+            {
+                return new \Zend\Diactoros\Stream($stream, $mode);
+            }
+        };
+
+        $this->router = new Router($this->collection, new \Opis\HttpRouting\Dispatcher($factory), null, $global);
     }
 
     /**
@@ -52,16 +72,13 @@ class RoutingTest extends TestCase
      * @param string $domain
      * @param string $method
      * @param bool $secure
-     * @return \Opis\Http\Response
+     * @return \Psr\Http\Message\ResponseInterface
      */
     protected function exec($path, $domain = 'localhost', $method = 'GET', $secure = false)
     {
-        $server = [
-            'HTTP_HOST' => $domain,
-            'HTTPS' => $secure ? 'on' : 'off',
-        ];
-        $request = \Opis\Http\Request::create($path, $method, [], [], [], $server);
-        return $this->router->route(new Context($request->path(), $request));
+        $url = new \Zend\Diactoros\Uri('http' . ($secure ? 's' : '') . '://' . $domain . $path);
+        $request = new \Zend\Diactoros\Request($url, $method);
+        return $this->router->route(new Context($path, $request));
     }
 
     public function testBasicRouting()
@@ -93,10 +110,10 @@ class RoutingTest extends TestCase
     public function testNotFound3()
     {
         $this->route('/', function () {
-            return 404;
+            return $this->factory->createResponse()->withStatus(404);
         });
 
-        $this->assertEquals(404, $this->exec('/')->getBody());
+        $this->assertEquals(404, $this->exec('/')->getStatusCode());
     }
 
     public function testParam()
