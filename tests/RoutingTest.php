@@ -16,9 +16,19 @@
  * ============================================================================ */
 
 use Opis\Routing\Context;
-use Opis\HttpRouting\Route;
-use Opis\HttpRouting\Router;
-use Opis\HttpRouting\RouteCollection;
+use Opis\HttpRouting\{
+    Route, Router, RouteCollection, IResponseFactory, Dispatcher
+};
+use Psr\Http\Message\{
+    ResponseInterface,
+    StreamInterface
+};
+use Opis\Http\{
+    Uri,
+    Response,
+    Stream,
+    Request
+};
 use PHPUnit\Framework\TestCase;
 
 class RoutingTest extends TestCase
@@ -27,33 +37,36 @@ class RoutingTest extends TestCase
     protected $router;
     /** @var  RouteCollection */
     protected $collection;
-    /** @var \Opis\HttpRouting\IResponseFactory */
+    /** @var IResponseFactory */
     protected $factory;
 
     public function setUp()
     {
         $this->collection = new RouteCollection();
-        $global = new \ArrayObject();
-        $global['x'] = 'X';
-        $this->factory = $factory = new class implements \Opis\HttpRouting\IResponseFactory {
+
+        $this->factory = $factory = new class implements IResponseFactory
+        {
             /**
              * @inheritDoc
              */
-            public function createResponse(string $stream = 'php://memory'): \Psr\Http\Message\ResponseInterface
+            public function createResponse(string $stream = 'php://memory'): ResponseInterface
             {
-                return new \Zend\Diactoros\Response($stream);
+                return new Response($stream);
             }
 
             /**
              * @inheritDoc
              */
-            public function createStream(string $stream, string $mode = 'r'): \Psr\Http\Message\StreamInterface
+            public function createStream(string $stream, string $mode = 'r'): StreamInterface
             {
-                return new \Zend\Diactoros\Stream($stream, $mode);
+                return new Stream($stream, $mode);
             }
         };
 
-        $this->router = new Router($this->collection, new \Opis\HttpRouting\Dispatcher($factory), null, $global);
+        $global = new \ArrayObject();
+        $global['x'] = 'X';
+
+        $this->router = new Router($this->collection, new Dispatcher($factory), null, $global);
     }
 
     /**
@@ -76,8 +89,9 @@ class RoutingTest extends TestCase
      */
     protected function exec($path, $domain = 'localhost', $method = 'GET', $secure = false)
     {
-        $url = new \Zend\Diactoros\Uri('http' . ($secure ? 's' : '') . '://' . $domain . $path);
-        $request = new \Zend\Diactoros\Request($url, $method);
+        $url = new Uri('http' . ($secure ? 's' : '') . '://' . $domain . $path);
+        $request = new Request($url, $method);
+
         return $this->router->route(new Context($path, $request));
     }
 
@@ -96,6 +110,7 @@ class RoutingTest extends TestCase
     public function testNotFound1()
     {
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testNotFound2()
@@ -105,6 +120,7 @@ class RoutingTest extends TestCase
         });
 
         $this->assertEquals(404, $this->exec('/foo')->getStatusCode());
+        $this->assertEquals('', $this->exec('/foo')->getBody());
     }
 
     public function testNotFound3()
@@ -114,6 +130,7 @@ class RoutingTest extends TestCase
         });
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testParam()
@@ -122,6 +139,7 @@ class RoutingTest extends TestCase
             return $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
@@ -132,7 +150,21 @@ class RoutingTest extends TestCase
         })
             ->where('foo', '[a-z]+');
 
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
+    }
+
+    public function testParamInlineRegex()
+    {
+        $this->route('/{foo=[a-z]+}', function ($foo) {
+            return $foo;
+        });
+
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
+        $this->assertEquals('bar', $this->exec('/bar')->getBody());
+
+        $this->assertEquals(404, $this->exec('/123')->getStatusCode());
+        $this->assertEquals('', $this->exec('/123')->getBody());
     }
 
     public function testParamConstraintFail()
@@ -143,6 +175,7 @@ class RoutingTest extends TestCase
             ->where('foo', '[a-z]+');
 
         $this->assertEquals(404, $this->exec('/123')->getStatusCode());
+        $this->assertEquals('', $this->exec('/123')->getBody());
     }
 
     public function testParamOptional1()
@@ -151,6 +184,7 @@ class RoutingTest extends TestCase
             return $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/bar')->getBody());
     }
 
@@ -160,6 +194,7 @@ class RoutingTest extends TestCase
             return $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
@@ -170,6 +205,7 @@ class RoutingTest extends TestCase
         })
             ->implicit('foo', 'bar');
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('bar', $this->exec('/')->getBody());
     }
 
@@ -179,6 +215,7 @@ class RoutingTest extends TestCase
             return $bar . $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/foo/bar')->getStatusCode());
         $this->assertEquals('barfoo', $this->exec('/foo/bar')->getBody());
     }
 
@@ -192,6 +229,7 @@ class RoutingTest extends TestCase
             })
             ->filter('foo');
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
@@ -206,6 +244,7 @@ class RoutingTest extends TestCase
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testGlobalBeforeFilterSuccess()
@@ -219,6 +258,7 @@ class RoutingTest extends TestCase
         })
             ->filter('foo');
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
@@ -234,6 +274,7 @@ class RoutingTest extends TestCase
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testLocalFilterGlobalValuesSuccess()
@@ -246,6 +287,7 @@ class RoutingTest extends TestCase
             })
             ->filter('foo');
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
@@ -260,6 +302,7 @@ class RoutingTest extends TestCase
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testGlobalFilterGlobalValuesSuccess()
@@ -273,6 +316,7 @@ class RoutingTest extends TestCase
         })
             ->filter('foo');
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
     }
 
@@ -288,6 +332,7 @@ class RoutingTest extends TestCase
             ->filter('foo');
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
+        $this->assertEquals('', $this->exec('/')->getBody());
     }
 
     public function testLocalBinding1()
@@ -299,6 +344,7 @@ class RoutingTest extends TestCase
                 return strtoupper($foo);
             });
 
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
     }
 
@@ -311,6 +357,7 @@ class RoutingTest extends TestCase
                 return 'BAR';
             });
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/')->getBody());
     }
 
@@ -324,6 +371,7 @@ class RoutingTest extends TestCase
             return $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/bar')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/bar')->getBody());
     }
 
@@ -337,6 +385,7 @@ class RoutingTest extends TestCase
             return $foo;
         });
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('BAR', $this->exec('/')->getBody());
     }
 
@@ -346,6 +395,7 @@ class RoutingTest extends TestCase
             return $x;
         });
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('X', $this->exec('/')->getBody());
     }
 
@@ -358,6 +408,7 @@ class RoutingTest extends TestCase
                 return $x;
             });
 
+        $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('X', $this->exec('/')->getBody());
     }
 }
