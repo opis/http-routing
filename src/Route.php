@@ -92,7 +92,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string[] ...$method
+     * @param string ...$method
      * @return static|Route
      */
     public function method(string ...$method): self
@@ -116,7 +116,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string[] ...$callbacks
+     * @param string ...$callbacks
      * @return static|Route
      */
     public function filter(string ...$callbacks): self
@@ -125,7 +125,7 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string[] ...$callbacks
+     * @param string ...$callbacks
      * @return static|Route
      */
     public function guard(string ...$callbacks): self
