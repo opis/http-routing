@@ -40,14 +40,14 @@ class Dispatcher implements IDispatcher
         $route = $this->findRoute($router);
 
         if ($route === null) {
-            return new Response(404, [], null);
+            return new Response(404);
         }
 
         /** @var Request $request */
         $request = $router->getContext()->data();
 
         if (!in_array($request->getMethod(), $route->get('method', ['GET']))) {
-            return new Response(405, [], null);
+            return new Response(405);
         }
 
         $callbacks = $route->getCallbacks();
@@ -58,7 +58,7 @@ class Dispatcher implements IDispatcher
                 $callback = $callbacks[$name];
                 $arguments = $invoker->getArgumentResolver()->resolve($callback);
                 if (false === $callback(...$arguments)) {
-                    return new Response(404, [], null);
+                    return new Response(404);
                 }
             }
         }
