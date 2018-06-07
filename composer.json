@@ -13,7 +13,7 @@
     "require": {
         "php": "^7.1",
         "opis/routing": "5.0.x-dev",
-        "opis/http": "dev-custom"
+        "opis/http": "3.0.x-dev"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5"
