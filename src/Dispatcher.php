@@ -17,11 +17,11 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Http\{
+    Request, Response, Response\HtmlResponse
+};
 use Opis\Routing\{
     DispatcherTrait, IDispatcher, Router as BaseRouter
-};
-use Psr\Http\Message\{
-    ResponseInterface, ServerRequestInterface, StreamInterface
 };
 
 /**
@@ -30,18 +30,6 @@ use Psr\Http\Message\{
 class Dispatcher implements IDispatcher
 {
     use DispatcherTrait;
-
-    /** @var IResponseFactory */
-    protected $factory;
-
-    /**
-     * Dispatcher constructor.
-     * @param IResponseFactory $factory
-     */
-    public function __construct(IResponseFactory $factory)
-    {
-        $this->factory = $factory;
-    }
 
     /**
      * @param BaseRouter|Router $router
@@ -52,18 +40,14 @@ class Dispatcher implements IDispatcher
         $route = $this->findRoute($router);
 
         if ($route === null) {
-            return $this->factory
-                        ->createResponse()
-                        ->withStatus(404);
+            return new Response(404, [], null);
         }
 
-        /** @var ServerRequestInterface $request */
+        /** @var Request $request */
         $request = $router->getContext()->data();
 
         if (!in_array($request->getMethod(), $route->get('method', ['GET']))) {
-            return $this->factory
-                        ->createResponse()
-                        ->withStatus(405);
+            return new Response(405, [], null);
         }
 
         $callbacks = $route->getCallbacks();
@@ -74,37 +58,15 @@ class Dispatcher implements IDispatcher
                 $callback = $callbacks[$name];
                 $arguments = $invoker->getArgumentResolver()->resolve($callback);
                 if (false === $callback(...$arguments)) {
-                    return $this->factory
-                                ->createResponse()
-                                ->withStatus(404);
+                    return new Response(404, [], null);
                 }
             }
         }
 
         $result = $invoker->invokeAction();
 
-        if (!$result instanceof ResponseInterface) {
-
-            if (!$result instanceof StreamInterface) {
-                if (!is_string($result)) {
-                    try {
-                        $result = (string)$result;
-                    } catch (\Error $error) {
-                        $result = $error->getMessage();
-                    } catch (\Exception $exception) {
-                        $result = $exception->getMessage();
-                    }
-                }
-                $stream = $this->factory->createStream('php://memory', 'rw');
-                $stream->write($result);
-                $result = $stream;
-            }
-
-            $result = $this->factory
-                            ->createResponse()
-                            ->withStatus(200)
-                            ->withHeader('Content-Type', 'text/html')
-                            ->withBody($result);
+        if (!$result instanceof Response) {
+            $result = new HtmlResponse($result);
         }
 
         return $result;

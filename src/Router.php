@@ -37,10 +37,14 @@ class Router extends BaseRouter
      */
     public function __construct(
         RouteCollection $routes,
-        IDispatcher $dispatcher,
+        IDispatcher $dispatcher = null,
         FilterCollection $filters = null,
         ArrayAccess $global = null
     ) {
+
+        if ($dispatcher === null) {
+            $dispatcher = new Dispatcher();
+        }
 
         if ($filters === null) {
             $filters = new FilterCollection();

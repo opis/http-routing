@@ -17,11 +17,7 @@
 
 use Opis\Routing\Context;
 use Opis\HttpRouting\{
-    Route, Router, RouteCollection, IResponseFactory, Dispatcher
-};
-use Psr\Http\Message\{
-    ResponseInterface,
-    StreamInterface
+    Route, Router, RouteCollection, Dispatcher
 };
 use Opis\Http\{
     Uri,
@@ -37,36 +33,13 @@ class RoutingTest extends TestCase
     protected $router;
     /** @var  RouteCollection */
     protected $collection;
-    /** @var IResponseFactory */
-    protected $factory;
 
     public function setUp()
     {
         $this->collection = new RouteCollection();
-
-        $this->factory = $factory = new class implements IResponseFactory
-        {
-            /**
-             * @inheritDoc
-             */
-            public function createResponse(string $stream = 'php://memory'): ResponseInterface
-            {
-                return new Response($stream);
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function createStream(string $stream, string $mode = 'r'): StreamInterface
-            {
-                return new Stream($stream, $mode);
-            }
-        };
-
         $global = new \ArrayObject();
         $global['x'] = 'X';
-
-        $this->router = new Router($this->collection, new Dispatcher($factory), null, $global);
+        $this->router = new Router($this->collection, null, null, $global);
     }
 
     /**
@@ -85,12 +58,16 @@ class RoutingTest extends TestCase
      * @param string $domain
      * @param string $method
      * @param bool $secure
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Response
      */
-    protected function exec($path, $domain = 'localhost', $method = 'GET', $secure = false)
+    protected function exec($path, $method = 'GET', $domain = 'localhost', $secure = false, array $headers = [])
     {
-        $url = new Uri('http' . ($secure ? 's' : '') . '://' . $domain . $path);
-        $request = new Request($url, $method);
+
+        $headers += [
+            'Host' => $domain
+        ];
+
+        $request = new Request($method, $path, 'HTTP/1.1', $secure, $headers);
 
         return $this->router->route(new Context($path, $request));
     }
@@ -126,7 +103,7 @@ class RoutingTest extends TestCase
     public function testNotFound3()
     {
         $this->route('/', function () {
-            return $this->factory->createResponse()->withStatus(404);
+            return new Response(404, [], null);
         });
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());

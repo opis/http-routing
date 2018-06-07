@@ -17,12 +17,12 @@
 
 namespace Opis\HttpRouting;
 
+use Opis\Http\Request;
 use Opis\Routing\{
     IFilter,
     Route as BaseRoute,
     Router as BaseRouter
 };
-use Psr\Http\Message\RequestInterface;
 
 class RequestFilter implements IFilter
 {
@@ -33,7 +33,7 @@ class RequestFilter implements IFilter
      */
     public function filter(BaseRouter $router, BaseRoute $route): bool
     {
-        /** @var RequestInterface $request */
+        /** @var Request $request */
         $request = $router->getContext()->data();
 
         if (!in_array($request->getMethod(), $route->get('method', ['GET']))) {
