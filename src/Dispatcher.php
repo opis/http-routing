@@ -18,7 +18,7 @@
 namespace Opis\HttpRouting;
 
 use Opis\Http\{
-    Request, Response, Response\HtmlResponse
+    Request, Response, Responses\HtmlResponse
 };
 use Opis\Routing\{
     DispatcherTrait, IDispatcher, Router as BaseRouter
