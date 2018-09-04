@@ -2,31 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.0.x-dev
+## 5.0.0 - 2018.09.04
 ### Added
 - Support for PHP 7.0.x
 - `opis/http` dependency
-- `Opis\HttpRouting\CompactRoute` class
 
 ### Removed
 - Support for PHP 5.x
-- `Opis\HttpRouting\DispatcherResolver` class
-- `Opis\HttpRouting\CallbackFilter` class
-- `Opis\HttpRouting\Path` class
+
 ### Changed
 - Source files were moved form `lib` to `src`
-- All classes were refactored
-- Updated `opis/routing` dependency to version `5.0.x-dev`
-- Updated `phpunit/phpunit` dependency(dev mode) to version `^6.5`
-- `Opis\HttpRouting\Route::filter` was renamed to `callback`
-- `Opis\HttpRouting\Route::getFilters` was renamed to `getCallbacks`
-- `Opis\HttpRouting\Route::before` was renamed to `filter`
-- `Opis\HttpRouting\Route::after` was renamed to `guard`
-- `Opis\HttpRouting\RouteCollection::filter` was renamed to `callback`
-- `Opis\HttpRouting\RouteCollection::getFilters` was renamed to `getCallbacks`
+- The library was fully refactored
 
-### Fixed
-- Nothing
 
 ## v4.0.2 - 2016.03.20
 ### Added

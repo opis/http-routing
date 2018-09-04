@@ -8,40 +8,44 @@ Opis HTTP Routing
 HTTP Routing library
 ---------------------
 **Opis HTTP Routing** is a library that can be used to route all types of HTTP request, providing a full
-range of features, like path filters, domain filters, user defined filters, access filters, custom error
-handlers for `404 Not found` and `403 Forbidden` HTTP errors and much more. 
+range of features, like path filters, domain filters, user defined filters, and more.
+
+### Documentation
+
+The full documentation for this library can be found [here][documentation].
 
 ### License
 
-**Opis HTTP Routing** is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). 
+**Opis Http Routing** is licensed under the [Apache License, Version 2.0][apache_license].
 
 ### Requirements
 
-* PHP 7.0.* or higher
-* [Opis Routing](http://www.opis.io/routing) 5.0.x-dev
+* PHP ^7.1
+* [Opis Routing] ^5.0
+* [Opis Http] ^3.0
 
-### Installation
+## Installation
 
-This library is available on [Packagist](https://packagist.org/packages/opis/http-routing) and can be installed using [Composer](http://getcomposer.org).
+**Opis Http Routing** is available on [Packagist] and it can be installed from a 
+command line interface by using [Composer]. 
+
+```bash
+composer require opis/http-routing
+```
+
+Or you could directly reference it into your `composer.json` file as a dependency
 
 ```json
 {
     "require": {
-        "opis/http-routing": "5.0.x-dev"
+        "opis/http-routing": "^5.0"
     }
 }
 ```
 
-If you are unable to use [Composer](http://getcomposer.org) you can download the
-[tar.gz](https://github.com/opis/http-routing/archive/master.tar.gz) or the [zip](https://github.com/opis/http-routing/archive/master.zip)
-archive file, extract the content of the archive and include de `autoload.php` file into your project. 
-
-```php
-
-require_once 'path/to/http-routing-master/autoload.php';
-
-```
-
-### Documentation
-
-Examples and documentation can be found [here](http://opis.io/http-routing).
+[documentation]: https://opis.io/http-routing
+[apache_license]: https://www.apache.org/licenses/LICENSE-2.0 "Apache License"
+[Packagist]: https://packagist.org/packages/opis/http-routing "Packagist"
+[Composer]: https://getcomposer.org "Composer"
+[Opis Routing]: https://opis.io/routing "Opis Routing"
+[Opis Http]: https://opis.io/http "Opis Http"

@@ -1,19 +1,23 @@
 {
     "name": "opis/http-routing",
-    "description": "Opis HTTP Routing is a library that can be used to route all types of HTTP request, providing a full range of features, like path filters, domain filters, user defined filters, access filters, custom error handlers for HTTP errors and much more. ",
-    "keywords": ["routing", "http", "serializable", "psr-7", "http-message"],
-    "homepage": "http://opis.io",
+    "description": "Opis HTTP Routing is a library that can be used to route all types of HTTP requests",
+    "keywords": ["routing", "http", "http-message"],
+    "homepage": "https://opis.io/http-routing",
     "license": "Apache-2.0",
     "authors": [
         {
             "name": "Marius Sarca",
             "email": "marius.sarca@gmail.com"
+        },
+        {
+            "name": "Sorin Sarca",
+            "email": "sarca_sorin@hotmail.com"
         }
     ],
     "require": {
         "php": "^7.1",
-        "opis/routing": "5.0.x-dev",
-        "opis/http": "3.0.x-dev"
+        "opis/routing": "^5.0",
+        "opis/http": "^3.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5"
