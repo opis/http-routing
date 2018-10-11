@@ -18,31 +18,29 @@
 namespace Opis\HttpRouting;
 
 use Opis\Pattern\RegexBuilder;
-use Opis\Routing\ClosureWrapperTrait;
-use Opis\Routing\RouteCollection as BaseCollection;
+use Opis\Routing\{ClosureTrait, RouteCollection as BaseCollection};
 
 /**
- * Class RouteCollection
  * @method Route createRoute(string $pattern, callable $action, string $name = null)
  */
 class RouteCollection extends BaseCollection
 {
-    use ClosureWrapperTrait;
+    use ClosureTrait;
 
-    /** @var    array */
-    protected $placeholders = [];
+    /** @var array */
+    private $placeholders = [];
 
-    /** @var   callable[] */
-    protected $bindings = [];
+    /** @var callable[] */
+    private $bindings = [];
 
-    /** @var    callable[] */
-    protected $callbacks = [];
+    /** @var callable[] */
+    private $callbacks = [];
 
-    /** @var    array */
-    protected $defaults = [];
+    /** @var array */
+    private $defaults = [];
 
-    /** @var  RegexBuilder|null */
-    protected $domainBuilder;
+    /** @var RegexBuilder|null */
+    private $domainBuilder;
 
     /**
      * @inheritDoc
@@ -62,7 +60,7 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Get wildcards
+     * Get placeholders
      *
      * @return  array
      */
@@ -168,33 +166,31 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * @return array
+     * @inheritdoc
      */
-    protected function getSerialize()
+    protected function getSerializableData(): array
     {
         $map = [static::class, 'wrapClosures'];
 
         return [
-            'parent' => parent::getSerialize(),
+            'parent' => parent::getSerializableData(),
             'placeholders' => $this->placeholders,
-            'callbacks' => array_map($map, $this->callbacks),
-            'bindings' => array_map($map, $this->bindings),
-            'defaults' => array_map($map, $this->defaults),
+            'callbacks' => $this->wrapClosures($this->callbacks),
+            'bindings' => $this->wrapClosures($this->bindings),
+            'defaults' => $this->wrapClosures($this->defaults),
         ];
     }
 
     /**
-     * @param $object
+     * @inheritdoc
      */
-    protected function setUnserialize($object)
+    protected function setUnserializedData(array $data)
     {
-        $map = [static::class, 'unwrapClosures'];
+        $this->placeholders = $data['placeholders'];
+        $this->callbacks = $this->unwrapClosures($data['callbacks']);
+        $this->bindings = $this->unwrapClosures($data['bindings']);
+        $this->defaults = $this->unwrapClosures($data['defaults']);
 
-        $this->placeholders = $object['placeholders'];
-        $this->callbacks = array_map($map, $object['callbacks']);
-        $this->bindings = array_map($map, $object['bindings']);
-        $this->defaults = array_map($map, $object['defaults']);
-
-        parent::setUnserialize($object['parent']);
+        parent::setUnserializedData($data['parent']);
     }
 }

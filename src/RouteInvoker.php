@@ -20,8 +20,6 @@ namespace Opis\HttpRouting;
 use Opis\Routing\RouteInvoker as BaseRouteInvoker;
 
 /**
- * Class CompiledRoute
- * @package Opis\HttpRouting
  * @property Route $route
  * @method Route getRoute()
  */

@@ -28,7 +28,7 @@ use Opis\Routing\Route as BaseRoute;
 class Route extends BaseRoute
 {
     /** @var array */
-    protected $cache = [];
+    private $cache = [];
 
     /**
      * @return array
@@ -37,7 +37,7 @@ class Route extends BaseRoute
     {
         if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
-            $collection = $this->collection;
+            $collection = $this->getRouteCollection();
             $this->cache[__FUNCTION__] = parent::getPlaceholders() + $collection->getPlaceholders();
         }
         return $this->cache[__FUNCTION__];
@@ -50,7 +50,7 @@ class Route extends BaseRoute
     {
         if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
-            $collection = $this->collection;
+            $collection = $this->getRouteCollection();
             $this->cache[__FUNCTION__] = parent::getDefaults() + $collection->getDefaults();
         }
         return $this->cache[__FUNCTION__];
@@ -63,7 +63,7 @@ class Route extends BaseRoute
     {
         if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
-            $collection = $this->collection;
+            $collection = $this->getRouteCollection();
             $this->cache[__FUNCTION__] = parent::getBindings() + $collection->getBindings();
         }
         return $this->cache[__FUNCTION__];
@@ -76,7 +76,7 @@ class Route extends BaseRoute
     {
         if (!isset($this->cache[__FUNCTION__])) {
             /** @var RouteCollection $collection */
-            $collection = $this->collection;
+            $collection = $this->getRouteCollection();
             $this->cache[__FUNCTION__] = $this->get('callbacks', []) + $collection->getCallbacks();
         }
         return $this->cache[__FUNCTION__];
