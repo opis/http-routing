@@ -16,7 +16,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "opis/routing": "dev-refactor",
+        "opis/routing": "^5.0",
         "opis/http": "^3.0"
     },
     "require-dev": {
