@@ -2,9 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 5.0.0 - 2018.09.04
+## 5.0.0 - 2018.10.16
 ### Added
-- Support for PHP 7.0.x
+- Support for PHP 7.x
 - `opis/http` dependency
 
 ### Removed
