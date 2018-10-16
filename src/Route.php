@@ -80,6 +80,38 @@ class Route extends BaseRoute
     }
 
     /**
+     * @return array
+     */
+    public function getLocalPlaceholders(): array
+    {
+        return parent::getPlaceholders();
+    }
+
+    /**
+     * @return array
+     */
+    public function getLocalDefaults(): array
+    {
+        return parent::getDefaults();
+    }
+
+    /**
+     * @return array
+     */
+    public function getLocalBindings(): array
+    {
+        return parent::getBindings();
+    }
+
+    /**
+     * @return array
+     */
+    public function getLocalCallbacks(): array
+    {
+        return $this->get('callbacks', []);
+    }
+
+    /**
      * @param string $value
      * @return static|Route
      */
