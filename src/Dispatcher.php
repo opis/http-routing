@@ -50,16 +50,25 @@ class Dispatcher implements IDispatcher
             return new Response(405);
         }
 
-        $callbacks = $route->getCallbacks();
         $invoker = $router->resolveInvoker($route);
+        $guards = $route->getRouteCollection()->getGuards();
 
-        foreach ($route->get('guard', []) as $name) {
-            if (isset($callbacks[$name])) {
-                $callback = $callbacks[$name];
-                $arguments = $invoker->getArgumentResolver()->resolve($callback);
-                if (false === $callback(...$arguments)) {
-                    return new Response(404);
+        /**
+         * @var string $name
+         * @var callable|null $callback
+         */
+        foreach ($route->get('guards', []) as $name => $callback) {
+            if ($callback === null) {
+                if (!isset($guards[$name])) {
+                    continue;
                 }
+                $callback = $guards[$name];
+            }
+
+            $arguments = $invoker->getArgumentResolver()->resolve($callback);
+
+            if (false === $callback(...$arguments)) {
+                return new Response(404);
             }
         }
 

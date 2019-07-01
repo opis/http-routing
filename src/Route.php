@@ -67,19 +67,6 @@ class Route extends BaseRoute
     }
 
     /**
-     * @return callable[]
-     */
-    public function getCallbacks(): array
-    {
-        if (!isset($this->cache[__FUNCTION__])) {
-            /** @var RouteCollection $collection */
-            $collection = $this->getRouteCollection();
-            $this->cache[__FUNCTION__] = $this->get('callbacks', []) + $collection->getCallbacks();
-        }
-        return $this->cache[__FUNCTION__];
-    }
-
-    /**
      * @return array
      */
     public function getLocalPlaceholders(): array
@@ -101,14 +88,6 @@ class Route extends BaseRoute
     public function getLocalBindings(): array
     {
         return parent::getBindings();
-    }
-
-    /**
-     * @return array
-     */
-    public function getLocalCallbacks(): array
-    {
-        return $this->get('callbacks', []);
     }
 
     /**
@@ -145,32 +124,26 @@ class Route extends BaseRoute
     }
 
     /**
-     * @param string ...$callbacks
+     * @param string $name
+     * @param callable|null $callback
      * @return static|Route
      */
-    public function filter(string ...$callbacks): self
+    public function filter(string $name, callable $callback = null): self
     {
-        return $this->set('filter', $callbacks);
-    }
-
-    /**
-     * @param string ...$callbacks
-     * @return static|Route
-     */
-    public function guard(string ...$callbacks): self
-    {
-        return $this->set('guard', $callbacks);
+        $filters = $this->get('filters', []);
+        $filters[$name] = $callback;
+        return $this->set('filters', $filters);
     }
 
     /**
      * @param string $name
-     * @param callable $callback
+     * @param callable|null $callback
      * @return static|Route
      */
-    public function callback(string $name, callable $callback): self
+    public function guard(string $name, callable $callback = null): self
     {
-        $list = $this->get('callbacks', []);
-        $list[$name] = $callback;
-        return $this->set('callbacks', $list);
+        $guards = $this->get('guards', []);
+        $guards[$name] = $callback;
+        return $this->set('guards', $guards);
     }
 }

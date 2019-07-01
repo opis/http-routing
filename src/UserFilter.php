@@ -33,17 +33,25 @@ class UserFilter implements IFilter
      */
     public function filter(BaseRouter $router, BaseRoute $route): bool
     {
-        /** @var callable[] $callbacks */
-        $callbacks = $route->getCallbacks();
         $invoker = $router->resolveInvoker($route);
+        $filters = $route->getRouteCollection()->getFilters();
 
-        foreach ($route->get('filter', []) as $name) {
-            if (isset($callbacks[$name])) {
-                $callback = $callbacks[$name];
-                $arguments = $invoker->getArgumentResolver()->resolve($callback, false);
-                if (false === $callback(...$arguments)) {
-                    return false;
+        /**
+         * @var string $name
+         * @var callable|null $callback
+         */
+        foreach ($route->get('filters', []) as $name => $callback) {
+            if ($callback === null) {
+                if (!isset($filters[$name])) {
+                    continue;
                 }
+                $callback = $filters[$name];
+            }
+
+            $arguments = $invoker->getArgumentResolver()->resolve($callback, false);
+
+            if (false === $callback(...$arguments)) {
+                return false;
             }
         }
 

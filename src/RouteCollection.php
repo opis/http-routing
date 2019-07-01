@@ -42,6 +42,12 @@ class RouteCollection extends BaseCollection
     /** @var RegexBuilder|null */
     private $domainBuilder;
 
+    /** @var callable[] */
+    private $guards = [];
+
+    /** @var callable[] */
+    private $filters = [];
+
     /**
      * @inheritDoc
      */
@@ -100,6 +106,26 @@ class RouteCollection extends BaseCollection
     }
 
     /**
+     * Get filters
+     *
+     * @return callable[]
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+    /**
+     * Get guards
+     *
+     * @return callable[]
+     */
+    public function getGuards(): array
+    {
+        return $this->guards;
+    }
+
+    /**
      * @return RegexBuilder
      */
     public function getDomainBuilder(): RegexBuilder
@@ -153,15 +179,28 @@ class RouteCollection extends BaseCollection
     }
 
     /**
-     * Add a callback
+     * Add global filter
      *
-     * @param   string $name
-     * @param   callable $callback
-     * @return  static|RouteCollection
+     * @param string $name
+     * @param callable $callback
+     * @return static|RouteCollection
      */
-    public function callback(string $name, callable $callback): self
+    public function filter(string $name, callable $callback): self
     {
-        $this->callbacks[$name] = $callback;
+        $this->filters[$name] = $callback;
+        return $this;
+    }
+
+    /**
+     * Add global guard
+     *
+     * @param string $name
+     * @param callable $callback
+     * @return static|RouteCollection
+     */
+    public function guard(string $name, callable $callback): self
+    {
+        $this->guards[$name] = $callback;
         return $this;
     }
 
@@ -170,12 +209,11 @@ class RouteCollection extends BaseCollection
      */
     protected function getSerializableData(): array
     {
-        $map = [static::class, 'wrapClosures'];
-
         return [
             'parent' => parent::getSerializableData(),
             'placeholders' => $this->placeholders,
-            'callbacks' => $this->wrapClosures($this->callbacks),
+            'filters' => $this->wrapClosures($this->filters),
+            'guards' => $this->wrapClosures($this->guards),
             'bindings' => $this->wrapClosures($this->bindings),
             'defaults' => $this->wrapClosures($this->defaults),
         ];
@@ -187,7 +225,8 @@ class RouteCollection extends BaseCollection
     protected function setUnserializedData(array $data)
     {
         $this->placeholders = $data['placeholders'];
-        $this->callbacks = $this->unwrapClosures($data['callbacks']);
+        $this->filters = $this->unwrapClosures($data['filters']);
+        $this->guards = $this->unwrapClosures($data['guards']);
         $this->bindings = $this->unwrapClosures($data['bindings']);
         $this->defaults = $this->unwrapClosures($data['defaults']);
 

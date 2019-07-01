@@ -17,12 +17,10 @@
 
 use Opis\Routing\Context;
 use Opis\HttpRouting\{
-    Route, Router, RouteCollection, Dispatcher
+    Route, Router, RouteCollection
 };
 use Opis\Http\{
-    Uri,
     Response,
-    Stream,
     Request
 };
 use PHPUnit\Framework\TestCase;
@@ -201,10 +199,9 @@ class RoutingTest extends TestCase
         $this->route('/', function () {
             return 'OK';
         })
-            ->callback('foo', function () {
+            ->filter('foo', function () {
                 return true;
-            })
-            ->filter('foo');
+            });
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
@@ -215,10 +212,9 @@ class RoutingTest extends TestCase
         $this->route('/', function () {
             return 'OK';
         })
-            ->callback('foo', function () {
+            ->filter('foo', function () {
                 return false;
-            })
-            ->filter('foo');
+            });
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
         $this->assertEquals('', $this->exec('/')->getBody());
@@ -226,7 +222,7 @@ class RoutingTest extends TestCase
 
     public function testGlobalBeforeFilterSuccess()
     {
-        $this->collection->callback('foo', function () {
+        $this->collection->filter('foo', function() {
             return true;
         });
 
@@ -241,7 +237,7 @@ class RoutingTest extends TestCase
 
     public function testGlobalBeforeFilterFail()
     {
-        $this->collection->callback('foo', function () {
+        $this->collection->filter('foo', function() {
             return false;
         });
 
@@ -259,10 +255,9 @@ class RoutingTest extends TestCase
         $this->route('/', function () {
             return 'OK';
         })
-            ->callback('foo', function ($x) {
+            ->filter('foo', function ($x) {
                 return $x == 'X';
-            })
-            ->filter('foo');
+            });
 
         $this->assertEquals(200, $this->exec('/')->getStatusCode());
         $this->assertEquals('OK', $this->exec('/')->getBody());
@@ -273,10 +268,9 @@ class RoutingTest extends TestCase
         $this->route('/', function () {
             return 'OK';
         })
-            ->callback('foo', function ($x) {
+            ->filter('foo', function ($x) {
                 return $x != 'X';
-            })
-            ->filter('foo');
+            });
 
         $this->assertEquals(404, $this->exec('/')->getStatusCode());
         $this->assertEquals('', $this->exec('/')->getBody());
@@ -284,7 +278,7 @@ class RoutingTest extends TestCase
 
     public function testGlobalFilterGlobalValuesSuccess()
     {
-        $this->collection->callback('foo', function ($x) {
+        $this->collection->filter('foo', function ($x) {
             return $x == 'X';
         });
 
@@ -299,7 +293,7 @@ class RoutingTest extends TestCase
 
     public function testGlobalFilterGlobalValuesFail()
     {
-        $this->collection->callback('foo', function ($x) {
+        $this->collection->filter('foo', function ($x) {
             return $x != 'X';
         });
 
